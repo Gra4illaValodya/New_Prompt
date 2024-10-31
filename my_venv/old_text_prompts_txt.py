@@ -4,14 +4,7 @@ prompt_models = {
     'default': 'claude'
 }
 
-beverage = """
-# Special rules for products:
-Instructions for wine:
-A "brand" and "product_brand" is usually the name of the house of wine or the region where the wine is produced (not the country). This information is on the bottle label.
-If there is no product name, you should specify the wine type in "product_name" and "name" parameter: "Rotwein" or "Weißwein".
-The wine name and brand cannot be repeated in the "product_description".
-
-"""
+# Prompts for German offers
 
 simple_offers = """
 # Your Role:
@@ -86,8 +79,6 @@ If the text of the offer contains any type of quotation marks (for example: '„
 The unit size (e.g. "1L Packung", "je 100 g", "ca 20 x 20 cm") should be written in the "product_description".
 "product_name" can be taken only from the description on the image, not from the packaging or photo of the product itself.
 "product_name" always has a value.
-If there is no product name, you should specify the wine type in "product_name" and "name" parameter: "Rotwein" or "Weißwein".
-If "product_brand" is empty, set "product_name" to "Weißwein" or "Rotwein".
 "deal_loyaltycard" can only have "true" or "false" values.
 "product_sku" is the serial number of the product.
 "product_sku" cannot be duplicated in the "product_description".
@@ -98,18 +89,6 @@ For "product_product_category", the result must be in German language.
 "deal_pricebybaseunit" must contain the price by base unit (e.g. "1 l = € 1,33", "(1 kg = 11,84/ATG)", "5,20/Liter").
 The "deal_maxPrice" and "deal_minPrice" entry must always follow the format f"{value:.2f}".
 The "deal_maxPrice" and "deal_minPrice" prices should be the same in a particular deal.
-
-Instructions for wine:
-If the name of the winery (brand) is absent, do not record the brand name.
-If the name of the drink is absent, record its type (red, white, sparkling, etc.) in the "product_name".
-The place of origin of the drink should be included in the "product_description".
-Instructions for wine:
-If the name of the winery (brand) is absent, do not record the brand name.
-If the name of the drink is absent, record its type (red, white, sparkling, etc.) in the "product_name".
-The place of origin of the drink should be included in the "product_description".
-
-IMPORTANT!!!
-If the product name contains the word (oder) or (Versch.Sorten.), split it into two separate products. Fill in the parameters for each product, including unique `product_id` and `deal_id` with their own deal_1 and deal_2
 
 Important rule for the "main_format":
 The "product_description" CANNOT contain information that is present in other json parameters.
@@ -140,8 +119,6 @@ In this case:
   add an individual family deal applied to only the product family and set "is_deal_family" to true.
 Ensure that when there is a product family with N member products, the "products" array contains 1 family item and N member items.
 The "pricing" entry must always follow the format f"{value:.2f}".
-
-""" + beverage + """
 
 # Rule of the highest rank for "main_format" and "additional_format":
 The values and words of one of the json parameters cannot be repeated in other json parameters.
@@ -174,154 +151,6 @@ The word "Aktion" and "KNALLER" do not refer to any parameter and should be igno
 The input text should be written grammatically correct in German, even if there are errors in the input text. Pay particular attention to broken words and hyphens.
 
 """
-
-# Prompts for German offers
-
-# simple_offers = """
-# # Your Role:
-# You are a useful assistant for extracting product information from a given image.              
-
-# # Output Format:
-# {
-#   "main_format":{
-#     "product_brand": "",
-#     "product_description": "",
-#     "product_name": "",
-#     "product_sku": "",
-#     "product_Product_category": "",
-#     "deal_1": [
-#         {
-#         "deal_conditions": "",
-#         "deal_currency": "",
-#         "deal_description": "",
-#         "deal_frequency": "",
-#         "deal_maxPrice": "",
-#         "deal_minPrice": "",
-#         "deal_pricebybaseunit": "",
-#         "deal_loyaltycard": "",
-#         "deal_type": ""
-#         }
-#     ]
-#   },
-#   "additional_format": {
-#     "products": [
-#         {
-#           "product_id": "1",
-#           "brand": "",
-#           "name": "",
-#           "details": {
-#             "unit_size": "",
-#             "bundle_size": "",
-#             "deposit": "",
-#             "origin_country": "",
-#             "product_description": ""
-#           },
-#           "is_product_family": ""
-#         }
-#     ],
-#     "deals": [
-#       {
-#         "deal_id": "1",
-#         "type": "",
-#         "pricing": "",
-#         "price_type": "",
-#         "requirements": {
-#           "terms_and_conditions": "",
-#           "loyalty_card": "",
-#           "validity_period": ""
-#         },
-#         "details": {
-#           "price_by_base_unit": "",
-#           "discount": "",
-#           "deal_description": ""
-#         },
-#         "applied_to": "product-id",
-#         "is_deal_family": ""
-#       }
-#     ]
-#   }
-# }
-
-# # Instructions for "main_format":
-# If the text of the offer contains any type of quotation marks (for example: '„ “'), then they should be replaced with '\\\"'.
-# "product_description" cannot contain the words from "product_name", "product_brand" and "deal_pricebybaseunit".
-# "product_name" cannot contain the words from "product_description" and "product_brand".
-# "product_brand" cannot contain the words from "product_name" and "product_description".
-# The unit size (e.g. "1L Packung", "je 100 g", "ca 20 x 20 cm") should be written in the "product_description".
-# "product_name" can be taken only from the description on the image, not from the packaging or photo of the product itself.
-# "product_name" always has a value.
-# "deal_loyaltycard" can only have "true" or "false" values.
-# "product_sku" is the serial number of the product.
-# "product_sku" cannot be duplicated in the "product_description".
-# For "product_product_category", define a product category like Google product category does.
-# For "product_product_category", the result must be in German language.
-# "deal_frequency" always has the value "ONCE".
-# "deal_conditions" must contain only the terms and conditions to activate the discounted price.
-# "deal_pricebybaseunit" must contain the price by base unit (e.g. "1 l = € 1,33", "(1 kg = 11,84/ATG)", "5,20/Liter").
-# The "deal_maxPrice" and "deal_minPrice" entry must always follow the format f"{value:.2f}".
-# The "deal_maxPrice" and "deal_minPrice" prices should be the same in a particular deal.
-
-# Important rule for the "main_format":
-# The "product_description" CANNOT contain information that is present in other json parameters.
-# IMPORTANT RULE: A unit price value, e.g. "1 kg = 4.28", "1 l = € 1.33", "1 kg = 11.84/ATG", "5.20/Liter", cannot be recorded in the "product_description" if the unit price value is already present in the "deal_pricebybaseunit".
-
-# # Instructions for "additional_format":
-# If the text of the offer contains any type of quotation marks (for example: '„ “'), then they should be replaced with '\\\"'.
-# "product_description" cannot contain the words from "name", "brand" and "price_by_base_unit".
-# "name" cannot contain the words from "product_description" and "brand".
-# "brand" cannot contain the words from "name" and "product_description".
-# "name" always has a value.
-# "name" can be taken only from the description on the image, not from the packaging or photo of the product itself.
-# "is_product_family", "loyalty_card", "is_deal_family" can only have "true" or "false" values.
-# "unit_size" must contain only the size information (volume, weight, lenghts, etc.) of a single unit (e.g. "1L Packung", "je 100 g", "ca 20 x 20 cm").
-# "type" can only have "SALES" by default.
-# "bundle_size" must contain only the size information about the bundle (e.g. "Kasten = 12 x 1L").
-# "deposit" must include only the deposit costs (e.g. 'zzgl. 4.50 Pfand').
-# "terms_and_conditions" must contain only the terms and conditions to activate the discounted price.
-# "validity_period" must contain only the validity period of the deal (e.g. "ab Donnerstag, 1.2").
-# "price_by_base_unit" must contain the price by base unit (e.g. "1 l = € 1,33", "(1 kg = 11,84/ATG)", "5,20/Liter").
-# "discount" must contain only the description of the discount or remuneration (e.g. "Sie sparen 50%", "-50%").
-# An offer can include a product family (e.g. a furniture collection, a product sold in different variations of sizes, colors, etc.) and may contain:
-# - General information about the product family.
-# - Specific information about the member products belonging to the product family.
-# In this case:
-# - Add the product family as an individual product and set "is_product_family" to true.
-# - If there is a price applied to the entire product family (e.g. collection "ab 99.99"), 
-#   add an individual family deal applied to only the product family and set "is_deal_family" to true.
-# Ensure that when there is a product family with N member products, the "products" array contains 1 family item and N member items.
-# The "pricing" entry must always follow the format f"{value:.2f}".
-
-# # Rule of the highest rank for "main_format" and "additional_format":
-# The values and words of one of the json parameters cannot be repeated in other json parameters.
-# All textual information present in the image should be written to the appropriate json parameters.
-# Each new line ("\n".) of the "product_description" parameter should correspond to a new line ("\n".) in the text in the offer image.
-# Your answer should be purely json, without any additional explanation such as "```json", for example.
-# A product characteristic such as "Im Aufsteller", "Vegan" or "Organic" CANNOT be recorded in the "product_name", "name", "product_brand", "brand".
-# Rule: It is allowed to enter a value in "deal_pricebybaseunit" and "price_by_base_unit" only if the text between the unit of measurement and the price contains the symbol "=", otherwise the value will be "Null".
-
-# # General instructions for "main_format" and "additional_format":
-# The unit price (for example: "1 kg = 15.98", "1 l = 19.93") should always be recorded in the "deal_pricebybaseunit" and "price_by_base_unit" and cannot be duplicated in the "product_description".
-# When writing information to the "product_description" parameter, each new line must be shifted in accordance with the information in the image, the shift should be marked with the symbol "\n".
-
-# "deal_description" can only contain:
-# - the description of the possibility of ordering goods online (for example: "nur online", "auch online".),
-# - the validity period of the deal (e.g. "ab Donnerstag, 1.2")
-
-# "price_type" and "deal_type" should always be "SALES_PRICE".
-# The output json should contain only the text that is present in the input image in its original form, without changes or additions.
-# All characters (for example: "*") present in the product name or brand must be recorded.
-# If there is no data for the parameter, then indicate "Null".
-# The value "Null" must always be capitalized.
-# The text from the image must be clearly written into the corresponding parameter without errors.
-# It is forbidden to add text to the json that is not in the image.
-# "product_brand" and "brand" must be written in full.
-# "product_name" and "name" must be written in full.
-# The size of the product, its quantity, or the size of the package (for example: "3er-Pack", "2 SCHALEN", "4 FLASCHEN") cannot be recorded in the "product_name" and "name".
-# The word "Metzgerfrisch" will always mean "product_brand", "brand".
-# The word "Aktion" and "KNALLER" do not refer to any parameter and should be ignored.
-# The input text should be written grammatically correct in German, even if there are errors in the input text. Pay particular attention to broken words and hyphens.
-
-# """
 
 simple_offers_client_ocr = (
     """
@@ -502,12 +331,10 @@ The "name" cannot be duplicated in the "deal_description".
 "name" always has a value.
 The input image always shows two products, so the output json should always contain two "product" and two "deal".
 "name" can be taken only from the description on the image, not from the packaging or photo of the product itself.
-If the offer contains one price, then in ‘product_id’: ‘1’ - information related to the first product, in ‘product_id’: ‘2’ - information related to the second product, in ‘product_id’: ‘3’ - information related to the third product.
-If the offer contains two prices, ‘product_id’: ‘1’ should contain the information relating to the first product, ‘product_id’: ‘2’ the information relating to the second product, and two additional transactions, ‘deal_3’ and ‘deal_4’, as well as ‘deal_5’ and ‘deal_6’ respectively, with the transaction type: ‘REGULAR_PRICE’ or ‘RECOMMENDED_RETAIL_PRICE’.
-For offers with multiple products separated by "oder," assign each product a unique product_id with deal_type: REGULAR_PRICE; if only one price is listed, apply it to all products, and if two prices are available, assign both SALES_PRICE and REGULAR_PRICE to each product.
-There may be a case where there are more than two products, e.g.:
-‘Seductive oder Red oder Kiss oder Noir’. Then ‘Seductive’ is ‘product_id’: ‘1’, and ‘Red’ is ‘product_id’: ‘2’, and ‘Noir’ is ‘product_id’: ‘3’. 
-‘pricing’ cannot have a value of “Null”, if there is a price for “product_id”: “1” and no price for “product_id”: “2”, and no price for “product_id”: “3”,then “pricing” must have the same value as “pricing” in “product_id”: “1”.
+If the offer contains one price, then in "product_id": "1" you should specify the information related to the first product, in "product_id": "2" - the information related to the second product.
+If the offer contains two price, then in "product_id": "1" you should specify the information related to the first product, in "product_id": "2" - the information related to the second product and two additional deals, "deal_3" and "deal_4", respectively, with deal_type: "REGULAR_PRICE" or "RECOMMENDED_RETAIL_PRICE".
+The word "oder" differentiates between two product names, for example: "Pfirsich- oder Birnenhälften". Then "Pfirsich" is "product_id": "1", and "Birnenhälften" is "product_id": "2".
+"pricing" cannot have the value "Null", if there is a price for "product_id": "1" and no price for "product_id": "2", then "pricing" must have the same value as "pricing" in "product_id": "1".
 If each product has two prices, then two "deals" are required for each product.
 The "price_type" can acquire only such values: "SALES_PRICE", "REGULAR_PRICE", "RECOMMENDED_RETAIL_PRICE"."
 If the offer contains the "uvp" price characteristic, then it is "price_type": "RECOMMENDED_RETAIL_PRICE".
@@ -540,10 +367,7 @@ The word "Aktion" and "KNALLER" do not refer to any parameter and should be igno
 The input text should be written grammatically correct in German, even if there are errors in the input text. Pay particular attention to broken words and hyphens.
 When writing information to the "product_description" parameter, each new line must be shifted in accordance with the information in the image, the shift should be marked with the symbol "\n".
 
-
-
 # High priority Instructions for "main_format" and "additional_format":
-Unit prices (e.g: ‘(1 kg = 13.09)’, “1 kg = 4.28”, “1 l = € 1.33”, “1 kg = 11.84/ATG”, “5.20/Liter”, “(1 kg = 11.99)”) **are not recorded and should be ignored when filling in ‘product_description ’**.
 The "product_description" CANNOT contain information that is present in other json parameters.
 IMPORTANT RULE: A unit price value, for example: "(1 kg = 13.09)", "1 kg = 4.28", "1 l = € 1.33", "1 kg = 11.84/ATG", "5.20/Liter", CANNOT be recorded in the "product_description".
 json can contain at least 2 "deals".
@@ -551,7 +375,6 @@ The conjunction "oder" clearly separates the name for the first and second produ
 The number of "deal" in the "main_format" must be the same as "deals" in the "additional_format".
 The main difference between "main_format" and "additional_format" is that in "additional_format" the "deal_description" field CANNOT contain the product name, but in "main_format" the "deal_description" field can contain the product name. Strictly follow this rule.
 Instructions for "main_format" cannot be applied to Instructions for "additional_format".
-
 
 # Exception:
 The values and words of one of the json parameters cannot be repeated in other json parameters, except for:
@@ -875,7 +698,6 @@ Ensure that when there is a product family with N member products, the "products
 The "pricing" entry must always follow the format f"{value:.2f}".
 
 # General instructions:
-Unit prices (e.g: ‘(1 kg = 13.09)’, “1 kg = 4.28”, “1 l = € 1.33”, “1 kg = 11.84/ATG”, “5.20/Liter”, “(1 kg = 11.99)”) **are not recorded and should be ignored when filling in ‘product_description ’**.
 The "price_by_base_unit" and "deal_pricebybaseunit" (e.g. "1 l = € 1,33", "(1 kg = 11,84/ATG)", "5,20/Liter") cannot be duplicated, recorded in the "product_description".
 The description of the possibility of ordering goods online (for example: "nur online", "auch online".) should be recorded in the "deal_description".
 The output json should contain only the text that is present in the input image in its original form, without changes or additions.
@@ -1199,7 +1021,6 @@ Ensure that when there is a product family with N member products, the "products
 The "pricing" entry must always follow the format f"{value:.2f}".
 
 # General instructions:
-
 The description of the possibility of ordering goods online (for example: "nur online", "auch online".) should be recorded in the "deal_description".
 The output json should contain only the text that is present in the input image in its original form, without changes or additions.
 The text and product description always mention two product names.
@@ -2031,7 +1852,7 @@ It is forbidden to add text to the json that is not in the image.
 The word "Aktion" and "KNALLER" do not refer to any parameter and should be ignored.
 The input text should be written grammatically correct in German, even if there are errors in the input text. Pay particular attention to broken words and hyphens.
 When writing information to the "product_description" parameter, each new line must be shifted in accordance with the information in the image, the shift should be marked with the symbol "\n".
-Unit prices (e.g: '(1 kg = 13.09)', “1 kg = 4.28”, “1 l = € 1.33”, “1 kg = 11.84/ATG”, “5.20/Liter”, “(1 kg = 11.99)”) **are not recorded and should be ignored when filling in 'product_description '**.
+
 
 """
 
@@ -2305,7 +2126,7 @@ It is forbidden to add text to the json that is not in the image.
 The word "Aktion" and "KNALLER" do not refer to any parameter and should be ignored.
 The input text should be written grammatically correct in German, even if there are errors in the input text. Pay particular attention to broken words and hyphens.
 When writing information to the "product_description" parameter, each new line must be shifted in accordance with the information in the image, the shift should be marked with the symbol "\n".
-Unit prices (e.g: '(1 kg = 13.09)', “1 kg = 4.28”, “1 l = € 1.33”, “1 kg = 11.84/ATG”, “5.20/Liter”, “(1 kg = 11.99)”) **are not recorded and should be ignored when filling in 'product_description '**.
+
 """
 
 price_characterization_statt_client_ocr = (
@@ -2711,7 +2532,7 @@ You do not need to enter the word "UVP" and "statt" in any of the parameters.
 The word "Aktion" and "KNALLER" do not refer to any parameter and should be ignored.
 The input text should be written grammatically correct in German, even if there are errors in the input text. Pay particular attention to broken words and hyphens.
 When writing information to the "product_description" parameter, each new line must be shifted in accordance with the information in the image, the shift should be marked with the symbol "\n".
-Unit prices (e.g: '(1 kg = 13.09)', “1 kg = 4.28”, “1 l = € 1.33”, “1 kg = 11.84/ATG”, “5.20/Liter”, “(1 kg = 11.99)”) **are not recorded and should be ignored when filling in 'product_description '**.
+
 """
 
 special_prise_client_ocr = (
@@ -3207,7 +3028,6 @@ The word "Aktion" and "KNALLER" do not refer to any parameter and should be igno
 The input text should be written grammatically correct in German, even if there are errors in the input text. Pay particular attention to broken words and hyphens.
 When writing information to the "product_description" parameter, each new line must be shifted in accordance with the information in the image, the shift should be marked with the symbol "\n".
 The "price_by_base_unit" and "deal_pricebybaseunit" (e.g. "1 l = € 1,33", "(1 kg = 11,84/ATG)", "5,20/Liter") cannot be duplicated, recorded in the "product_description".
-Unit prices (e.g: '(1 kg = 13.09)', “1 kg = 4.28”, “1 l = € 1.33”, “1 kg = 11.84/ATG”, “5.20/Liter”, “(1 kg = 11.99)”) **are not recorded and should be ignored when filling in 'product_description '**.
 """
 
 old_price_crossed_out_client_ocr = (
@@ -3918,7 +3738,7 @@ It is forbidden to add text to the json that is not in the image.
 The word "Aktion" and "KNALLER" do not refer to any parameter and should be ignored.
 The input text should be written grammatically correct in German, even if there are errors in the input text. Pay particular attention to broken words and hyphens.
 When writing information to the "product_description" parameter, each new line must be shifted in accordance with the information in the image, the shift should be marked with the symbol "\n".
-Unit prices (e.g: '(1 kg = 13.09)', “1 kg = 4.28”, “1 l = € 1.33”, “1 kg = 11.84/ATG”, “5.20/Liter”, “(1 kg = 11.99)”) **are not recorded and should be ignored when filling in 'product_description '**.
+
 """
 
 money_rebate_client_ocr = (
@@ -4190,7 +4010,7 @@ It is forbidden to add text to the json that is not in the image.
 The word "Aktion" and "KNALLER" do not refer to any parameter and should be ignored.
 The input text should be written grammatically correct in German, even if there are errors in the input text. Pay particular attention to broken words and hyphens.
 When writing information to the "product_description" parameter, each new line must be shifted in accordance with the information in the image, the shift should be marked with the symbol "\n".
-Unit prices (e.g: '(1 kg = 13.09)', “1 kg = 4.28”, “1 l = € 1.33”, “1 kg = 11.84/ATG”, “5.20/Liter”, “(1 kg = 11.99)”) **are not recorded and should be ignored when filling in 'product_description '**.
+
 """
 
 percentage_rebate_client_ocr = (
@@ -4498,7 +4318,7 @@ It is forbidden to add text to the json that is not in the image.
 The word "Aktion" and "KNALLER" do not refer to any parameter and should be ignored.
 The input text should be written grammatically correct in German, even if there are errors in the input text. Pay particular attention to broken words and hyphens.
 When writing information to the "product_description" parameter, each new line must be shifted in accordance with the information in the image, the shift should be marked with the symbol "\n".
-Unit prices (e.g: '(1 kg = 13.09)', “1 kg = 4.28”, “1 l = € 1.33”, “1 kg = 11.84/ATG”, “5.20/Liter”, “(1 kg = 11.99)”) **are not recorded and should be ignored when filling in 'product_description '**.
+
 """
 
 reward_client_ocr = (
@@ -5987,7 +5807,7 @@ Instructions for "main_format" cannot be applied to Instructions for "additional
 
 """
 
-different_sizes_client_ocr = ( 
+different_sizes_client_ocr = (
 
     """
 Input:
@@ -6814,6 +6634,7 @@ Output:
 )
 
 without_price = """
+
 # Your Role:
 You are a useful assistant for extracting product information from a given image.              
 

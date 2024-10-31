@@ -1,7 +1,7 @@
 import openai
 import base64
 import re
-from text_prompts_txt import percentage_rebate
+from text_prompts_txt import price_characterization_statt
  
 openai.api_type = "azure"
 openai.api_version = "2023-05-15"   
@@ -57,14 +57,13 @@ def chat_with_gpt4(prompt, image_path, model="bonial-gpt-4o", max_tokens=4096):
         print(f"Total tokens: {total_tokens}")
 
         return response.choices[0].message['content'].strip()   
-    except Exception as e:  
+    except Exception as e:      
         return f"Error: {e}"    
 
 
-prompt = percentage_rebate
+prompt = price_characterization_statt
 #image_path = "5.jpg"
-image_path = "https://content-media.bonial.biz/29f59639-8d72-4765-a49a-5bbccdb1914b/main.jpg"
-
+image_path = "https://content-media.bonial.biz/0b689776-5afb-471b-94a3-f0ea88e7acf2/main.jpg"
 
 response = chat_with_gpt4(prompt, image_path)
 print(response) 
