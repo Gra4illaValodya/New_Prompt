@@ -1,7 +1,7 @@
 import openai
 import base64
 import re
-from text_prompts_txt import supplemental_bid      
+from text_prompts_txt import one_price      
  
 openai.api_type = "azure"
 openai.api_version = "2023-05-15"   
@@ -18,7 +18,7 @@ def is_url(image_path):
     return bool(re.match(r'^(http|https)://', image_path))
 
 def chat_with_gpt4(prompt, image_path, model="bonial-gpt-4o", max_tokens=4096):
-    try:
+    try: 
 
         if is_url(image_path):
             image_data = image_path
@@ -61,8 +61,13 @@ def chat_with_gpt4(prompt, image_path, model="bonial-gpt-4o", max_tokens=4096):
 
 
 
-prompt = supplemental_bid
+prompt = one_price
 
+
+image_path = "https://content-media.bonial.biz/e0729259-16e8-4390-b8ec-92ce75335d5a/main.jpg"
+response = chat_with_gpt4(prompt, image_path)
+print(response)     
+#DE
 
 # simple_offers
 # two_products_in_one_offer
@@ -89,10 +94,9 @@ prompt = supplemental_bid
 # stocks
 # several_products_with_different_prices
 
-
+#FR
+#one_price
 
 #image_path = "main (21).jpg
 
-image_path = "https://content-media.bonial.biz/459fe74b-92ac-4610-876d-c53af02c6281/main.jpg"
-response = chat_with_gpt4(prompt, image_path)
-print(response)     
+   
