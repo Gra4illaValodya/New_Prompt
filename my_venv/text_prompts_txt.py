@@ -5748,6 +5748,11 @@ The input text should be written grammatically correct in German, even if there 
 When writing information to the "product_description" parameter, each new line must be shifted in accordance with the information in the image, the shift should be marked with the symbol "\n".
 if the old price is not crossed out, then we write the RECOMMENDED_RETAIL_PRICE type into a separate deal.
 
+IMPORTANT 
+only on the stage, not in the text, the price where uvp is written should be added to the deal with the RECOMMENDED_RETAIL_PRICE type
+and the price without uvp to the deal with the SALES_PRICE type
+
+
 # High priority Instructions for "main_format" and "additional_format":
 The output json should not contain syntax errors.
 The values and words of one of the json parameters cannot be repeated in other json parameters.
