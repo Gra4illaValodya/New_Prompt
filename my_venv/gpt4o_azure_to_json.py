@@ -1,7 +1,7 @@
 import openai
 import base64
 import re
-from text_prompts_txt import one_price      
+from text_prompts_txt import one_old_and_one_new_price      
  
 openai.api_type = "azure"
 openai.api_version = "2023-05-15"   
@@ -61,10 +61,10 @@ def chat_with_gpt4(prompt, image_path, model="bonial-gpt-4o", max_tokens=4096):
 
 
 
-prompt = one_price
+prompt = one_old_and_one_new_price
 
 
-image_path = "https://content-media.bonial.biz/e0729259-16e8-4390-b8ec-92ce75335d5a/main.jpg"
+image_path = "https://content-media.bonial.biz/0fb5d70e-2e49-48cb-bbe5-507342e020d8/main.jpg"
 response = chat_with_gpt4(prompt, image_path)
 print(response)     
 #DE
@@ -96,6 +96,7 @@ print(response)
 
 #FR
 #one_price
+#one_old_and_one_new_price
 
 #image_path = "main (21).jpg
 
