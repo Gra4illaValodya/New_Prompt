@@ -10,6 +10,9 @@ Instructions for wine:
 A "brand" and "product_brand" is usually the name of the house of wine or the region where the wine is produced (not the country). This information is on the bottle label.
 If there is no product name, you should specify the wine type in "product_name" and "name" parameter: "Rotwein" or "Weißwein".
 The wine name and brand cannot be repeated in the "product_description".
+If the name of the winery (brand) is absent, do not record the brand name.
+If the name of the drink is absent, record its type (red, white, sparkling, etc.) in the "product_name".
+The place of origin of the drink should be included in the "product_description".
 
 """
 
@@ -96,15 +99,6 @@ For "product_product_category", the result must be in German language.
 "deal_pricebybaseunit" must contain the price by base unit (e.g. "1 l = € 1,33", "(1 kg = 11,84/ATG)", "5,20/Liter").
 The "deal_maxPrice" and "deal_minPrice" entry must always follow the format f"{value:.2f}".
 The "deal_maxPrice" and "deal_minPrice" prices should be the same in a particular deal.
-
-Instructions for wine:
-If the name of the winery (brand) is absent, do not record the brand name.
-If the name of the drink is absent, record its type (red, white, sparkling, etc.) in the "product_name".
-The place of origin of the drink should be included in the "product_description".
-Instructions for wine:
-If the name of the winery (brand) is absent, do not record the brand name.
-If the name of the drink is absent, record its type (red, white, sparkling, etc.) in the "product_name".
-The place of origin of the drink should be included in the "product_description".
 
 IMPORTANT!!!
 If the product name contains the word (oder) or (Versch.Sorten.), split it into two separate products. Fill in the parameters for each product, including unique `product_id` and `deal_id` with their own deal_1 and deal_2
