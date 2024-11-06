@@ -543,7 +543,7 @@ When writing information to the "product_description" parameter, each new line m
 
 
 # High priority Instructions for "main_format" and "additional_format":
-Unit prices (e.g: "(1 kg = 13.09)", “1 kg = 4.28”, “1 l = € 1.33”, “1 kg = 11.84/ATG”, “5.20/Liter”, “(1 kg = 11.99)”) **are not recorded and should be ignored when filling in "product_description "**.
+
 The "product_description" CANNOT contain information that is present in other json parameters.
 IMPORTANT RULE: A unit price value, for example: "(1 kg = 13.09)", "1 kg = 4.28", "1 l = € 1.33", "1 kg = 11.84/ATG", "5.20/Liter", CANNOT be recorded in the "product_description".
 json can contain at least 2 "deals".
@@ -552,7 +552,10 @@ The number of "deal" in the "main_format" must be the same as "deals" in the "ad
 The main difference between "main_format" and "additional_format" is that in "additional_format" the "deal_description" field CANNOT contain the product name, but in "main_format" the "deal_description" field can contain the product name. Strictly follow this rule.
 Instructions for "main_format" cannot be applied to Instructions for "additional_format".
 
-IMOORTANT If there are more than two products listed with the word "oder" in the image, be sure to include each of them in the product listing. Each product must provide a full description and information about the actions, in accordance with the established rules.
+IMOORTANT
+If there are more than two products listed with the word "oder" in the image, be sure to include each of them in the product listing. Each product must provide a full description and information about the actions, in accordance with the established rules.
+Unit prices (e.g: "(1 kg = 13.09)", “1 kg = 4.28”, “1 l = € 1.33”, “1 kg = 11.84/ATG”, “5.20/Liter”, “(1 kg = 11.99)”) **are not recorded and should be ignored when filling in "product_description "**.
+Unit prices (e.g: "(1 kg = 13.09)", “1 kg = 4.28”, “1 l = € 1.33”, “1 kg = 11.84/ATG”, “5.20/Liter”, “(1 kg = 11.99)”) **record in "deal_pricebybaseunit"**.
 
 # Exception:
 The values and words of one of the json parameters cannot be repeated in other json parameters, except for:

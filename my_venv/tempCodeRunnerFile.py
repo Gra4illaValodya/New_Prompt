@@ -1,2 +1,1 @@
-a34df45-3c5a-45cb-b3ef-5a0a67bf0313/main.jpg"
-response = chat_with_gpt4(prompt, image_path)
+https://content-media.bonial.biz/cbfbdf1f-626d-4a54-91da-23368bec6be8/main.jpg
