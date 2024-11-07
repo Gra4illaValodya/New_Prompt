@@ -9020,7 +9020,7 @@ For "product_product_category", the result must be in French language.
 "deal_loyaltycard" can only be a value Null or Yes.
 If the offer mentions any loyalty program compte, cagnoté, prix déduit, Prix payé en caisse, Prix carte, Sans carte, then "deal_loyaltycard" should be set to Yes.
 The value of one json parameter cannot be repeated in another json parameter.
-The "deal_type" can acquire only such values: SALES_PRICE.
+The "deal_type" can acquire only such values: REGULAR.
  **Filter for Discount Percentages**: Any values with a discount in percentage (e.g., "-20%", "50% de réduction") or a specific amount (e.g., "-5€") **must be ignored and excluded** from all JSON parameters, especially from "deal_conditions" and "deal_description".
 
 
