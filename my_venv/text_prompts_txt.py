@@ -9323,68 +9323,55 @@ Output:
 )
 
 
-def price_reduced_on_the_n_th_product_only(ocr):
-    examples = price_reduced_on_the_n_th_product_only_client_ocr if "client" == ocr else price_reduced_on_the_n_th_product_only_our_ocr
+price_reduced_on_the_n_th_product_only = """
+Your Role:
+You will be provided with text relating to an offer from the promotional brochure.
 
-    return {
-        "role": "system",
-        "content": """
-"# Your Role:"
-"You will be provided with text relating to offer from the promotional brochure."                 
-
-"# Output Format:
-Your answer should be purely json, without any additional explanation such as "```json", for example."
-"Your extracted data should be presented in JSON format as follows:"
-"Always follow the structure given in the Output Format when formulating your response."
-"```json"
-"{"
-"  \"product_brand\": \"\","
-"  \"product_description\": \"\","
-"  \"product_name\": \"\","
-"  \"product_sku\": \"\","
-"  \"product_Product_category\": \"\","
-"  \"deal\": ["
-      "{"
-        "  \"deal_conditions\": \"\","
-        "  \"deal_currency\": \"\","
-        "  \"deal_description\": \"\","
-        "  \"deal_frequency\": \"\","
-        "  \"deal_maxPrice\": \"\","
-        "  \"deal_minPrice\": \"\","
-        "  \"deal_pricebybaseunit\": \"\","
-        "  \"deal_loyaltycard\": \"\","
-        "  \"deal_type\": \"\","
-      "{"
-    "]" 
-"}\n```",
-
-"# Instructions 1:"
-"\"product_name\" always has a value."
-"It is forbidden to write the words from \"product_name\" in \"product_description\"."
-"The \"product_description\" cannot contain information related to the \"product_name\" or \"deal_pricebybaseunit\"."
-"In the \"product_name\" parameter, the product name must be written in full."
-"Extract \"deal_pricebybaseunit\" from text segments containing only the price by base unit in the format <base-unit> = <price> or similar (for example, \"1 l = € 1.50\", \"Le kg : 5,20 €\", \"9,95 € le kg\")."
-"The quantity of the product, such as weight or volume (ml, l, g, kg), is always recorded in the \"product_description\"."
-"The discount (for example, -13%, -5€, 2ème à - 50%) does not apply to any of the parameters, it should be ignored and forbidden to be written as a value in the output json parameters."
-"The input text should be written grammatically correct in French, even if there are errors in the input text. Pay particular attention to broken words and hyphens."
-"If the input text has not been assigned to any of the parameters, it should be written in \"product_description\"."
-"It is forbidden to write \"deal\" without numbering, always follow the numbering, for example deal_1, deal_2, deal_3 and so on."
-"If there is no data for the category, then indicate "Null"."
-"For \"product_product_category\", define a product category like Google product category does."
-"For \"product_product_category\", the result must be in French language."
-"\"deal_loyaltycard\" can only be a value "Null" or "Yes"."
-
-"# Instructions 2:"
-"If the offer mentions any loyalty program "compte", "cagnoté", "prix déduit", "Prix payé en caisse", "Prix
-carte", "Sans carte", then \"deal_loyaltycard\" should be set to "Yes"."
-"The value of one json parameter cannot be repeated in another json parameter."
-"Strictly adhere to the structure given in the examples."
-"The \"deal_type\" can acquire only such values: "SALES_PRICE", "REGULAR_PRICE"."
-
-
-"# Examples:"
-""" + examples
+Output Format:
+Your answer should be purely in JSON, without any additional explanation or code formatting such as "```json". The extracted data should follow this JSON structure exactly:
+{
+  "product_brand": "",
+  "product_description": "",
+  "product_name": "",
+  "product_sku": "",
+  "product_Product_category": "",
+  "deal": [
+    {
+      "deal_conditions": "",
+      "deal_currency": "",
+      "deal_description": "",
+      "deal_frequency": "",
+      "deal_maxPrice": "",
+      "deal_minPrice": "",
+      "deal_pricebybaseunit": "",
+      "deal_loyaltycard": "",
+      "deal_type": ""
     }
+  ]
+}
+
+Instructions 1:
+
+"product_name" must always have a value.
+Avoid repeating words from "product_name" in "product_description."
+"product_description" should not include data related to "product_name" or "deal_pricebybaseunit."
+Ensure "product_name" has the complete product name.
+Extract "deal_pricebybaseunit" only from segments containing the base unit price in the format <base-unit> = <price>, like "1 l = € 1.50," "Le kg : 5,20 €," or "9,95 € le kg."
+"product_description" should always include product quantity, like weight or volume (e.g., ml, l, g, kg).
+Ignore discounts (e.g., -13%, -5€, 2ème à - 50%) for all JSON parameters.
+Ensure French language accuracy, correcting broken or hyphenated words.
+Any unassigned input data should go in "product_description."
+Number each "deal" sequentially (e.g., deal_1, deal_2, deal_3).
+If the category is unknown, use "Null" for "product_product_category."
+Set "product_product_category" as a French-language Google product category.
+The "deal_loyaltycard" can only be "Null" or "Yes."
+Instructions 2:
+
+If the offer includes terms related to loyalty programs like "compte," "cagnoté," "prix déduit," "Prix payé en caisse," "Prix carte," or "Sans carte," set "deal_loyaltycard" to "Yes."
+Values in one JSON parameter should not duplicate in another.
+Adhere strictly to the example structure.
+"deal_type" can only be "SALES_PRICE" or "REGULAR_PRICE."
+""" 
 
 
 price_reduced_on_the_n_th_product_only_client_ocr = (
@@ -9493,68 +9480,54 @@ Output:
 )
 
 
-def one_price_with_and_one_price_without_the_card(ocr):
-    examples = one_price_with_and_one_price_without_the_card_client_ocr if "client" == ocr else one_price_with_and_one_price_without_the_card_our_ocr
+one_price_with_and_one_price_without_the_card =  """
+Your Role:
+You will be provided with text relating to an offer from the promotional brochure.
 
-    return {
-        "role": "system",
-        "content": """
-"# Your Role:"
-"You will be provided with text relating to offer from the promotional brochure."                 
-
-"# Output Format:
-Your answer should be purely json, without any additional explanation such as "```json", for example."
-"Your extracted data should be presented in JSON format as follows:"
-"Always follow the structure given in the Output Format when formulating your response."
-"```json"
-"{"
-"  \"product_brand\": \"\","
-"  \"product_description\": \"\","
-"  \"product_name\": \"\","
-"  \"product_sku\": \"\","
-"  \"product_Product_category\": \"\","
-"  \"deal\": ["
-      "{"
-        "  \"deal_conditions\": \"\","
-        "  \"deal_currency\": \"\","
-        "  \"deal_description\": \"\","
-        "  \"deal_frequency\": \"\","
-        "  \"deal_maxPrice\": \"\","
-        "  \"deal_minPrice\": \"\","
-        "  \"deal_pricebybaseunit\": \"\","
-        "  \"deal_loyaltycard\": \"\","
-        "  \"deal_type\": \"\","
-      "{"
-    "]" 
-"}\n```",
-
-"# Instructions 1:"
-"\"product_name\" always has a value."
-"It is forbidden to write the words from \"product_name\" in \"product_description\"."
-"The \"product_description\" cannot contain information related to the \"product_name\" or \"deal_pricebybaseunit\"."
-"In the \"product_name\" parameter, the product name must be written in full."
-"Extract \"deal_pricebybaseunit\" from text segments containing only the price by base unit in the format <base-unit> = <price> or similar (for example, \"1 l = € 1.50\", \"Le kg : 5,20 €\", \"9,95 € le kg\")."
-"The quantity of the product, such as weight or volume (ml, l, g, kg), is always recorded in the \"product_description\"."
-"The discount (for example, -13%, -5€, 2ème à - 50%) does not apply to any of the parameters, it should be ignored and forbidden to be written as a value in the output json parameters."
-"The input text should be written grammatically correct in French, even if there are errors in the input text. Pay particular attention to broken words and hyphens."
-"If the input text has not been assigned to any of the parameters, it should be written in \"product_description\"."
-"It is forbidden to write \"deal\" without numbering, always follow the numbering, for example deal_1, deal_2, deal_3 and so on."
-"If there is no data for the category, then indicate "Null"."
-"For \"product_product_category\", define a product category like Google product category does."
-"For \"product_product_category\", the result must be in French language."
-"\"deal_loyaltycard\" can only be a value "Null" or "Yes"."
-
-"# Instructions 2:"
-"If the offer mentions any loyalty program "compte", "cagnoté", "prix déduit", "Prix payé en caisse", "Prix
-carte", "Sans carte", then \"deal_loyaltycard\" should be set to "Yes"."
-"The value of one json parameter cannot be repeated in another json parameter."
-"Strictly adhere to the structure given in the examples."
-"The \"deal_type\" can acquire only such values: "SALES_PRICE", "REGULAR_PRICE"."
-
-
-"# Examples:"
-""" + examples
+Output Format:
+Your answer should be purely in JSON, without any additional explanation or code formatting such as "```json". The extracted data should follow this JSON structure exactly:
+{
+  "product_brand": "",
+  "product_description": "",
+  "product_name": "",
+  "product_sku": "",
+  "product_Product_category": "",
+  "deal": [
+    {
+      "deal_conditions": "",
+      "deal_currency": "",
+      "deal_description": "",
+      "deal_frequency": "",
+      "deal_maxPrice": "",
+      "deal_minPrice": "",
+      "deal_pricebybaseunit": "",
+      "deal_loyaltycard": "",
+      "deal_type": ""
     }
+  ]
+}
+Instructions 1:
+
+"product_name" must always have a value.
+Avoid repeating words from "product_name" in "product_description."
+"product_description" should not include data related to "product_name" or "deal_pricebybaseunit."
+Ensure "product_name" has the complete product name.
+Extract "deal_pricebybaseunit" only from segments containing the base unit price in the format <base-unit> = <price>, like "1 l = € 1.50," "Le kg : 5,20 €," or "9,95 € le kg."
+"product_description" should always include product quantity, like weight or volume (e.g., ml, l, g, kg).
+Ignore discounts (e.g., -13%, -5€, 2ème à - 50%) for all JSON parameters.
+Ensure French language accuracy, correcting broken or hyphenated words.
+Any unassigned input data should go in "product_description."
+Number each "deal" sequentially (e.g., deal_1, deal_2, deal_3).
+If the category is unknown, use "Null" for "product_product_category."
+Set "product_product_category" as a French-language Google product category.
+The "deal_loyaltycard" can only be "Null" or "Yes."
+Instructions 2:
+
+If the offer includes terms related to loyalty programs like "compte," "cagnoté," "prix déduit," "Prix payé en caisse," "Prix carte," or "Sans carte," set "deal_loyaltycard" to "Yes."
+Values in one JSON parameter should not duplicate in another.
+Adhere strictly to the example structure.
+"deal_type" can only be "SALES_PRICE" or "REGULAR_PRICE."
+""" 
 
 
 one_price_with_and_one_price_without_the_card_client_ocr = (
@@ -9662,68 +9635,56 @@ Output:
 )
 
 
-def money_spared_on_the_card(ocr):
-    examples = money_spared_on_the_card_client_ocr if "client" == ocr else money_spared_on_the_card_our_ocr
+money_spared_on_the_card=  """
+Your Role:
+You will be provided with text related to an offer from the promotional brochure.
 
-    return {
-        "role": "system",
-        "content": """
-"# Your Role:"
-"You will be provided with text relating to offer from the promotional brochure."                 
-
-"# Output Format:
-Your answer should be purely json, without any additional explanation such as "```json", for example."
-"Your extracted data should be presented in JSON format as follows:"
-"Always follow the structure given in the Output Format when formulating your response."
-"```json"
-"{"
-"  \"product_brand\": \"\","
-"  \"product_description\": \"\","
-"  \"product_name\": \"\","
-"  \"product_sku\": \"\","
-"  \"product_Product_category\": \"\","
-"  \"deal\": ["
-      "{"
-        "  \"deal_conditions\": \"\","
-        "  \"deal_currency\": \"\","
-        "  \"deal_description\": \"\","
-        "  \"deal_frequency\": \"\","
-        "  \"deal_maxPrice\": \"\","
-        "  \"deal_minPrice\": \"\","
-        "  \"deal_pricebybaseunit\": \"\","
-        "  \"deal_loyaltycard\": \"\","
-        "  \"deal_type\": \"\","
-      "{"
-    "]" 
-"}\n```",
-
-"# Instructions 1:"
-"\"product_name\" always has a value."
-"It is forbidden to write the words from \"product_name\" in \"product_description\"."
-"The \"product_description\" cannot contain information related to the \"product_name\" or \"deal_pricebybaseunit\"."
-"In the \"product_name\" parameter, the product name must be written in full."
-"Extract \"deal_pricebybaseunit\" from text segments containing only the price by base unit in the format <base-unit> = <price> or similar (for example, \"1 l = € 1.50\", \"Le kg : 5,20 €\", \"9,95 € le kg\")."
-"The quantity of the product, such as weight or volume (ml, l, g, kg), is always recorded in the \"product_description\"."
-"The discount (for example, -13%, -5€, 2ème à - 50%) does not apply to any of the parameters, it should be ignored and forbidden to be written as a value in the output json parameters."
-"The input text should be written grammatically correct in French, even if there are errors in the input text. Pay particular attention to broken words and hyphens."
-"If the input text has not been assigned to any of the parameters, it should be written in \"product_description\"."
-"It is forbidden to write \"deal\" without numbering, always follow the numbering, for example deal_1, deal_2, deal_3 and so on."
-"If there is no data for the category, then indicate "Null"."
-"For \"product_product_category\", define a product category like Google product category does."
-"For \"product_product_category\", the result must be in French language."
-"\"deal_loyaltycard\" can only be a value "Null" or "Yes"."
-
-"# Instructions 2:"
-"If the offer mentions any loyalty program "compte", "cagnoté", "prix déduit", "Prix payé en caisse", "Prix
-carte", "Sans carte", then \"deal_loyaltycard\" should be set to "Yes"."
-"The value of one json parameter cannot be repeated in another json parameter."
-"Strictly adhere to the structure given in the examples."
-"The \"deal_type\" can acquire only such values: "SALES_PRICE", "REGULAR_PRICE"."
-
-
-"# Examples:"
-""" + examples
+Output Format:
+Your answer should be purely in JSON, without any additional explanation or code formatting such as "```json". The extracted data should follow this JSON structure exactly:
+{
+  "product_brand": "",
+  "product_description": "",
+  "product_name": "",
+  "product_sku": "",
+  "product_Product_category": "",
+  "deal": [
+    {
+      "deal_conditions": "",
+      "deal_currency": "",
+      "deal_description": "",
+      "deal_frequency": "",
+      "deal_maxPrice": "",
+      "deal_minPrice": "",
+      "deal_pricebybaseunit": "",
+      "deal_loyaltycard": "",
+      "deal_type": ""
     }
+  ]
+}
+
+
+Instructions 1:
+
+"product_name" must always have a value.
+Avoid repeating words from "product_name" in "product_description."
+"product_description" should not include data related to "product_name" or "deal_pricebybaseunit."
+Ensure "product_name" has the complete product name.
+Extract "deal_pricebybaseunit" only from segments containing the base unit price in the format <base-unit> = <price>, like "1 l = € 1.50," "Le kg : 5,20 €," or "9,95 € le kg."
+"product_description" should always include product quantity, like weight or volume (e.g., ml, l, g, kg).
+Ignore discounts (e.g., -13%, -5€, 2ème à - 50%) for all JSON parameters.
+Ensure French language accuracy, correcting broken or hyphenated words.
+Any unassigned input data should go in "product_description."
+Number each "deal" sequentially (e.g., deal_1, deal_2, deal_3).
+If the category is unknown, use "Null" for "product_product_category."
+Set "product_product_category" as a French-language Google product category.
+The "deal_loyaltycard" can only be "Null" or "Yes."
+Instructions 2:
+
+If the offer includes terms related to loyalty programs like "compte," "cagnoté," "prix déduit," "Prix payé en caisse," "Prix carte," or "Sans carte," set "deal_loyaltycard" to "Yes."
+Values in one JSON parameter should not duplicate in another.
+Adhere strictly to the example structure.
+"deal_type" can only be "SALES_PRICE" or "REGULAR_PRICE."
+""" 
 
 
 money_spared_on_the_card_client_ocr = (
@@ -9930,62 +9891,48 @@ Output:
 )
 
 
-def offer_without_price(ocr):
-    examples = offer_without_price_client_ocr if "client" == ocr else offer_without_price_our_ocr
+offer_without_price = """
+Your Role:
+You will be provided with text related to an offer from the promotional brochure.
 
-    return {
-        "role": "system",
-        "content": """
-"# Your Role:"
-"You will be provided with text relating to offer from the promotional brochure."              
-
-"# Output Format:
-Your answer should be purely json, without any additional explanation such as "```json", for example."
-"Your extracted data should be presented in JSON format as follows:"
-"Always follow the structure given in the Output Format when formulating your response."
-"```json"
-"{"
-"  \"product_brand\": \"\","
-"  \"product_description\": \"\","
-"  \"product_name\": \"\","
-"  \"product_sku\": \"\","
-"  \"product_Product_category\": \"\","
-"  \"deal\": ["
-      "{"
-        "  \"deal_conditions\": \"\","
-        "  \"deal_currency\": \"\","
-        "  \"deal_description\": \"\","
-        "  \"deal_frequency\": \"\","
-        "  \"deal_maxPrice\": \"\","
-        "  \"deal_minPrice\": \"\","
-        "  \"deal_pricebybaseunit\": \"\","
-        "  \"deal_loyaltycard\": \"\","
-        "  \"deal_type\": \"\","
-      "{"
-    "]" 
-"}\n```",
-
-"# Instructions 1:"
-"\"product_name\" always has a value."
-"The quantity of the product, such as weight or volume (ml, l, g, kg), is always recorded in the \"product_description\"."
-"The input text should be written grammatically correct in French, even if there are errors in the input text. Pay particular attention to broken words and hyphens."
-"If the input text has not been assigned to any of the parameters, it should be written in \"product_description\"."
-"If there is no data for the category, then indicate "Null"."
-"For \"product_product_category\", define a product category like Google product category does."
-"For \"product_product_category\", the result must be in French language."
-"\"deal_loyaltycard\" can only be a value "Null" or "Yes"."
-
-"# Instructions 2:"
-"If the offer mentions any loyalty program "compte", "cagnoté", "prix déduit", "Prix payé en caisse", "Prix
-carte", "Sans carte", then \"deal_loyaltycard\" should be set to "Yes"."
-"Strictly adhere to the structure given in the examples."
-"The \"deal_type\" can acquire only such values: "OTHER"."
-"\"deal\" with "deal_type": "OTHER" cannot have values in \"deal_maxPrice\" and \"deal_minPrice\"."
-
-
-"# Examples:"
-""" + examples
+Output Format:
+Your answer should be purely in JSON, without any additional explanation or code formatting such as "```json". The extracted data should follow this JSON structure exactly:
+{
+  "product_brand": "",
+  "product_description": "",
+  "product_name": "",
+  "product_sku": "",
+  "product_Product_category": "",
+  "deal": [
+    {
+      "deal_conditions": "",
+      "deal_currency": "",
+      "deal_description": "",
+      "deal_frequency": "",
+      "deal_maxPrice": "",
+      "deal_minPrice": "",
+      "deal_pricebybaseunit": "",
+      "deal_loyaltycard": "",
+      "deal_type": ""
     }
+  ]
+}
+Instructions 1:
+
+"product_name" must always have a value.
+"product_description" should always include product quantity, like weight or volume (e.g., ml, l, g, kg).
+Ensure French language accuracy, correcting broken or hyphenated words.
+Any unassigned input text should go in "product_description."
+If the category is unknown, use "Null" for "product_product_category."
+Set "product_product_category" as a French-language Google product category.
+The "deal_loyaltycard" can only be "Null" or "Yes."
+Instructions 2:
+
+If the offer includes terms related to loyalty programs like "compte," "cagnoté," "prix déduit," "Prix payé en caisse," "Prix carte," or "Sans carte," set "deal_loyaltycard" to "Yes."
+Adhere strictly to the example structure.
+The "deal_type" can only have the value "OTHER."
+"deal" entries with "deal_type": "OTHER" cannot include values for "deal_maxPrice" or "deal_minPrice."
+""" 
 
 
 offer_without_price_client_ocr = (
@@ -10061,62 +10008,50 @@ Output:
 )
 
 
-def offer_without_price_loyalty_card(ocr):
-    examples = offer_without_price_loyalty_card_client_ocr if "client" == ocr else offer_without_price_loyalty_card_our_ocr
+offer_without_price_loyalty_card = """
+Your Role:
+You will be provided with text related to an offer from the promotional brochure.
 
-    return {
-        "role": "system",
-        "content": """
-"# Your Role:"
-"You will be provided with text relating to offer from the promotional brochure."              
-
-"# Output Format:
-Your answer should be purely json, without any additional explanation such as "```json", for example."
-"Your extracted data should be presented in JSON format as follows:"
-"Always follow the structure given in the Output Format when formulating your response."
-"```json"
-"{"
-"  \"product_brand\": \"\","
-"  \"product_description\": \"\","
-"  \"product_name\": \"\","
-"  \"product_sku\": \"\","
-"  \"product_Product_category\": \"\","
-"  \"deal\": ["
-      "{"
-        "  \"deal_conditions\": \"\","
-        "  \"deal_currency\": \"\","
-        "  \"deal_description\": \"\","
-        "  \"deal_frequency\": \"\","
-        "  \"deal_maxPrice\": \"\","
-        "  \"deal_minPrice\": \"\","
-        "  \"deal_pricebybaseunit\": \"\","
-        "  \"deal_loyaltycard\": \"\","
-        "  \"deal_type\": \"\","
-      "{"
-    "]" 
-"}\n```",
-
-"# Instructions 1:"
-"\"product_name\" always has a value."
-"The quantity of the product, such as weight or volume (ml, l, g, kg), is always recorded in the \"product_description\"."
-"The input text should be written grammatically correct in French, even if there are errors in the input text. Pay particular attention to broken words and hyphens."
-"If the input text has not been assigned to any of the parameters, it should be written in \"product_description\"."
-"If there is no data for the category, then indicate "Null"."
-"For \"product_product_category\", define a product category like Google product category does."
-"For \"product_product_category\", the result must be in French language."
-"\"deal_loyaltycard\" can only be a value "Null" or "Yes"."
-
-"# Instructions 2:"
-"If the offer mentions any loyalty program "compte", "cagnoté", "prix déduit", "Prix payé en caisse", "Prix
-carte", "Sans carte", then \"deal_loyaltycard\" should be set to "Yes"."
-"Strictly adhere to the structure given in the examples."
-"The \"deal_type\" can acquire only such values: "OTHER"."
-"\"deal\" with "deal_type": "OTHER" cannot have values in \"deal_maxPrice\" and \"deal_minPrice\"."
-
-
-"# Examples:"
-""" + examples
+Output Format:
+Your answer should be purely in JSON, without any additional explanation or formatting such as "```json". The extracted data should follow this JSON structure exactly:
+{
+  "product_brand": "",
+  "product_description": "",
+  "product_name": "",
+  "product_sku": "",
+  "product_Product_category": "",
+  "deal": [
+    {
+      "deal_conditions": "",
+      "deal_currency": "",
+      "deal_description": "",
+      "deal_frequency": "",
+      "deal_maxPrice": "",
+      "deal_minPrice": "",
+      "deal_pricebybaseunit": "",
+      "deal_loyaltycard": "",
+      "deal_type": ""
     }
+  ]
+}
+
+Instructions 1:
+
+The "product_name" field must always have a value.
+Always include product quantity (e.g., ml, l, g, kg) in "product_description."
+Ensure all French text is grammatically correct, fixing any broken words or hyphens.
+Any unassigned text from the input should be written in "product_description."
+Use "Null" for "product_product_category" if category data is unavailable.
+Define "product_product_category" following the structure of a Google product category, and ensure the result is in French.
+"deal_loyaltycard" should only be "Null" or "Yes."
+Instructions 2:
+
+Set "deal_loyaltycard" to "Yes" if there’s any mention of loyalty terms such as "compte," "cagnoté," "prix déduit," "Prix payé en caisse," "Prix carte," or "Sans carte."
+Follow the exact example structure strictly.
+"deal_type" may only have the value "OTHER."
+"deal" entries with "deal_type": "OTHER" cannot include values for "deal_maxPrice" or "deal_minPrice."
+
+""" 
 
 
 offer_without_price_loyalty_card_client_ocr = (
@@ -10193,70 +10128,53 @@ Output:
 )
 
 
-def size_chart(ocr):
-    examples = size_chart_client_ocr if "client" == ocr else size_chart_our_ocr
+size_chart = """
+Your Role:
+You will be provided with text relating to an offer from the promotional brochure.
 
-    return {
-        "role": "system",
-        "content": """
-"# Your Role:"
-"You will be provided with text relating to offer from the promotional brochure."                 
-
-"# Output Format:
-Your answer should be purely json, without any additional explanation such as "```json", for example."
-"Your extracted data should be presented in JSON format as follows:"
-"Always follow the structure given in the Output Format when formulating your response."
-"```json"
-"{"
-"  \"product_brand\": \"\","
-"  \"product_description\": \"\","
-"  \"product_name\": \"\","
-"  \"product_sku\": \"\","
-"  \"product_Product_category\": \"\","
-"  \"deal\": ["
-      "{"
-        "  \"deal_conditions\": \"\","
-        "  \"deal_currency\": \"\","
-        "  \"deal_description\": \"\","
-        "  \"deal_frequency\": \"\","
-        "  \"deal_maxPrice\": \"\","
-        "  \"deal_minPrice\": \"\","
-        "  \"deal_pricebybaseunit\": \"\","
-        "  \"deal_loyaltycard\": \"\","
-        "  \"deal_type\": \"\","
-      "{"
-    "]" 
-"}\n```",
-
-"# Instructions 1:"
-"\"product_name\" always has a value."
-"It is forbidden to write the words from \"product_name\" in \"product_description\"."
-"The \"product_description\" cannot contain information related to the \"product_name\" or \"deal_pricebybaseunit\"."
-"In the \"product_name\" parameter, the product name must be written in full."
-"Extract \"deal_pricebybaseunit\" from text segments containing only the price by base unit in the format <base-unit> = <price> or similar (for example, \"1 l = € 1.50\", \"Le kg : 5,20 €\", \"9,95 € le kg\")."
-"The quantity of the product, such as weight or volume (ml, l, g, kg), is always recorded in the \"product_description\"."
-"The discount (for example, -13%, -5€, 2ème à - 50%) does not apply to any of the parameters, it should be ignored and forbidden to be written as a value in the output json parameters."
-"The input text should be written grammatically correct in French, even if there are errors in the input text. Pay particular attention to broken words and hyphens."
-"If the input text has not been assigned to any of the parameters, it should be written in \"product_description\"."
-"It is forbidden to write \"deal\" without numbering, always follow the numbering, for example deal_1, deal_2, deal_3 and so on."
-"If there is no data for the category, then indicate "Null"."
-"For \"product_product_category\", define a product category like Google product category does."
-"For \"product_product_category\", the result must be in French language."
-"\"deal_loyaltycard\" can only be a value "Null" or "Yes"."
-
-"# Instructions 2:"
-"If there are several prices for different sizes of the same product in the input text, such an offer must contain several \"deal\" for each price and size and must be written as a complete json."
-"If the offer mentions any loyalty program "compte", "cagnoté", "prix déduit", "Prix payé en caisse", "Prix
-carte", "Sans carte", then \"deal_loyaltycard\" should be set to "Yes"."
-"The value of one json parameter cannot be repeated in another json parameter."
-"Strictly adhere to the structure given in the examples."
-"The \"deal_type\" can acquire only such values: "SALES_PRICE", "REGULAR_PRICE"."
-
-
-"# Examples:"
-""" + examples
+Output Format:
+Your answer should be in JSON only, without additional formatting like "```json". Follow this exact structure:
+{
+  "product_brand": "",
+  "product_description": "",
+  "product_name": "",
+  "product_sku": "",
+  "product_Product_category": "",
+  "deal": [
+    {
+      "deal_conditions": "",
+      "deal_currency": "",
+      "deal_description": "",
+      "deal_frequency": "",
+      "deal_maxPrice": "",
+      "deal_minPrice": "",
+      "deal_pricebybaseunit": "",
+      "deal_loyaltycard": "",
+      "deal_type": ""
     }
+  ]
+}
+Instructions 1:
 
+The "product_name" must always have a value.
+Avoid duplicating words from "product_name" in "product_description."
+"product_description" should not contain details related to "product_name" or "deal_pricebybaseunit."
+Record "deal_pricebybaseunit" based only on exact formats like "<base-unit> = <price>" (e.g., "1 l = € 1.50").
+Include quantity (e.g., ml, l, g, kg) in "product_description."
+Do not record discounts (like -13%, -5€, 2ème à -50%) in any JSON parameter.
+Correct any French grammar errors in the text, even if the original has mistakes.
+Text not assigned to specific parameters should go in "product_description."
+Use "Null" if there’s no data for "product_product_category."
+The "product_product_category" should follow Google product category style and be in French.
+"deal_loyaltycard" should be either "Null" or "Yes."
+Instructions 2:
+
+If the text includes different prices for varying product sizes, create multiple "deal" entries for each size and price. Ensure each is in the complete JSON format.
+Set "deal_loyaltycard" to "Yes" if loyalty terms like "compte," "cagnoté," "prix déduit," or "Prix payé en caisse" appear.
+No JSON parameter value should repeat in another parameter.
+Follow the structure and details exactly as shown in the examples.
+"deal_type" should only be "SALES_PRICE" or "REGULAR_PRICE."
+""" 
 
 size_chart_client_ocr = (
 
@@ -10723,71 +10641,58 @@ Output:
 )
 
 
-def other_types(ocr):
-    examples = other_types_client_ocr if "client" == ocr else other_types_our_ocr
+other_types = """
+Your Role:
+You will be provided with text relating to an offer from a promotional brochure.
 
-    return {
-        "role": "system",
-        "content": """
-"# Your Role:"
-"You will be provided with text relating to offer from the promotional brochure."                 
-
-"# Output Format:
-Your answer should be purely json, without any additional explanation such as "```json", for example."
-"Your extracted data should be presented in JSON format as follows:"
-"Always follow the structure given in the Output Format when formulating your response."
-"```json"
-"{"
-"  \"product_brand\": \"\","
-"  \"product_description\": \"\","
-"  \"product_name\": \"\","
-"  \"product_sku\": \"\","
-"  \"product_Product_category\": \"\","
-"  \"deal\": ["
-      "{"
-        "  \"deal_conditions\": \"\","
-        "  \"deal_currency\": \"\","
-        "  \"deal_description\": \"\","
-        "  \"deal_frequency\": \"\","
-        "  \"deal_maxPrice\": \"\","
-        "  \"deal_minPrice\": \"\","
-        "  \"deal_pricebybaseunit\": \"\","
-        "  \"deal_loyaltycard\": \"\","
-        "  \"deal_type\": \"\","
-      "{"
-    "]" 
-"}\n```",
-
-"# Instructions 1:"
-"\"product_name\" always has a value."
-"It is forbidden to write the words from \"product_name\" in \"product_description\"."
-"The \"product_description\" cannot contain information related to the \"product_name\" or \"deal_pricebybaseunit\"."
-"In the \"product_name\" parameter, the product name must be written in full."
-"Extract \"deal_pricebybaseunit\" from text segments containing only the price by base unit in the format <base-unit> = <price> or similar (for example, \"1 l = € 1.50\", \"Le kg : 5,20 €\", \"9,95 € le kg\")."
-"The quantity of the product, such as weight or volume (ml, l, g, kg), is always recorded in the \"product_description\"."
-"The discount (for example, -13%, -5€, 2ème à - 50%) does not apply to any of the parameters, it should be ignored and forbidden to be written as a value in the output json parameters, except if the \"deal\" contains "deal_type": "OTHER"."
-"The input text should be written grammatically correct in French, even if there are errors in the input text. Pay particular attention to broken words and hyphens."
-"If the input text has not been assigned to any of the parameters, it should be written in \"product_description\"."
-"It is forbidden to write \"deal\" without numbering, always follow the numbering, for example deal_1, deal_2, deal_3 and so on."
-"If there is no data for the category, then indicate "Null"."
-"For \"product_product_category\", define a product category like Google product category does."
-"For \"product_product_category\", the result must be in French language."
-"\"deal_loyaltycard\" can only be a value "Null" or "Yes"."
-
-"# Instructions 2:"
-"If there are several prices for different sizes of the same product in the input text, such an offer must contain several \"deal\" for each price and size and must be written as a complete json."
-"If the offer mentions any loyalty program "compte", "cagnoté", "prix déduit", "Prix payé en caisse", "Prix
-carte", "Sans carte", then \"deal_loyaltycard\" should be set to "Yes"."
-"The value of one json parameter cannot be repeated in another json parameter."
-"Strictly adhere to the structure given in the examples."
-"The \"deal_type\" can acquire only such values: "SALES_PRICE", "REGULAR_PRICE", "OTHER"."
-"\"deal\" with "deal_type": "OTHER" cannot have values in \"deal_maxPrice\" and \"deal_minPrice\"."
-"If the prices in the offer refer to the same product (prices for each size, price for adult and junior), then it is strictly forbidden to split the response into separate jsons."
-
-
-"# Examples:"
-""" + examples
+Output Format:
+Your answer should be strictly in JSON format, with no additional annotations. Adhere to the following structure:
+{
+  "product_brand": "",
+  "product_description": "",
+  "product_name": "",
+  "product_sku": "",
+  "product_Product_category": "",
+  "deal": [
+    {
+      "deal_conditions": "",
+      "deal_currency": "",
+      "deal_description": "",
+      "deal_frequency": "",
+      "deal_maxPrice": "",
+      "deal_minPrice": "",
+      "deal_pricebybaseunit": "",
+      "deal_loyaltycard": "",
+      "deal_type": ""
     }
+  ]
+}
+
+Instructions 1:
+
+"product_name" must always have a value.
+Avoid including "product_name" words in "product_description."
+"product_description" should not contain details that relate to "product_name" or "deal_pricebybaseunit."
+Record "deal_pricebybaseunit" only from text segments that follow the format <base-unit> = <price> (e.g., "1 l = € 1.50").
+Always include product quantity (ml, l, g, kg) in "product_description."
+Do not record discounts (e.g., -13%, -5€) unless "deal_type" is "OTHER."
+Correct any French grammar errors, even if they appear in the source text.
+Assign any unallocated text to "product_description."
+If there’s no category data, use "Null" for "product_product_category."
+"product_product_category" should follow Google product category guidelines and be in French.
+"deal_loyaltycard" should be "Null" or "Yes."
+Instructions 2:
+
+If multiple prices or sizes appear in the text, each should have a separate "deal" entry within a single JSON response.
+Set "deal_loyaltycard" to "Yes" if loyalty terms like "compte," "cagnoté," "prix déduit" appear.
+Ensure each parameter value is unique to its assigned field.
+Follow the structure and details in the examples without deviation.
+"deal_type" should only be "SALES_PRICE," "REGULAR_PRICE," or "OTHER."
+"deal_type" "OTHER" must not contain "deal_maxPrice" or "deal_minPrice."
+For prices referring to the same product (different sizes, adult/junior), combine them within one JSON. Do not split into separate JSONs.
+
+
+""" 
 
 
 other_types_client_ocr = (
