@@ -5743,8 +5743,7 @@ When writing information to the "product_description" parameter, each new line m
 if the old price is not crossed out, then we write the RECOMMENDED_RETAIL_PRICE type into a separate deal.
 
 IMPORTANT 
-only on the stage, not in the text, the price where uvp is written should be added to the deal with the RECOMMENDED_RETAIL_PRICE type
-and the price without uvp to the deal with the SALES_PRICE type
+
 
 
 # High priority Instructions for "main_format" and "additional_format":
@@ -9198,7 +9197,7 @@ Provide your answer in pure JSON format, without any additional explanation such
 # Important Points:
 - If loyalty terms (e.g., "compte", "cagnoté", "prix déduit") are mentioned, set "deal_loyaltycard" to "Yes".
 - Ensure unique values for each JSON parameter.
-- "deal_type" can only be "SALES_PRICE" or "REGULAR_PRICE".
+- "deal_type" can only be "REGULAR_PRICE".
 
 # general conditions :
 1. **Very important**: The product name cannot be included in the product description.
@@ -9208,7 +9207,9 @@ Provide your answer in pure JSON format, without any additional explanation such
 5. All offers where there is only one price will have deal_type: regular.
 6. If there is a crossed-out price, it must be recorded in a separate deal with the REGULAR type 
 7. The main price is always a separate deal with the SALE_PRICE type
-
+8. the price without tax (HT) should be ignored
+9. the price with tax should be written in deal_type REGULAR
+10. crosed old price should be ignored
 
 #main_format:
 1. deal with minPrice and maxPrice should always be the same

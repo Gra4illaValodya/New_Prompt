@@ -1,1 +1,1 @@
-https://content-media.bonial.biz/cbfbdf1f-626d-4a54-91da-23368bec6be8/main.jpg
+two_products_in_one_offer
