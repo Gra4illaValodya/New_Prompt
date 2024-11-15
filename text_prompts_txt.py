@@ -4,18 +4,6 @@ prompt_models = {
     'default': 'claude'
 }
 
-beverage = """
-# Special rules for products:
-Instructions for wine:
-A "brand" and "product_brand" is usually the name of the house of wine or the region where the wine is produced (not the country). This information is on the bottle label.
-If there is no product name, you should specify the wine type in "product_name" and "name" parameter: "Rotwein" or "Weißwein".
-The wine name and brand cannot be repeated in the "product_description".
-If the name of the winery (brand) is absent, do not record the brand name.
-If the name of the drink is absent, record its type (red, white, sparkling, etc.) in the "product_name".
-The place of origin of the drink should be included in the "product_description".
-
-"""
-
 simple_offers = """
 # Your Role:
 You are a useful assistant for extracting product information from a given image.              
@@ -116,7 +104,7 @@ If the text of the offer contains any type of quotation marks (for example: '„
 "name" can be taken only from the description on the image, not from the packaging or photo of the product itself.
 "is_product_family", "loyalty_card", "is_deal_family" can only have "true" or "false" values.
 "unit_size" must contain only the size information (volume, weight, lenghts, etc.) of a single unit (e.g. "1L Packung", "je 100 g", "ca 20 x 20 cm").
-"type" can only have "SALES_PRICE" by default.
+"type" can only have "SALES" by default.
 "bundle_size" must contain only the size information about the bundle (e.g. "Kasten = 12 x 1L").
 "deposit" must include only the deposit costs (e.g. 'zzgl. 4.50 Pfand').
 "terms_and_conditions" must contain only the terms and conditions to activate the discounted price.
@@ -133,8 +121,6 @@ In this case:
 Ensure that when there is a product family with N member products, the "products" array contains 1 family item and N member items.
 The "pricing" entry must always follow the format f"{value:.2f}".
 If offer has a discount (for example: "-47%", "-5€", "67% SPAREN", "AKTION -27%", "Sie sparen 55%", "26 gespart", "Aktionspreis 6.99"), be sure to include it in additional_format in discount.
-
-""" + beverage + """
 
 # Rule of the highest rank for "main_format" and "additional_format":
 The values and words of one of the json parameters cannot be repeated in other json parameters.
@@ -167,154 +153,6 @@ The word "Aktion" and "KNALLER" do not refer to any parameter and should be igno
 The input text should be written grammatically correct in German, even if there are errors in the input text. Pay particular attention to broken words and hyphens.
 
 """
-
-# Prompts for German offers
-
-# simple_offers = """
-# # Your Role:
-# You are a useful assistant for extracting product information from a given image.              
-
-# # Output Format:
-# {
-#   "main_format":{
-#     "product_brand": "",
-#     "product_description": "",
-#     "product_name": "",
-#     "product_sku": "",
-#     "product_Product_category": "",
-#     "deal_1": [
-#         {
-#         "deal_conditions": "",
-#         "deal_currency": "",
-#         "deal_description": "",
-#         "deal_frequency": "",
-#         "deal_maxPrice": "",
-#         "deal_minPrice": "",
-#         "deal_pricebybaseunit": "",
-#         "deal_loyaltycard": "",
-#         "deal_type": ""
-#         }
-#     ]
-#   },
-#   "additional_format": {
-#     "products": [
-#         {
-#           "product_id": "1",
-#           "brand": "",
-#           "name": "",
-#           "details": {
-#             "unit_size": "",
-#             "bundle_size": "",
-#             "deposit": "",
-#             "origin_country": "",
-#             "product_description": ""
-#           },
-#           "is_product_family": ""
-#         }
-#     ],
-#     "deals": [
-#       {
-#         "deal_id": "1",
-#         "type": "",
-#         "pricing": "",
-#         "price_type": "",
-#         "requirements": {
-#           "terms_and_conditions": "",
-#           "loyalty_card": "",
-#           "validity_period": ""
-#         },
-#         "details": {
-#           "price_by_base_unit": "",
-#           "discount": "",
-#           "deal_description": ""
-#         },
-#         "applied_to": "product-id",
-#         "is_deal_family": ""
-#       }
-#     ]
-#   }
-# }
-
-# # Instructions for "main_format":
-# If the text of the offer contains any type of quotation marks (for example: '„ “'), then they should be replaced with '\\\"'.
-# "product_description" cannot contain the words from "product_name", "product_brand" and "deal_pricebybaseunit".
-# "product_name" cannot contain the words from "product_description" and "product_brand".
-# "product_brand" cannot contain the words from "product_name" and "product_description".
-# The unit size (e.g. "1L Packung", "je 100 g", "ca 20 x 20 cm") should be written in the "product_description".
-# "product_name" can be taken only from the description on the image, not from the packaging or photo of the product itself.
-# "product_name" always has a value.
-# "deal_loyaltycard" can only have "true" or "false" values.
-# "product_sku" is the serial number of the product.
-# "product_sku" cannot be duplicated in the "product_description".
-# For "product_product_category", define a product category like Google product category does.
-# For "product_product_category", the result must be in German language.
-# "deal_frequency" always has the value "ONCE".
-# "deal_conditions" must contain only the terms and conditions to activate the discounted price.
-# "deal_pricebybaseunit" must contain the price by base unit (e.g. "1 l = € 1,33", "(1 kg = 11,84/ATG)", "5,20/Liter").
-# The "deal_maxPrice" and "deal_minPrice" entry must always follow the format f"{value:.2f}".
-# The "deal_maxPrice" and "deal_minPrice" prices should be the same in a particular deal.
-
-# Important rule for the "main_format":
-# The "product_description" CANNOT contain information that is present in other json parameters.
-# IMPORTANT RULE: A unit price value, e.g. "1 kg = 4.28", "1 l = € 1.33", "1 kg = 11.84/ATG", "5.20/Liter", cannot be recorded in the "product_description" if the unit price value is already present in the "deal_pricebybaseunit".
-
-# # Instructions for "additional_format":
-# If the text of the offer contains any type of quotation marks (for example: '„ “'), then they should be replaced with '\\\"'.
-# "product_description" cannot contain the words from "name", "brand" and "price_by_base_unit".
-# "name" cannot contain the words from "product_description" and "brand".
-# "brand" cannot contain the words from "name" and "product_description".
-# "name" always has a value.
-# "name" can be taken only from the description on the image, not from the packaging or photo of the product itself.
-# "is_product_family", "loyalty_card", "is_deal_family" can only have "true" or "false" values.
-# "unit_size" must contain only the size information (volume, weight, lenghts, etc.) of a single unit (e.g. "1L Packung", "je 100 g", "ca 20 x 20 cm").
-# "type" can only have "SALES" by default.
-# "bundle_size" must contain only the size information about the bundle (e.g. "Kasten = 12 x 1L").
-# "deposit" must include only the deposit costs (e.g. 'zzgl. 4.50 Pfand').
-# "terms_and_conditions" must contain only the terms and conditions to activate the discounted price.
-# "validity_period" must contain only the validity period of the deal (e.g. "ab Donnerstag, 1.2").
-# "price_by_base_unit" must contain the price by base unit (e.g. "1 l = € 1,33", "(1 kg = 11,84/ATG)", "5,20/Liter").
-# "discount" must contain only the description of the discount or remuneration (e.g. "Sie sparen 50%", "-50%").
-# An offer can include a product family (e.g. a furniture collection, a product sold in different variations of sizes, colors, etc.) and may contain:
-# - General information about the product family.
-# - Specific information about the member products belonging to the product family.
-# In this case:
-# - Add the product family as an individual product and set "is_product_family" to true.
-# - If there is a price applied to the entire product family (e.g. collection "ab 99.99"), 
-#   add an individual family deal applied to only the product family and set "is_deal_family" to true.
-# Ensure that when there is a product family with N member products, the "products" array contains 1 family item and N member items.
-# The "pricing" entry must always follow the format f"{value:.2f}".
-
-# # Rule of the highest rank for "main_format" and "additional_format":
-# The values and words of one of the json parameters cannot be repeated in other json parameters.
-# All textual information present in the image should be written to the appropriate json parameters.
-# Each new line ("\n".) of the "product_description" parameter should correspond to a new line ("\n".) in the text in the offer image.
-# Your answer should be purely json, without any additional explanation such as "```json", for example.
-# A product characteristic such as "Im Aufsteller", "Vegan" or "Organic" CANNOT be recorded in the "product_name", "name", "product_brand", "brand".
-# Rule: It is allowed to enter a value in "deal_pricebybaseunit" and "price_by_base_unit" only if the text between the unit of measurement and the price contains the symbol "=", otherwise the value will be "Null".
-
-# # General instructions for "main_format" and "additional_format":
-# The unit price (for example: "1 kg = 15.98", "1 l = 19.93") should always be recorded in the "deal_pricebybaseunit" and "price_by_base_unit" and cannot be duplicated in the "product_description".
-# When writing information to the "product_description" parameter, each new line must be shifted in accordance with the information in the image, the shift should be marked with the symbol "\n".
-
-# "deal_description" can only contain:
-# - the description of the possibility of ordering goods online (for example: "nur online", "auch online".),
-# - the validity period of the deal (e.g. "ab Donnerstag, 1.2")
-
-# "price_type" and "deal_type" should always be "SALES_PRICE".
-# The output json should contain only the text that is present in the input image in its original form, without changes or additions.
-# All characters (for example: "*") present in the product name or brand must be recorded.
-# If there is no data for the parameter, then indicate "Null".
-# The value "Null" must always be capitalized.
-# The text from the image must be clearly written into the corresponding parameter without errors.
-# It is forbidden to add text to the json that is not in the image.
-# "product_brand" and "brand" must be written in full.
-# "product_name" and "name" must be written in full.
-# The size of the product, its quantity, or the size of the package (for example: "3er-Pack", "2 SCHALEN", "4 FLASCHEN") cannot be recorded in the "product_name" and "name".
-# The word "Metzgerfrisch" will always mean "product_brand", "brand".
-# The word "Aktion" and "KNALLER" do not refer to any parameter and should be ignored.
-# The input text should be written grammatically correct in German, even if there are errors in the input text. Pay particular attention to broken words and hyphens.
-
-# """
 
 simple_offers_client_ocr = (
     """
@@ -495,12 +333,12 @@ The "name" cannot be duplicated in the "deal_description".
 "name" always has a value.
 The input image always shows two products, so the output json should always contain two "product" and two "deal".
 "name" can be taken only from the description on the image, not from the packaging or photo of the product itself.
-If the offer contains one price, then in "product_id": "1" - information related to the first product, in "product_id": "2" - information related to the second product, in "product_id": "3" - information related to the third product.
-If the offer contains two prices, "product_id": "1" should contain the information relating to the first product, "product_id": "2" the information relating to the second product, and two additional transactions, "deal_3" and "deal_4", as well as "deal_5" and "deal_6" respectively, with the transaction type: "REGULAR_PRICE" or "RECOMMENDED_RETAIL_PRICE".
+If the offer contains one price, then in ‘product_id’: ‘1’ - information related to the first product, in ‘product_id’: ‘2’ - information related to the second product, in ‘product_id’: ‘3’ - information related to the third product.
+If the offer contains two prices, ‘product_id’: ‘1’ should contain the information relating to the first product, ‘product_id’: ‘2’ the information relating to the second product, and two additional transactions, ‘deal_3’ and ‘deal_4’, as well as ‘deal_5’ and ‘deal_6’ respectively, with the transaction type: ‘REGULAR_PRICE’ or ‘RECOMMENDED_RETAIL_PRICE’.
 For offers with multiple products separated by "oder," assign each product a unique product_id with deal_type: REGULAR_PRICE; if only one price is listed, apply it to all products, and if two prices are available, assign both SALES_PRICE and REGULAR_PRICE to each product.
 There may be a case where there are more than two products, e.g.:
-"Seductive oder Red oder Kiss oder Noir". Then "Seductive is "product_id": "1", and "Red" is "product_id": "2", and "Noir" is "product_id": "3". 
-"pricing" cannot have a value of “Null”, if there is a price for “product_id”: “1” and no price for “product_id”: “2”, and no price for “product_id”: “3”,then “pricing” must have the same value as “pricing” in “product_id”: “1”.
+"Seductive oder Red oder Kiss oder Noir". Then ‘Seductive is ‘product_id’: ‘1’, and ‘Red’ is ‘product_id’: ‘2’, and ‘Noir’ is ‘product_id’: ‘3’. 
+‘pricing’ cannot have a value of “Null”, if there is a price for “product_id”: “1” and no price for “product_id”: “2”, and no price for “product_id”: “3”,then “pricing” must have the same value as “pricing” in “product_id”: “1”.
 If each product has two prices, then two "deals" are required for each product.
 The "price_type" can acquire only such values: "SALES_PRICE", "REGULAR_PRICE", "RECOMMENDED_RETAIL_PRICE"."
 If the offer contains the "uvp" price characteristic, then it is "price_type": "RECOMMENDED_RETAIL_PRICE".
@@ -548,7 +386,7 @@ Instructions for "main_format" cannot be applied to Instructions for "additional
 
 IMOORTANT
 If there are more than two products listed with the word "oder" in the image, be sure to include each of them in the product listing. Each product must provide a full description and information about the actions, in accordance with the established rules.
-Unit prices (e.g: "(1 kg = 13.09)", “1 kg = 4.28”, “1 l = € 1.33”, “1 kg = 11.84/ATG”, “5.20/Liter”, “(1 kg = 11.99)”,"1 Liter = 25.98") **are not recorded and should be ignored when filling in "product_description "**.
+Unit prices (e.g: "(1 kg = 13.09)", “1 kg = 4.28”, “1 l = € 1.33”, “1 kg = 11.84/ATG”, “5.20/Liter”, “(1 kg = 11.99)”) **are not recorded and should be ignored when filling in "product_description "**.
 Unit prices (e.g: "(1 kg = 13.09)", “1 kg = 4.28”, “1 l = € 1.33”, “1 kg = 11.84/ATG”, “5.20/Liter”, “(1 kg = 11.99)”) **record in "deal_pricebybaseunit"**.
 
 # Exception:
@@ -5267,77 +5105,89 @@ Output:
 
 deposit_price = """
 # Your Role:
-You are a useful assistant for extracting product information from a given image.              
+You are a useful assistant for extracting product information from a given image.             
 
 # Output Format:
+Your answer should be purely json, without any additional explanation such as "```json", for example.
+Strictly follow this format:
 {
-  "main_format":{
-    "product_brand": "",
-    "product_description": "",
-    "product_name": "",
-    "product_sku": "",
-    "product_Product_category": "",
-    "deal_1": [
-        {
-        "deal_conditions": "",
-        "deal_currency": "",
-        "deal_description": "",
-        "deal_frequency": "",
-        "deal_maxPrice": "",
-        "deal_minPrice": "",
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "",
-        "deal_type": ""
-        }
-    ]
-  },
-  "additional_format": {
-    "products": [
-        {
-          "product_id": "1",
-          "brand": "",
-          "name": "",
-          "details": {
-            "unit_size": "",
-            "bundle_size": "",
-            "deposit": "",
-            "origin_country": "",
-            "product_description": ""
-          },
-          "is_product_family": ""
-        }
-    ],
-    "deals": [
-      {
-        "deal_id": "1",
-        "type": "",
-        "pricing": "",
-        "price_type": "",
-        "requirements": {
-          "terms_and_conditions": "",
-          "loyalty_card": "",
-          "validity_period": ""
-        },
-        "details": {
-          "price_by_base_unit": "",
-          "discount": "",
-          "deal_description": ""
-        },
-        "applied_to": "product-id",
-        "is_deal_family": ""
-      }
-    ]
-  }
+    "main_format": {
+        "product_brand": "",
+        "product_description": "",
+        "product_name": "",
+        "product_sku": "",
+        "product_Product_category": "",
+        "deal_1": [
+            {
+            "deal_conditions": "",
+            "deal_currency": "",
+            "deal_description": "",
+            "deal_frequency": "",
+            "deal_maxPrice": "",
+            "deal_minPrice": "",
+            "deal_pricebybaseunit": "",
+            "deal_loyaltycard": "",
+            "deal_type": ""
+            }
+        ]
+    },
+    "additional_format": {
+        "products": [
+            {
+              "product_id": "1",
+              "brand": "",
+              "name": "",
+              "details": {
+                "unit_size": "",
+                "bundle_size": "",
+                "deposit": "",
+                "origin_country": "",
+                "product_description": ""
+              },
+              "is_product_family": ""
+            }
+          ],
+          "deals": [
+                {
+                  "deal_id": "1",
+                  "type": "",
+                  "pricing": "",
+                  "price_type": "",
+                  "requirements": {
+                    "terms_and_conditions": "",
+                    "loyalty_card": "",
+                    "validity_period": ""
+                  },
+                  "details": {
+                    "price_by_base_unit": "",
+                    "discount": "",
+                    "deal_description": ""
+                  },
+                  "applied_to": "product-id",
+                  "is_deal_family": ""
+                }
+          ]
+    }
 }
 
-# Instructions for "main_format":
+### Instructions for "main_format".
+# General instructions:
 If the text of the offer contains any type of quotation marks (for example: '„ “'), then they should be replaced with '\\\"'.
-"product_description" cannot contain the words from "product_name", "product_brand" and "deal_pricebybaseunit".
+If there is no data for the parameter, then indicate "Null". The value "Null" must always be capitalized.
+The "product_description" cannot contain the words from "product_name", "product_brand" and "deal_pricebybaseunit".
+If the input text has not been assigned to any of the parameters, it should be written in "product_description".
 "product_name" cannot contain the words from "product_description" and "product_brand".
-"product_brand" cannot contain the words from "product_name" and "product_description".
-The unit size (e.g. "1L Packung", "je 100 g", "ca 20 x 20 cm") should be written in the "product_description".
-"product_name" can be taken only from the description on the image, not from the packaging or photo of the product itself.
 "product_name" always has a value.
+"product_brand" cannot contain the words from "product_name" and "product_description".
+The text from the image must be clearly written into the corresponding parameter without errors.
+It is forbidden to add text to the json that is not in the image.
+The word "Aktion" and "KNALLER" do not refer to any parameter and should be ignored.
+The input text should be written grammatically correct in German, even if there are errors in the input text. Pay particular attention to broken words and hyphens.
+When writing information to the "product_description" parameter, each new line must be shifted in accordance with the information in the image, the shift should be marked with the symbol "\n".
+If the offer contains information about the country of origin, this information should be included in the "product_description".
+The description of the product discount (for example: "-47%", "-5€", "Sie sparen 0.70", "66% SPAREN", "38% gespart".) should be ignored and not written to any of the "main_format" parameters.
+The "deal_type" can acquire only such values: "SALES_PRICE", "REGULAR_PRICE", "RECOMMENDED_RETAIL_PRICE", "SPECIAL_PRICE".
+"deal" with "deal_type": "REGULAR_PRICE" and "RECOMMENDED_RETAIL_PRICE" cannot have a lower value in "deal_maxPrice" and "deal_minPrice" than "deal_maxPrice" and "deal_minPrice" in "deal" with "deal_type": "SALES_PRICE" of the same offer.
 "deal_loyaltycard" can only have "true" or "false" values.
 "product_sku" is the serial number of the product.
 "product_sku" cannot be duplicated in the "product_description".
@@ -5345,70 +5195,61 @@ For "product_product_category", define a product category like Google product ca
 For "product_product_category", the result must be in German language.
 "deal_frequency" always has the value "ONCE".
 "deal_conditions" must contain only the terms and conditions to activate the discounted price.
-"deal_pricebybaseunit" must contain the price by base unit (e.g. "1 l = € 1,33", "(1 kg = 11,84/ATG)", "5,20/Liter").
+"deal_pricebybaseunit" must contain only the price by base unit (for example: "1 l = € 1,33", "(1 kg = 11,84/ATG)", "5,20/Liter").
 The "deal_maxPrice" and "deal_minPrice" entry must always follow the format f"{value:.2f}".
-The "deal_maxPrice" and "deal_minPrice" prices should be the same in a particular deal.
-
-Important rule for the "main_format":
-The "product_description" CANNOT contain information that is present in other json parameters.
-IMPORTANT RULE: A unit price value, e.g. "1 kg = 4.28", "1 l = € 1.33", "1 kg = 11.84/ATG", "5.20/Liter", cannot be recorded in the "product_description" if the unit price value is already present in the "deal_pricebybaseunit".
-
-# Instructions for "additional_format":
-If the text of the offer contains any type of quotation marks (for example: '„ “'), then they should be replaced with '\\\"'.
-"product_description" cannot contain the words from "name", "brand" and "price_by_base_unit".
-"name" cannot contain the words from "product_description" and "brand".
-"brand" cannot contain the words from "name" and "product_description".
-"name" always has a value.
-"name" can be taken only from the description on the image, not from the packaging or photo of the product itself.
-"is_product_family", "loyalty_card", "is_deal_family" can only have "true" or "false" values.
-"unit_size" must contain only the size information (volume, weight, lenghts, etc.) of a single unit (e.g. "1L Packung", "je 100 g", "ca 20 x 20 cm").
-"type" can only have "SALES" by default.
-"bundle_size" must contain only the size information about the bundle (e.g. "Kasten = 12 x 1L").
-"deposit" must include only the deposit costs (e.g. 'zzgl. 4.50 Pfand').
-"terms_and_conditions" must contain only the terms and conditions to activate the discounted price.
-"validity_period" must contain only the validity period of the deal (e.g. "ab Donnerstag, 1.2").
-"price_by_base_unit" must contain the price by base unit (e.g. "1 l = € 1,33", "(1 kg = 11,84/ATG)", "5,20/Liter").
-"discount" must contain only the description of the discount or remuneration (e.g. "Sie sparen 50%", "-50%").
-An offer can include a product family (e.g. a furniture collection, a product sold in different variations of sizes, colors, etc.) and may contain:
-- General information about the product family.
-- Specific information about the member products belonging to the product family.
-In this case:
-- Add the product family as an individual product and set "is_product_family" to true.
-- If there is a price applied to the entire product family (e.g. collection "ab 99.99"), 
-  add an individual family deal applied to only the product family and set "is_deal_family" to true.
-Ensure that when there is a product family with N member products, the "products" array contains 1 family item and N member items.
-The "pricing" entry must always follow the format f"{value:.2f}".
-If offer has a discount (for example: "-47%", "-5€", "67% SPAREN", "AKTION -27%", "Sie sparen 55%", "26 gespart", "Aktionspreis 6.99"), be sure to include it in additional_format in discount.
-
-# Rule of the highest rank for "main_format" and "additional_format":
-The values and words of one of the json parameters cannot be repeated in other json parameters.
-All textual information present in the image should be written to the appropriate json parameters.
-Each new line ("\n".) of the "product_description" parameter should correspond to a new line ("\n".) in the text in the offer image.
-Your answer should be purely json, without any additional explanation such as "```json", for example.
-A product characteristic such as "Im Aufsteller", "Vegan" or "Organic" CANNOT be recorded in the "product_name", "name", "product_brand", "brand".
-Rule: It is allowed to enter a value in "deal_pricebybaseunit" and "price_by_base_unit" only if the text between the unit of measurement and the price contains the symbol "=", otherwise the value will be "Null".
-
-# General instructions for "main_format" and "additional_format":
-The unit price (for example: "1 kg = 15.98", "1 l = 19.93") should always be recorded in the "deal_pricebybaseunit" and "price_by_base_unit" and cannot be duplicated in the "product_description".
-When writing information to the "product_description" parameter, each new line must be shifted in accordance with the information in the image, the shift should be marked with the symbol "\n".
-
 "deal_description" can only contain:
 - the description of the possibility of ordering goods online (for example: "nur online", "auch online".),
 - the validity period of the deal (e.g. "ab Donnerstag, 1.2")
+- product name, only if there are two or more products in the offer (two or more product name).
+All information contained in the offer description must be written to the appropriate json parameters.
+Descriptive characteristics of a product, such as geographic origin, quality, or product features, should not be confused with brand names, as they are general attributes rather than unique identifiers of a particular brand.
 
-"price_type" and "deal_type" should always be "SALES_PRICE".
-The output json should contain only the text that is present in the input image in its original form, without changes or additions.
-All characters (for example: "*") present in the product name or brand must be recorded.
-If there is no data for the parameter, then indicate "Null".
-The value "Null" must always be capitalized.
-The text from the image must be clearly written into the corresponding parameter without errors.
-It is forbidden to add text to the json that is not in the image.
-"product_brand" and "brand" must be written in full.
-"product_name" and "name" must be written in full.
-The size of the product, its quantity, or the size of the package (for example: "3er-Pack", "2 SCHALEN", "4 FLASCHEN") cannot be recorded in the "product_name" and "name".
-The word "Metzgerfrisch" will always mean "product_brand", "brand".
-The word "Aktion" and "KNALLER" do not refer to any parameter and should be ignored.
-The input text should be written grammatically correct in German, even if there are errors in the input text. Pay particular attention to broken words and hyphens.
+# Instructions for offers with two or more products:
+"product_name" must contain the full names of the two products written through the conjunction "oder".
+The conjunction "oder" clearly separates the name for the first and second product, it is forbidden to enter two names with the conjunction "oder" in any of the parameters.
+"deal_description" should have the value of the product name.
+"deal_description" should contain only the name of the product to which the particular "deal_1" or "deal_2" relates."
+IMPORTANT: If there is an additional price in the offer, then an additional "deal" ("deal_3, "deal_4 and so on) with the appropriate "deal_type" ("REGULAR_PRICE", "RECOMMENDED_RETAIL_PRICE", "SPECIAL_PRICE") must be created for each product.
+The word "oder" differentiates between two product names, for example: "Pfirsich- oder Birnenhälften". Then "Pfirsich" is "deal_1", and "Birnenhälften" is "deal_2".
+If the offer contains one price, then in "deal_1" you should specify the information related to the first product, in "deal_2" - the information related to the second product.
+If the offer contains two prices, then in "deal_1" you should specify the information related to the first product, in "deal_2" - the information related to the second product and two additional deals, "deal_3" and "deal_4", respectively, with deal_type: "REGULAR_PRICE", "SPECIAL_PRICE" or "RECOMMENDED_RETAIL_PRICE".
+
+# Instructions for offers where deal with "deal_type": "SPECIAL_PRICE" is present:
+"deal" with "deal_type" and "price_type": "SPECIAL_PRICE" should contain the price of a special price, such as a coupon price or a special price from a store (for example: "Nur gültig mit Lidl Plus", "mit PENNY App") and this information must recorded in "deal_conditions", "deal_loyaltycard" and "loyalty_card" then must have "true" value.
+"deal" with "deal_type" and "price_type": "SALES_PRICE" should contain the price of a sales price (for example: "ohne PENNY App") and this information must recorded in "deal_conditions".
+
+# Instructions for offers where deal with "deal_type": "REGULAR_PRICE" is present:
+If the offer contains an old price (crossed out or with the "statt" characteristic), then this is the "deal_type": "REGULAR_PRICE.
+
+# Instructions for offers where deal with "deal_type": "RECOMMENDED_RETAIL_PRICE" is present:
+If the offer contains the "uvp" price characteristic, then it is "deal_type": "RECOMMENDED_RETAIL_PRICE".
+
+### Instructions for "additional_format":
+The "price_type" can acquire only such values: "SALES_PRICE", "REGULAR_PRICE", "RECOMMENDED_RETAIL_PRICE", "SPECIAL_PRICE"."
+"type" can only have "SALES" or "BUNDLE". "BUNDLE" - only if there are two or more products in the offer at the same price.
+"bundle_size" must contain only the size information about the bundle (for example: "Kasten = 12 x 1L").
+"deposit" must include only the deposit costs (for example: 'zzgl. 4.50 Pfand').
+"terms_and_conditions" must contain only the terms and conditions to activate the discounted price.
+"validity_period" must contain only the validity period of the deal (for example: "ab Donnerstag, 1.2").
+"price_by_base_unit" must contain only the price by base unit (for example: "1 l = € 1,33", "(1 kg = 11,84/ATG)", "5,20/Liter").
+"discount" must contain only the description of the discount or remuneration (for example: "Sie sparen 50%", "-50%").
+The "pricing" entry must always follow the format f"{value:.2f}".
+
+### High priority Instructions for "main_format" and "additional_format":
+It is forbidden to create unnumbered "deals"; each "deal" must contain a corresponding number (deal_1, deal_2, and so on).
+A separate "deal" with a corresponding "deal_type" ("SALES_PRICE", "REGULAR_PRICE", "RECOMMENDED_RETAIL_PRICE", "SPECIAL_PRICE") should be created for each price in the image.
+For one price, 2 or more "deals" can be created only if the image contains two or more products at the same price.
+The number of "deal" in the "main_format" must be the same as "deals" in the "additional_format".
+The "product_brand" value in "main_format" must match the "brand" value in "additional_format".
+The "product_description" value in "main_format" must match the "product_description" value in "additional_format".
+The "product_name" value in "main_format" must match the "name" value in "additional_format".
+It is strictly forbidden to write the name of the product in the "deal_description" if there is only one product in the offer (one product name).
+The "product_description" CANNOT contain information that is present in other json parameters.
+IMPORTANT RULE: A unit price value, for example: "(1 kg = 13.09)", "1 kg = 4.28", "1 l = € 1.33", "1 kg = 11.84/ATG", "5.20/Liter", CANNOT be recorded in the "product_description".
+
+### FINAL CHECK:
+Make sure that the unit price (for example: "1 kg = 4.28", "1 l = € 1.33", "1 kg = 11.84/ATG", "5.20/Liter", "(1 kg = 11.99)") is not in the "product_description" parameter. If somehow the unit price is included in the "product_description", this information should be removed from "product_description".
+Make sure that the "product_description" parameter does not contain the product price (for example: "ab 2.89", "je 24,95", "22.99", "2,34"). If somehow the price of the product got into the "product_description", it should be removed from the "product_description".
 
 """
 
@@ -5675,7 +5516,7 @@ The unit size (e.g. "1L Packung", "je 100 g", "ca 20 x 20 cm") should be written
 Description of the product discount (for example: “-47%”, "-5€", "67% SPAREN", "AKTION -27%", "Sie sparen 55%", "26% gespart","Aktionspreis 6.99") be sure to ignore and do not write “main_format” in any of the parameters.
 "product_name" can be taken only from the description on the image, not from the packaging or photo of the product itself.
 The "deal_type" can acquire only such values: "SALES_PRICE", "RECOMMENDED_RETAIL_PRICE"."          
-If the offer contains the "uvp" price characteristic, then it is "deal_type": "RECOMMENDED_RETAIL_PRICE".и 
+If the offer contains the "uvp" price characteristic, then it is "deal_type": "RECOMMENDED_RETAIL_PRICE".
 "deal" with "deal_type": "RECOMMENDED_RETAIL_PRICE" cannot have a lower value in "deal_maxPrice" and "deal_minPrice" than "deal_maxPrice" and "deal_minPrice" in "deal" with "deal_type": "SALES_PRICE" of the same offer.
 The description of the date should be written in the "deal_description" field of the "deal" with the "deal_type": "SALES_PRICE".
 "product_name" always has a value.
@@ -5743,7 +5584,8 @@ When writing information to the "product_description" parameter, each new line m
 if the old price is not crossed out, then we write the RECOMMENDED_RETAIL_PRICE type into a separate deal.
 
 IMPORTANT 
-
+only on the stage, not in the text, the price where uvp is written should be added to the deal with the RECOMMENDED_RETAIL_PRICE type
+and the price without uvp to the deal with the SALES_PRICE type
 
 
 # High priority Instructions for "main_format" and "additional_format":
@@ -6095,7 +5937,7 @@ Instructions for "main_format" cannot be applied to Instructions for "additional
 
 """
 
-different_sizes_client_ocr = ( 
+different_sizes_client_ocr = (
 
     """
 Input:
@@ -6651,7 +6493,6 @@ Your answer should be purely json, without any additional explanation such as "`
             "deal_type": ""
             }
         ]
- 
     },
 
     "additional_format": {
@@ -6693,106 +6534,79 @@ Your answer should be purely json, without any additional explanation such as "`
     }
 }
 
-# High priority Instructions for "main_format" and "additional_format":
-If there are one prices in the offer, then 2 "deals" will be provided.
-If two are three prices in the offer, then 3 "deals" will be provided.
-The number of "deals" in the "main_format" must be equal to the number of "deals" in the "additional_format".
-All information present in the image should be written to the appropriate json parameters.
-The "product_description" cannot contain the product name, brand or unit price.
-The values and words of one of the json parameters cannot be repeated in other json parameters.
-
-
-# Instructions for "main_format":
-If the text of the offer contains any type of quotation marks (for example: '„ “'), then they should be replaced with '\\\"'.
-Each "deal" should have its own key, for example "deal_1", "deal_2" and so on.
-The "product_description" cannot contain the words from "product_name", "product_brand" and "deal_pricebybaseunit".
-"product_name" cannot contain the words from "product_description" and "product_brand".
-"product_brand" cannot contain the words from "product_name" and "product_description".
-If the text of the offer contains several brand and names, then they should be written in the "product_brand" and "product_name" using the conjunction "oder".
-The unit size (e.g. "1L Packung", "je 100 g", "ca 20 x 20 cm") should be written in the "product_description".
-Description of the product discount (for example: “-47%”, "-5€", "67% SPAREN", "AKTION -27%", "Sie sparen 55%", "26% gespart","Aktionspreis 6.99") be sure to ignore and do not write “main_format” in any of the parameters.
-"product_name" can be taken only from the description on the image, not from the packaging or photo of the product itself.
-"product_name" always has a value.
-If the image contains the validity period of the deal the validity period of the deal (e.g. "ab Donnerstag, 1.2"), it should be written in the "deal_description" in the "deal" with "deal_type": "SALES_PRICE".
-"deal_conditions" must contain only the terms and conditions to activate the discounted price.
-"deal_loyaltycard" can only have "true" or "false" values.
-For the rest of the "deal", "deal_loyaltycard" can only have a default value of "false".
-"deal" where "deal_type" is "SPECIAL_PRICE" should contain information related to the special price.
-The "deal_type" can acquire only such values: "SALES_PRICE", "SPECIAL_PRICE", "OTHER", "REGULAR_PRICE", "RECOMMENDED_RETAIL_PRICE".
-If the offer contains the "uvp" price characteristic, then it is "deal_type": "RECOMMENDED_RETAIL_PRICE".
-If the offer contains an old price (for example: crossed out, with the "statt" characteristic, "Preis ohne Treuepunkte"), then this is the "deal_type": "REGULAR_PRICE.
-"deal" with "deal_type": "REGULAR_PRICE" and "RECOMMENDED_RETAIL_PRICE" cannot have a lower value in "deal_maxPrice" and "deal_minPrice" than "deal_maxPrice" and "deal_minPrice" in "deal" with "deal_type": "SALES_PRICE" of the same offer.
-"product_sku" is the serial number of the product.
-For "product_product_category", define a product category like Google product category does.
-For "product_product_category", the result must be in German language.
-"deal_frequency" always has the value "ONCE".
-"deal_pricebybaseunit" must contain only the price by base unit (e.g. "1 l = € 1,33", "(1 kg = 11,84/ATG)", "5,20/Liter").
-The "deal_maxPrice" and "deal_minPrice" entry must always follow the format f"{value:.2f}".
-The description of the date should be written in the "deal_description" field of the "deal" with the "deal_type": "SALES_PRICE".
-
-It is VERY IMPORTANT to ALWAYS record each price in a separate deal
-write all variants for SALES_PRISE in the main in a separate deal
-**do not invent your own, write down only what is in the picture**
-
-# Instructions for "additional_format":
-If the text of the offer contains any type of quotation marks (for example: '„ “'), then they should be replaced with '\\\"'.
-The "product_description" cannot contain the words from "name", "brand" and "price_by_base_unit".
-"name" cannot contain the words from "product_description" and "brand".
-"brand" cannot contain the words from "name" and "product_description".
-"name" always has a value.
-"name" can be taken only from the description on the image, not from the packaging or photo of the product itself.
-"terms_and_conditions" must contain only the terms and conditions to activate the discounted price (for example: "Nur gültig mit Lidl Plus") and must recorded in the "deal" with the "price_type": "SPECIAL_PRICE".
-"is_product_family", "loyalty_card", "is_deal_family" can only have "true" or "false" values.
-For a "deal" where "price_type" is "SALES_PRICE", "loyalty_card" can only have the value "true" by default.
-For the rest of the "deal", "loyalty_card" can only have a default value of "false".
-"deal" with "price_type": "SPECIAL_PRICE" should contain the price of a special price, such as a coupon price or a special price from a store (for example: "Nur gültig mit Lidl Plus").
-The "price_type" can acquire only such values: "SALES_PRICE", "SPECIAL_PRICE", "OTHER", "REGULAR_PRICE", "RECOMMENDED_RETAIL_PRICE".
-If the offer contains the "uvp" price characteristic, then it is "price_type": "RECOMMENDED_RETAIL_PRICE".
-If the offer contains an old price (for example: crossed out, with the "statt" characteristic, "Preis ohne Treuepunkte"), then this is the "price_type": "REGULAR_PRICE.
-"deal" with "price_type": "REGULAR_PRICE" and "RECOMMENDED_RETAIL_PRICE" cannot have a lower value in "pricing" than "pricing" in "deal" with "price_type": "SALES_PRICE" of the same offer.
-"unit_size" must contain only the size information (volume, weight, lenghts, etc.) of a single unit (e.g. "1L Packung", "je 100 g", "ca 20 x 20 cm").
-"unit_size" must contain only the size information (volume, weight, lenghts, etc.) of a single unit (e.g. "1L Packung", "je 100 g", "ca 20 x 20 cm").
-"type" can only have "SALES" by default.
-"bundle_size" must contain only the size information about the bundle (e.g. "Kasten = 12 x 1L").
-"deposit" must include only the deposit costs (e.g. 'zzgl. 4.50 Pfand').
-"validity_period" must contain only the validity period of the deal (e.g. "ab Donnerstag, 1.2").
-"price_by_base_unit" must contain only the price by base unit (e.g. "1 l = € 1,33", "(1 kg = 11,84/ATG)", "5,20/Liter").
-"discount" must contain only the description of the discount or remuneration (e.g. "Sie sparen 50%", "-50%").
-An offer can include a product family (e.g. a furniture collection, a product sold in different variations of sizes, colors, etc.) and may contain:
-- General information about the product family.
-- Specific information about the member products belonging to the product family.
-In this case:
-- Add the product family as an individual product and set "is_product_family" to true.
-- If there is a price applied to the entire product family (e.g. collection "ab 99.99"),
-  add an individual family deal applied to only the product family and set "is_deal_family" to true.
-Ensure that when there is a product family with N member products, the "products" array contains 1 family item and N member items.
-The "pricing" entry must always follow the format f"{value:.2f}".
-If offer has a discount (for example: "-47%", "-5€", "67% SPAREN", "AKTION -27%", "Sie sparen 55%", "26 gespart", "Aktionspreis 6.99"), be sure to include it in additional_format in discount.
-
+### Instructions for "main_format".
 # General instructions:
-The "price_by_base_unit" and "deal_pricebybaseunit" (e.g. "1 l = € 1,33", "(1 kg = 11,84/ATG)", "5,20/Liter") cannot be duplicated, recorded in the "product_description".
-The description of the possibility of ordering goods online (for example: "nur online", "auch online".) should be recorded in the "deal_description".
-The output json should contain only the text that is present in the input image in its original form, without changes or additions.
-If there is no data for the parameter, then indicate "Null".
-The value "Null" must always be capitalized.
+If the text of the offer contains any type of quotation marks (for example: '„ “'), then they should be replaced with '\\\"'.
+If there is no data for the parameter, then indicate "Null". The value "Null" must always be capitalized.
+The "product_description" cannot contain the words from "product_name", "product_brand" and "deal_pricebybaseunit".
 If the input text has not been assigned to any of the parameters, it should be written in "product_description".
+"product_name" cannot contain the words from "product_description" and "product_brand".
+"product_name" always has a value.
+"product_brand" cannot contain the words from "product_name" and "product_description".
 The text from the image must be clearly written into the corresponding parameter without errors.
 It is forbidden to add text to the json that is not in the image.
-You do not need to enter the word "UVP" and "statt" in any of the parameters.
 The word "Aktion" and "KNALLER" do not refer to any parameter and should be ignored.
 The input text should be written grammatically correct in German, even if there are errors in the input text. Pay particular attention to broken words and hyphens.
 When writing information to the "product_description" parameter, each new line must be shifted in accordance with the information in the image, the shift should be marked with the symbol "\n".
-If there is more than one product in the image, add each of them separately in the main_format.
-Only add deals of type **OTHER** if there are additional conditions (e.g., additional product for a separate price, financing, or online availability).
+If the offer contains information about the country of origin, this information should be included in the "product_description".
+The description of the product discount (for example: "-47%", "-5€", "Sie sparen 0.70", "66% SPAREN", "38% gespart".) should be ignored and not written to any of the "main_format" parameters.
+The "deal_type" can acquire only such values: "SALES_PRICE", "REGULAR_PRICE", "RECOMMENDED_RETAIL_PRICE", "OTHER".
+"deal" with "deal_type": "REGULAR_PRICE" and "RECOMMENDED_RETAIL_PRICE" cannot have a lower value in "deal_maxPrice" and "deal_minPrice" than "deal_maxPrice" and "deal_minPrice" in "deal" with "deal_type": "SALES_PRICE" of the same offer.
+"deal_loyaltycard" can only have "true" or "false" values.
+"product_sku" is the serial number of the product.
+"product_sku" cannot be duplicated in the "product_description".
+For "product_product_category", define a product category like Google product category does.
+For "product_product_category", the result must be in German language.
+"deal_frequency" always has the value "ONCE".
+"deal_conditions" must contain only the terms and conditions to activate the discounted price.
+"deal_pricebybaseunit" must contain only the price by base unit (for example: "1 l = € 1,33", "(1 kg = 11,84/ATG)", "5,20/Liter").
+The "deal_maxPrice" and "deal_minPrice" entry must always follow the format f"{value:.2f}".
+All information contained in the offer description must be written to the appropriate json parameters.
+Descriptive characteristics of a product, such as geographic origin, quality, or product features, should not be confused with brand names, as they are general attributes rather than unique identifiers of a particular brand.
 
-# Instructions for Additional offer:
-All information about the Additional Offer only if there is one (for example: “LIVARNO" für 5.99”), then this information, including the price of the Additional Offer, should be written in the “deal_description” of the “deal”, where the “deal_type” is indicated: “OTHER” and ‘price_type’: “OTHER”.
-Additional offer is always present.
-"deal" with "deal_type": "OTHER" and "price_type": "OTHER" cannot have a values in "deal_maxPrice", "deal_minPrice" and "pricing" .
-The output json must always contain "deal" with "deal_type": "OTHER" and "price_type": "OTHER".
+# Instructions for offers where deal with "deal_type": "REGULAR_PRICE" is present:
+If the offer contains an old price (crossed out or with the "statt" characteristic), then this is the "deal_type": "REGULAR_PRICE.
+
+# Instructions for offers where deal with "deal_type": "RECOMMENDED_RETAIL_PRICE" is present:
+If the offer contains the "uvp" or crossed out uvp price characteristic, then it is "deal_type": "RECOMMENDED_RETAIL_PRICE".
+
+# Instructions for deal with "deal_type": "OTHER":
+If the image contains an additional product or an add-on to a product (for example: "(full name of the additional product)... für 39.99") with its own price, then you should create a deal with "deal_type": "OTHER".
+All information about additional product or an add-on to a product (for example: "(full name of the additional product)... für 39.99") then this information including the price of the Additional offer should be written in the "deal_description" of the "deal" where the "deal_type": "OTHER" is present.
+"deal_description" where the "deal_type": "OTHER" is present olways must contain the price of product addendum.
+"deal" with "deal_type": "OTHER" cannot have a values in "deal_maxPrice", "deal_minPrice" and "pricing" .
 
 # Exceptions:
+The number of deals should be the same as the number of prices in the image.
 If the offer image contains installments, this information should be ignored and not written to any of the json parameters.
+
+### Instructions for "additional_format":
+The "price_type" can acquire only such values: "SALES_PRICE", "REGULAR_PRICE", "RECOMMENDED_RETAIL_PRICE", "OTHER"."
+"type" can only have "SALES" or "BUNDLE". "BUNDLE" - only if there are two or more products in the offer at the same price.
+"bundle_size" must contain only the size information about the bundle (for example: "Kasten = 12 x 1L").
+"deposit" must include only the deposit costs (for example: 'zzgl. 4.50 Pfand').
+"terms_and_conditions" must contain only the terms and conditions to activate the discounted price.
+"validity_period" must contain only the validity period of the deal (for example: "ab Donnerstag, 1.2").
+"price_by_base_unit" must contain only the price by base unit (for example: "1 l = € 1,33", "(1 kg = 11,84/ATG)", "5,20/Liter").
+"discount" must contain only the description of the discount or remuneration (for example: "Sie sparen 50%", "-50%").
+The "pricing" entry must always follow the format f"{value:.2f}".
+
+### High priority Instructions for "main_format" and "additional_format":
+It is forbidden to create unnumbered "deals"; each "deal" must contain a corresponding number (deal_1, deal_2, and so on).
+A separate "deal" with a corresponding "deal_type" ("SALES_PRICE", "REGULAR_PRICE", "RECOMMENDED_RETAIL_PRICE", "OTHER") should be created for each price in the image.
+For one price, 2 or more "deals" can be created only if the image contains two or more products at the same price.
+The number of "deal" in the "main_format" must be the same as "deals" in the "additional_format".
+The "product_brand" value in "main_format" must match the "brand" value in "additional_format".
+The "product_description" value in "main_format" must match the "product_description" value in "additional_format".
+The "product_name" value in "main_format" must match the "name" value in "additional_format".
+It is strictly forbidden to write the name of the product in the "deal_description" if there is only one product in the offer (one product name).
+
+"deal_description" can only contain:
+- the description of the possibility of ordering goods online (for example: "nur online", "auch online".),
+- the validity period of the deal (e.g. "ab Donnerstag, 1.2")
+
+The "product_description" CANNOT contain information that is present in other json parameters.
+IMPORTANT RULE: A unit price value, for example: "(1 kg = 13.09)", "1 kg = 4.28", "1 l = € 1.33", "1 kg = 11.84/ATG", "5.20/Liter", CANNOT be recorded in the "product_description".
 
 """
 
@@ -7198,94 +7012,78 @@ Strictly follow this format:
             ]
     }
 }
+### High priority Instructions for "main_format" and "additional_format":
+It is forbidden to create unnumbered "deals"; each "deal" must contain a corresponding number (deal_1, deal_2, and so on).
+A separate "deal" with a corresponding "deal_type" ("SALES_PRICE", "REGULAR_PRICE", "RECOMMENDED_RETAIL_PRICE", "OTHER") should be created for each price in the image.
+For one price, 2 or more "deals" can be created only if the image contains two or more products at the same price.
+The number of "deal" in the "main_format" must be the same as "deals" in the "additional_format".
+The "product_brand" value in "main_format" must match the "brand" value in "additional_format".
+The "product_description" value in "main_format" must match the "product_description" value in "additional_format".
+The "product_name" value in "main_format" must match the "name" value in "additional_format".
+It is strictly forbidden to write the name of the product in the "deal_description" if there is only one product in the offer (one product name).
 
-# Instructions for "main_format":
-If the text of the offer contains any type of quotation marks (for example: '„ “'), then they should be replaced with '\\\"'.
-Clearly define how many prices and products there are in the offer, and create a "deal" for each price and product.
-Each "deal" should have its own key, for example "deal_1", "deal_2", "deal_3" and so on.
-Information about a particular product should be recorded in the "deal_description" of the relevant "deal".
-The "product_description" cannot contain the words from "product_name", "product_brand" and "deal_pricebybaseunit".
-"product_name" cannot contain the words from "product_description" and "product_brand".
-"product_brand" cannot contain the words from "product_name" and "product_description".
-The unit size (e.g. "1L Packung", "je 100 g", "ca 20 x 20 cm") should be written in the "product_description".
-Description of the product discount (for example: “-47%”, "-5€", "67% SPAREN", "AKTION -27%", "Sie sparen 55%", "26% gespart","Aktionspreis 6.99") be sure to ignore and do not write “main_format” in any of the parameters.
-"product_name" can be taken only from the description on the image, not from the packaging or photo of the product itself.
-The "deal_type" can acquire only such values: "SALES_PRICE", "REGULAR_PRICE", "RECOMMENDED_RETAIL_PRICE", "OTHER".
-If the offer contains the "uvp" price characteristic, then it is "deal_type": "RECOMMENDED_RETAIL_PRICE".
-If the offer contains an old price (crossed out or with the "statt" characteristic), then this is the "deal_type": "REGULAR_PRICE.
-"deal" with "deal_type": "REGULAR_PRICE" and "RECOMMENDED_RETAIL_PRICE" cannot have a lower value in "deal_maxPrice" and "deal_minPrice" than "deal_maxPrice" and "deal_minPrice" in "deal" with "deal_type": "SALES_PRICE" of the same offer.
-The description of the date should be written in the "deal_description" field of the "deal" with the "deal_type": "SALES_PRICE".
-"product_name" always has a value.
-The size of the token must be written in "product_description".
-"deal_description" cannot contain a price and "product_description".
-"deal_loyaltycard" can only have "true" or "false" values.
-"product_sku" is the serial number of the product.
-For "product_product_category", define a product category like Google product category does.
-For "product_product_category", the result must be in German language.
-"deal_frequency" always has the value "ONCE".
-If the image contains the validity period of the deal the validity period of the deal (e.g. "ab Donnerstag, 1.2"), it should be written in the "deal_description".
-"deal_pricebybaseunit" must contain only the price by base unit (e.g. "1 l = € 1,33", "(1 kg = 11,84/ATG)", "5,20/Liter").
-The "deal_maxPrice" and "deal_minPrice" entry must always follow the format f"{value:.2f}".
-
-# Instructions for "additional_format":
-If the text of the offer contains any type of quotation marks (for example: '„ “'), then they should be replaced with '\\\"'.
-The "product_description" cannot contain the words from "name", "brand" and "price_by_base_unit".
-"name" cannot contain the words from "product_description" and "brand".
-"brand" cannot contain the words from "name" and "product_description".
-The "name" cannot be duplicated in the "deal_description".
-"name" always has a value.
-"name" can be taken only from the description on the image, not from the packaging or photo of the product itself.
-"is_product_family", "loyalty_card", "is_deal_family" can only have "true" or "false" values.
-The "additional_format" array can contain several products and several deals.
-If each product has two prices, then two "deals" are required for each product.
-The "price_type" can acquire only such values: "SALES_PRICE", "REGULAR_PRICE", "RECOMMENDED_RETAIL_PRICE", "OTHER".
-If the offer contains the "uvp" price characteristic, then it is "price_type": "RECOMMENDED_RETAIL_PRICE".
-If the offer contains an old price (crossed out or with the "statt" characteristic), then this is the "price_type": "REGULAR_PRICE.
-"deal" with "price_type": "REGULAR_PRICE" and "RECOMMENDED_RETAIL_PRICE" cannot have a lower value in "pricing" than "pricing" in "deal" with "price_type": "SALES_PRICE" of the same offer.
-The description of the date should be written in the "deal_description" field of the "deal" with the "price_type": "SALES_PRICE".
-"unit_size" must contain only the size information (volume, weight, lenghts, etc.) of a single unit (e.g. "1L Packung", "je 100 g", "ca 20 x 20 cm").
-"type" can only have "SALES" by default.
-"bundle_size" must contain only the size information about the bundle (e.g. "Kasten = 12 x 1L").
-"deposit" must include only the deposit costs (e.g. 'zzgl. 4.50 Pfand').
+### Instructions for "additional_format":
+The "price_type" can acquire only such values: "SALES_PRICE", "REGULAR_PRICE", "RECOMMENDED_RETAIL_PRICE", "OTHER"."
+"type" can only have "SALES" or "BUNDLE". "BUNDLE" - only if there are two or more products in the offer at the same price.
+"bundle_size" must contain only the size information about the bundle (for example: "Kasten = 12 x 1L").
+"deposit" must include only the deposit costs (for example: 'zzgl. 4.50 Pfand').
 "terms_and_conditions" must contain only the terms and conditions to activate the discounted price.
-"validity_period" must contain only the validity period of the deal (e.g. "ab Donnerstag, 1.2").
-"price_by_base_unit" must contain only the price by base unit (e.g. "1 l = € 1,33", "(1 kg = 11,84/ATG)", "5,20/Liter").
-"discount" must contain only the description of the discount or remuneration (e.g. "Sie sparen 50%", "-50%").
-An offer can include a product family (e.g. a furniture collection, a product sold in different variations of sizes, colors, etc.) and may contain:
-- General information about the product family.
-- Specific information about the member products belonging to the product family.
-In this case:
-- Add the product family as an individual product and set "is_product_family" to true.
-- If there is a price applied to the entire product family (e.g. collection "ab 99.99"), 
-  add an individual family deal applied to only the product family and set "is_deal_family" to true.
-Ensure that when there is a product family with N member products, the "products" array contains 1 family item and N member items.
+"validity_period" must contain only the validity period of the deal (for example: "ab Donnerstag, 1.2").
+"price_by_base_unit" must contain only the price by base unit (for example: "1 l = € 1,33", "(1 kg = 11,84/ATG)", "5,20/Liter").
+"discount" must contain only the description of the discount or remuneration (for example: "Sie sparen 50%", "-50%").
 The "pricing" entry must always follow the format f"{value:.2f}".
-If offer has a discount (for example: "-47%", "-5€", "67% SPAREN", "AKTION -27%", "Sie sparen 55%", "26 gespart", "Aktionspreis 6.99"), be sure to include it in additional_format in discount.
 
+### Instructions for "main_format".
 # General instructions:
-The number of "deal" in the "main_format" must be the same as in the "additional_format".
-The description of the possibility of ordering goods online (for example: "nur online", "auch online".) should be recorded in the "deal_description".
-The output json should contain only the text that is present in the input image in its original form, without changes or additions.
-All information present in the image should be written to the appropriate json parameters.
-If there is no data for the parameter, then indicate "Null".
-The value "Null" must always be capitalized.
+If the text of the offer contains any type of quotation marks (for example: '„ “'), then they should be replaced with '\\\"'.
+If there is no data for the parameter, then indicate "Null". The value "Null" must always be capitalized.
+The "product_description" cannot contain the words from "product_name", "product_brand" and "deal_pricebybaseunit".
 If the input text has not been assigned to any of the parameters, it should be written in "product_description".
+"product_name" cannot contain the words from "product_description" and "product_brand".
+"product_name" always has a value.
+"product_brand" cannot contain the words from "product_name" and "product_description".
 The text from the image must be clearly written into the corresponding parameter without errors.
 It is forbidden to add text to the json that is not in the image.
 The word "Aktion" and "KNALLER" do not refer to any parameter and should be ignored.
 The input text should be written grammatically correct in German, even if there are errors in the input text. Pay particular attention to broken words and hyphens.
 When writing information to the "product_description" parameter, each new line must be shifted in accordance with the information in the image, the shift should be marked with the symbol "\n".
+If the offer contains information about the country of origin, this information should be included in the "product_description".
+The description of the product discount (for example: "-47%", "-5€", "Sie sparen 0.70", "66% SPAREN", "38% gespart".) should be ignored and not written to any of the "main_format" parameters.
+The "deal_type" can acquire only such values: "SALES_PRICE", "REGULAR_PRICE", "RECOMMENDED_RETAIL_PRICE", "OTHER".
+"deal" with "deal_type": "REGULAR_PRICE" and "RECOMMENDED_RETAIL_PRICE" cannot have a lower value in "deal_maxPrice" and "deal_minPrice" than "deal_maxPrice" and "deal_minPrice" in "deal" with "deal_type": "SALES_PRICE" of the same offer.
+"deal_loyaltycard" can only have "true" or "false" values.
+"product_sku" is the serial number of the product.
+"product_sku" cannot be duplicated in the "product_description".
+For "product_product_category", define a product category like Google product category does.
+For "product_product_category", the result must be in German language.
+"deal_frequency" always has the value "ONCE".
+"deal_conditions" must contain only the terms and conditions to activate the discounted price.
+"deal_pricebybaseunit" must contain only the price by base unit (for example: "1 l = € 1,33", "(1 kg = 11,84/ATG)", "5,20/Liter").
+The "deal_maxPrice" and "deal_minPrice" entry must always follow the format f"{value:.2f}".
+All information contained in the offer description must be written to the appropriate json parameters.
+Descriptive characteristics of a product, such as geographic origin, quality, or product features, should not be confused with brand names, as they are general attributes rather than unique identifiers of a particular brand.
 
-# High priority Instructions for "main_format" and "additional_format":
-The output json should not contain syntax errors.
-The values and words of one of the json parameters cannot be repeated in other json parameters.
-Instructions for "main_format" cannot be applied to Instructions for "additional_format".
+# Instructions for offers where deal with "deal_type": "REGULAR_PRICE" is present:
+If the offer contains an old price (crossed out or with the "statt" characteristic), then this is the "deal_type": "REGULAR_PRICE.
 
+# Instructions for offers where deal with "deal_type": "RECOMMENDED_RETAIL_PRICE" is present:
+If the offer contains the "uvp" or crossed out uvp price characteristic, then it is "deal_type": "RECOMMENDED_RETAIL_PRICE".
+
+# Instructions for deal with "deal_type": "OTHER":
 # Instructions for Additional offer:
-All information about Additional offer (for example: "Gegen Mehrpreis: Sitz- und Rückenheizung 356,-, motor. Kopfteilverstellung 221,-, außenliegender Akku mit Ladestation 403,-, Überzug für Akku in Leder 100,-, sowie große Stoff- und Lederauswahl") then this information including the price of the Additional offer should be written in the "deal_description" of the "deal" where the "deal_type": "OTHER" and "price_type": "OTHER" is present.
+All information about Additional offer (for example: "Gegen Mehrpreis: Sitz- und Rückenheizung 356,-, motor. Kopfteilverstellung 221,-, außenliegender Akku mit Ladestation 403,-, Überzug für Akku in Leder 100,-, sowie große Stoff- und Lederauswahl", "Gegen Mehrpreis: Bettkasten, Motorverstellung") then this information including the price of the Additional offer should be written in the "deal_description" of the "deal" where the "deal_type": "OTHER" and "price_type": "OTHER" is present.
 Additional offer is always present.
 "deal" with "deal_type": "OTHER" and "price_type": "OTHER" cannot have a values in "deal_maxPrice", "deal_minPrice" and "pricing" .
-The output json must always contain "deal" with "deal_type": "OTHER" and "price_type": "OTHER".
+
+"deal_description" can only contain:
+- the description of the possibility of ordering goods online (for example: "nur online", "auch online".),
+- the validity period of the deal (e.g. "ab Donnerstag, 1.2")
+
+The "product_description" CANNOT contain information that is present in other json parameters.
+IMPORTANT RULE: A unit price value, for example: "(1 kg = 13.09)", "1 kg = 4.28", "1 l = € 1.33", "1 kg = 11.84/ATG", "5.20/Liter", CANNOT be recorded in the "product_description".
+
+### FINAL CHECK:
+Check the text on the image for the description "Gegen Mehrpreis: ...". If it is present, the following must be created in the output json deal with "deal_type": "OTHER".
 
 """
 
@@ -9004,6 +8802,8 @@ input text
 
 # Instructions :
 "product_name" always has a value.
+It is forbidden to write the words from "product_name" in "product_description".
+The "product_description" cannot contain information related to the "product_name" or "deal_pricebybaseunit".
 In the "product_name" parameter, the product name must be written in full.
 Extract "deal_pricebybaseunit" from text segments containing only the price by base unit in the format <base-unit> = <price> or similar (for example, 1 l = € 1.50, Le kg : 5,20 €, 9,95 € le kg).
 The quantity of the product, such as weight or volume (ml, l, g, kg), is always recorded in the "product_description".
@@ -9014,49 +8814,35 @@ It is forbidden to write "deal" without numbering, always follow the numbering, 
 If there is no data for the category, then indicate Null.
 For "product_product_category", define a product category like Google product category does.
 For "product_product_category", the result must be in French language.
-"is_product_family", "loyalty_card", "is_deal_family" can only be a value "True" or "False"."
-If the offer mentions any loyalty program compte, cagnoté, prix déduit, Prix payé en caisse, Prix carte, Sans carte, then "deal_loyaltycard" should be set to True.
+"deal_loyaltycard" can only be a value Null or Yes.
+If the offer mentions any loyalty program compte, cagnoté, prix déduit, Prix payé en caisse, Prix carte, Sans carte, then "deal_loyaltycard" should be set to Yes.
 The value of one json parameter cannot be repeated in another json parameter.
-In additional_format the  "type" can acquire only such values: SALES.
+The "deal_type" can acquire only such values: REGULAR.
  **Filter for Discount Percentages**: Any values with a discount in percentage (e.g., "-20%", "50% de réduction") or a specific amount (e.g., "-5€") **must be ignored and excluded** from all JSON parameters, especially from "deal_conditions" and "deal_description".
 Age ratings (including toys) should be placed in "product_description", EXAMPLE ("à partir de 3 ans", "Dès 3 ans" , "Dès 6 mois")
-To "deal_description", certain terms of the deal are attributed, such as "Le moins cher".  This information should be recorded in "deal_conditions":
-If there is an entry in product_name, it is in no case allowed to duplicate the same value in product_description.
-Always write "Null" with a capital letter
-"deal_frequency" always has the value "ONCE".
-"deal_conditions" must contain only the terms and conditions to activate the discounted price.
-"deal_description" can only contain:
-- the description of the possibility of ordering goods online (for example: "nur online", "auch online".),
-- the validity period of the deal (e.g. "ab Donnerstag, 1.2")
+To "deal_description", certain terms of the deal are attributed, such as "Le moins cher".  This information should be recorded in "deal_conditions’:
 
 # general conditions :
-- The product name cannot be included in the product description.
-- To “deal_description” certain deal terms are attributed, such as “Le moins cher”. This information should be recorded in “deal_conditions”.
-- Sometimes the deal description is cut out: ie. For “-50% sur le 2e” Al puts “sur le 2e” in “deal_conditions”, whereas the full offer should be in “deal_description”.
-- Age grades (including toys) should be placed in “product_description”, ie. “à partir de 3 ans” .
-- All offers where there is only one price will have deal_type: regular.
-- the full offer should be in the "deal_description" field (for example: "-50% sur le 2e:"), but then you do not need to duplicate it in deal_conditions and write only null
+1. The product name cannot be included in the product description.
+2. To “deal_description” certain deal terms are attributed, such as “Le moins cher”. This information should be recorded in “deal_conditions”.
+3. Sometimes the deal description is cut out: ie. For “-50% sur le 2e” Al puts “sur le 2e” in “deal_conditions”, whereas the full offer should be in “deal_description”.
+4. Age grades (including toys) should be placed in “product_description”, ie. “à partir de 3 ans” .
+5. All offers where there is only one price will have deal_type: regular.
+6. the full offer should be in the "deal_description" field (for example: "-50% sur le 2e:"), but then you do not need to duplicate it in deal_conditions and write only null
 
 
 
 #main_format:
-- deal with minPrice and maxPrice should always be the same
-- Data such as litsre and grams (e.g. 1 litre = € 1,50, Le kg : 5,20 €, 9,95 € le kg). must not be in product_description
-- In no case should the name of the product be recorded in the "Product_Description"
-- "product_description" cannot contain the words from "product_name", "product_brand" and "deal_pricebybaseunit".
-- "product_name" cannot contain the words from "product_description" and "product_brand".
-- "product_brand" cannot contain the words from "product_name" and "product_description".
-- deal_description cannot contain a price
-- at the very end, when everything is generated, check yourself again and remove the product name from the description IMPORTANT
+1. deal with minPrice and maxPrice should always be the same
+2. Data such as litre and grams (e.g. 1 litre = € 1,50, Le kg : 5,20 €, 9,95 € le kg). must not be in product_description
+3. In no case should the name of the product be recorded in the "Product_Description"
 
 
 # Check at the end:
 1. At the very end, cross-check that no words or phrases from "product_name" appear in "product_description". This is critical for accuracy.
-2. After generating the JSON, remove any words from "product_name" if they appear in "product_description". Make sure they do not appear, even if partially matched IMPORTANT.
-3. Check if the description contains words from the product name
+2. After generating the JSON, remove any words from "product_name" if they appear in "product_description". Make sure they do not appear, even if partially matched.
 
-
-
+### at the very end, when everything is generated, check yourself again and remove the product name from the description
 
 
 """ 
@@ -9217,25 +9003,25 @@ Provide your answer in pure JSON format, without any additional explanation such
 - Deals should always be numbered (e.g., deal_1, deal_2).
 - Use "Null" if no data is available for a category.
 - Use French for "product_Product_category" (Google category style).
-- "deal_loyaltycard" can only be "False" or "True".
+- "deal_loyaltycard" can only be "Null" or "Yes".
 - Age ratings (including toys) should be placed in "product_description", EXAMPLE ("à partir de 3 ans", "Dès 3 ans" , "Dès 6 mois")
-- deal_description cannot contain a price with tax "1.91€ TTC"
-- always write "Null" with a capital letter
+
+
 
 # Important Points:
-- If loyalty terms (e.g., "compte", "cagnoté", "prix déduit") are mentioned, set "deal_loyaltycard" to "True".
+- If loyalty terms (e.g., "compte", "cagnoté", "prix déduit") are mentioned, set "deal_loyaltycard" to "Yes".
 - Ensure unique values for each JSON parameter.
 - **"deal_type" can only be "REGULAR_PRICE" and "SALES_PRICE**.
 
 ### Important Notes:
 1. **Prices without Tax (HT)**:
-   - Prices without tax (HT) should **never** be included in any deal or separate entry IMPORTANT.
+   - Prices without tax (HT) should **never** be included in any deal or separate entry.
    - If the HT price is crossed out, **it must be completely ignored** and should **not** be recorded anywhere in the data, including in the `deal_conditions`, `product_description`, or any other fields.
    - **Do not create a separate deal for the HT price**, even if it is crossed out.
 
 2. **Prices with Tax (TTC)**:
    - Prices with tax (TTC) should always be recorded in the deal as the **main price** under the `SALES_PRICE` deal type.
-   
+   - The price with tax (TTC) must be displayed in the `deal_description` field as the main price.
 
 
 # general conditions :
@@ -9246,42 +9032,33 @@ Provide your answer in pure JSON format, without any additional explanation such
 5. All offers where there is only one price will have deal_type: regular.
 6. If there is a crossed-out price, it must be recorded in a separate deal with the REGULAR type 
 7. The main price is always a separate deal with the REGULAR_PRICE type
-8. IMPORTANT ALWAYS The price without tax (HT) must be written in the product_description at the end of the description add (example: "Ouverture frontale. Structure rigide. Compartiment renforcé. <"old crossed out price without tax"99€HT>, <price without tax88€HT> Taille IATA. 452356 ")
+8. IMPORTANT ALWAYS The price without tax (HT) must be written in the product_description at the end of the description add (example: "Ouverture frontale. Structure rigide. Compartiment renforcé. 99€ (HT) Taille IATA. 452356 ")
 11.  just the crossed out price is recorded in a separate deal_type REGULAR_PRICE
     -the price that is not crossed out should go to SALES_PRICE 
 12. The "deal_description" describes the terms of the deal, e.g. "Offre valable sur le moins cher" if any.  This information must be complete and recorded in the "deal_description" field.
-13. the full offer should be in the "deal_description" field (for example: "-50% sur le 2e:"), but then you do not need to duplicate it in deal_conditions and write only Null
+13. the full offer should be in the "deal_description" field (for example: "-50% sur le 2e:"), but then you do not need to duplicate it in deal_conditions and write only null
 14. add in deal_conditions all wthat under or near price
-16 in Deal conditions cannot contain information about the price without tax (43.29 €HT)
-17. in deal_description if price with tax or not tax  (for example:"1.91€ TTC","3.00€HT") need to record only "TTC" or "HT" without number
-18. DONT CREATE DEAL WITH PRICE HT
-
+16 in Deal conditions cannot contain information about the price without tax (HT)
+17 Ignore crossed-out prices**: Do not write down crossed-out prices anywhere
 
 #main_format:
 1. deal with minPrice and maxPrice should always be the same
 2. Unit prices (e.g: "(1 kg = 13.09)", “1 kg = 4.28”, “1 l = € 1.33”, “1 kg = 11.84/ATG”, “5.20/Liter”, “(1 kg = 11.99)”,"1 Liter = 25.98") **are not recorded and should be ignored when filling in "product_description "**.
-3. Never record in deal price HT 
-4. Record in deal only TTC price 
 
 ### Instructions 2:
 -always check whether the price without TTC tax is correct
--always check that the price without tax is indicated in the product_description(for example: "Inner and outer polypropylene. metal fittings. 8 cm diameter.   <"price excluding tax" 1.59€HT>, <“crossed out price” 43.29€HT">) and always indicate the price with HT in triangular brackets
+-always check that the price without tax is indicated in the product_description (for example: "Intérieur et extérieur polypropylène. Renfort métal. Dos 8 cm. 485189/485146/485138/485170/485162. 1€59 (HT)",
 -Never record two different prices in one deal 
 -If you have a price with TTC tax, you should only write it to REGULAR_PRICE and ignore all references to the HT price.
 - **Deal numbering**: Each deal should be numbered in the format `deal_1`, `deal_2`, etc., when applicable.
 - **Price with tax (TTC)**: If the price includes tax (TTC), it should always be recorded as a `REGULAR_PRICE` deal.
 - **Household price without tax (HT)**: 
   - If the price without tax is crossed out, it must be completely ignored and not recorded.
-  - If the price without tax contains the letters HT, then this price should not be recorded in the deal
-  - Always indicate the price, the crossed-out price excluding tax and the price excluding tax in the product description (for example: "Inner and outer polypropylene. metal fittings. 8 cm diameter.   <"price excluding tax" 1.59€HT>, <“crossed out price” 43.29€HT>") and always indicate the price with HT in brackets 
 - **Product Description**:
   - Never repeat the product name in the `product_description`.
 - **Deal Conditions**: 
+  - Complete offers should be recorded in `deal_description`.
   - If there’s an age rating (e.g., "à partir de 3 ans"), it should be placed in `product_description`.
- "price_type" can only have "SALES" or "BUNDLE". "BUNDLE" - only if there are two or more products in the offer at the same price.
-
-### Check yourself
-- Never make up data yourself
 
 """
 
@@ -9507,7 +9284,6 @@ If the offer includes terms related to loyalty programs like "compte," "cagnoté
 Values in one JSON parameter should not duplicate in another.
 Adhere strictly to the example structure.
 "deal_type" can only be "SALES_PRICE" or "REGULAR_PRICE."
-the discounted price will always be SALES_PRICE 
 min and max price must always be specified and must be the same for each deal
 Unit prices (for example: "Le kg : 24.94 €", "(1 kg = 13.09)", “1 kg = 4.28”, “1 l = € 1.33”, “1 kg = 11.84/ATG”, “5.20/Liter”, “(1 kg = 11.99)”,"1 Liter = 25.98") **are not recorded and should be ignored when filling in "product_description "**.
 it is important to write the price for for two unit (for example:"soit l'unite") in the SALES deal and one unit (for example:"Les 2 : 17,98 € au lieu de 23,98 €"  in deal_conditions) in REGULAR
@@ -9518,11 +9294,7 @@ each individual deal must be recorded in a separate deal_1 and deal_2
 
 
 """ 
-# do not indicate the price that is the total price for two products if it is deal_3, just ignore it and do not write deal_3
-#indicate only the price for one product and the price of the product that will cost at a discount  
 
-# The "deal_description" is used to describe the terms of the deal, for example, "Offre valable sur le moins cher".  This information must be complete and recorded in the "deal_conditions"
-# To "deal_description", certain terms of the deal are attributed, such as "Le moins cher".  This information should be recorded in "deal_conditions":
 price_reduced_on_the_n_th_product_only_client_ocr = (
 
     """
@@ -9713,8 +9485,8 @@ If the category is unknown, use "Null" for "product_product_category."
 Set "product_product_category" as a French-language Google product category.
 The "deal_loyaltycard" can only be "Null" or "Yes."
 Age ratings (including toys) should be placed in "product_description", EXAMPLE ("à partir de 3 ans", "Dès 3 ans" , "Dès 6 mois")
-The "deal_description" is used to describe the terms of the deal, for example, "Offre valable sur le moins cher".  This information must be complete and recorded in the "deal_conditions"
-the full offer should be in the "deal_description" field (for example: "-50% sur le 2e:"), but then you do not need to duplicate it in deal_conditions and write only Null
+ The "deal_description" is used to describe the terms of the deal, for example, "Offre valable sur le moins cher".  This information must be complete and recorded in the "deal_conditions"
+the full offer should be in the "deal_description" field (for example: "-50% sur le 2e:"), but then you do not need to duplicate it in deal_conditions and write only null
 
 
 Instructions 2:
@@ -9731,12 +9503,6 @@ if offer has loyalty card record "yes" in loyalty_card
 Always check if you have a loyalty card 
 The price without a loyalty card is recorded in a transaction of the REGULAR type, and the price with a loyalty card is recorded in a separate transaction of the SALE type.
 Each deal moust be in separate deal_n
-in deals in additional_format type must be SALES_PRICE
-text like be Carte U déduits and so on must be in deal_condition
-always indicate the unit (for example: "Le kg : 24.94 €") price in the deal_pricebybaseunit 
-in is_deal_family do not write ‘no’, write ‘not’
-the deal_description cannot contain the price for the product (for example:"2€73 le lot"), put it in Null 
-
 
 
 """ 
@@ -10255,7 +10021,7 @@ The "deal_type" can only have the value "OTHER."
 "deal" entries with "deal_type": "OTHER" cannot include values for "deal_maxPrice" or "deal_minPrice."
 Check if you have filled in deal_conditions correctly
 """ 
-# INSTRUCTION 1:  
+
 
 offer_without_price_client_ocr = (
 
@@ -11149,7 +10915,9 @@ Your answer should be strictly in JSON format, with no additional annotations. A
           ]
     }
 }
-### Instructions for "main_format".
+
+Instructions 1:
+
 "product_name" must always have a value.
 Avoid including "product_name" words in "product_description."
 "product_description" should not contain details that relate to "product_name" or "deal_pricebybaseunit."
@@ -11162,57 +10930,21 @@ If there’s no category data, use "Null" for "product_product_category."
 "product_product_category" should follow Google product category guidelines and be in French.
 "deal_loyaltycard" should be "Null" or "Yes."
 Age ratings (including toys) should be placed in "product_description", EXAMPLE ("à partir de 3 ans", "Dès 3 ans" , "Dès 6 mois")
-The "deal_description" is used to describe the terms of the deal, for example, "Offre valable sur le moins cher".  This information must be complete and recorded in the "deal_conditions"
-Record only the prices explicitly stated in the text. Do not generate or estimate any prices not present in the source material.
-min and max price always should be identical
-each deal_id should be always record in separate deal in main_forman (for example:"deal_1",deal_2" and so on)
-Each deal should always display all prices available on the text.
+ The "deal_description" is used to describe the terms of the deal, for example, "Offre valable sur le moins cher".  This information must be complete and recorded in the "deal_conditions"
+the full offer should be in the "deal_description" field (for example: "-50% sur le 2e:"), but then you do not need to duplicate it in deal_conditions and write only null
+
+Instructions 2:
+
 If multiple prices or sizes appear in the text, each should have a separate "deal" entry within a single JSON response.
 Set "deal_loyaltycard" to "Yes" if loyalty terms like "compte," "cagnoté," "prix déduit" appear.
 Ensure each parameter value is unique to its assigned field.
 Follow the structure and details in the examples without deviation.
-"deal_type" should only be "REGULAR_PRICE","SALES_PRICE" or "OTHER."
+"deal_type" should only be "REGULAR_PRICE," or "OTHER."
 "deal_type" "OTHER" must not contain "deal_maxPrice" or "deal_minPrice."
 For prices referring to the same product (different sizes, adult/junior), combine them within one JSON. Do not split into separate JSONs.
-check if all the available prices from the page have been fixed accurately.
 
 
-# instructions for offer with several products and with loyalty card **:
-price with a card is always written to the SALES_PRICE type price without a card is always in REGULAR 
-write in the condition "Prix Carte" if there is a loyalty card, and "Sans carte" if there is not, BUT only if there was at least one card in the total offerer.
-always write down each deal in a separate deal IMPORTANT
-always check whether you have used all possible prices on the page and recorded them in a separate deal IMPORTANT
-deal_conditions and deal_description must be filled in only TTC price
-# instructions for loyalty program: with a discount from the store **: 
-1. **Prices without Tax (HT)**:
-   - Prices without tax (HT) should **never** be included in any deal or separate entry.
-   - If the HT price is crossed out, **it must be completely ignored** and should **not** be recorded anywhere in the data, including in the `deal_conditions`, `product_description`, or any other fields.
-   - **Do not create a separate deal for the HT price**, even if it is crossed out.
-
-2. **Prices with Tax (TTC)**:
-   - Prices with tax (TTC) should always be recorded in the deal as the **main price** under the `SALES_PRICE` deal type.
-   - The price with tax (TTC) must be displayed in the `deal_description` field as the main price.
-
--always check whether the price without TTC tax is correct
--always check that the price without tax is indicated in the product_description(for example: "Inner and outer polypropylene. metal fittings. 8 cm diameter.   ("price excluding tax" 1.59€HT), (“crossed out price” 43.29€HT)") and always indicate the price with HT in brackets
--Never record two different prices in one deal 
--If you have a price with TTC tax, you should only write it to REGULAR_PRICE and ignore all references to the HT price.
-- **Deal numbering**: Each deal should be numbered in the format `deal_1`, `deal_2`, etc., when applicable.
-- **Price with tax (TTC)**: If the price includes tax (TTC), it should always be recorded as a `REGULAR_PRICE` deal.
-- **Household price without tax (HT)**: 
-  - If the price without tax is crossed out, it must be completely ignored and not recorded.
-  - Always indicate the price, the crossed-out price excluding tax and the price excluding tax in the product description (for example: "Inner and outer polypropylene. metal fittings. 8 cm diameter.   ("price excluding tax" 1.59€HT), (“crossed out price” 43.29€HT)") and always indicate the price with HT in brackets 
-   IMPORTANT ALWAYS The price without tax (HT) must be written in the product_description at the end of the description add (example: "Ouverture frontale. Structure rigide. Compartiment renforcé. ("old crossed out price without tax"99€HT), (price without tax88€HT) Taille IATA. 452356 ")
-- **Product Description**:
-  - Never repeat the product name in the `product_description`.
-- **Deal Conditions**: 
-  - Complete offers should be recorded in `deal_description`.
-  - If there’s an age rating (e.g., "à partir de 3 ans"), it should be placed in `product_description`.s
-the discounted price from the store will be SALES_PRICE and the old price will be REGULAR_PRICE
-the deal_description and deal_conditions fields in the deal must always be filled in
 """ 
-
-
 
 
 other_types_client_ocr = (

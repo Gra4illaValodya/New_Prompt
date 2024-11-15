@@ -1,10 +1,10 @@
 import openai
 import base64
 import re
-from text_prompts_txt import multiple_offers_with_uvp            
+from text_prompts_txt import one_price              
  
 openai.api_type = "azure"
-openai.api_version = "2023-05-15"   
+openai.api_version = "2023-05-15"       
 openai.api_base = "https://bonial-openai-test-004.openai.azure.com/"
 openai.api_key = "3d337d2d785d4840b9ae45ebfc4faee5"
 
@@ -16,7 +16,7 @@ def convert_image_to_base64(image_path):
 def is_url(image_path):
 
     return bool(re.match(r'^(http|https)://', image_path))
-    
+
 def chat_with_gpt4(prompt, image_path, model="bonial-gpt-4o", max_tokens=4096):
     try: 
 
@@ -54,23 +54,32 @@ def chat_with_gpt4(prompt, image_path, model="bonial-gpt-4o", max_tokens=4096):
         print(f"Prompt tokens: {prompt_tokens}")
         print(f"Completion tokens: {completion_tokens}")
         print(f"Total tokens: {total_tokens}")
-
+    
         return response.choices[0].message['content'].strip()   
     except Exception as e:      
         return f"Error: {e}"    
 
 
 
-prompt = multiple_offers_with_uvp
+prompt = one_price
 
-image_path = "https://content-media.bonial.biz/441a7e7d-cb62-4b09-96f2-c46515ab5406/main.jpg"
-#image_path = "vine__.jpg"
+image_path = "https://content-media.bonial.biz/3232b170-eed3-4960-b482-c28e683e40f3/main.jpg"
+#image_path = "vine__.jpg"          
+response = chat_with_gpt4(prompt, image_path)           
+print(response)     
 
-response = chat_with_gpt4(prompt, image_path)
-print(response) 
+#FR``
+# one_price
+# one_old_and_one_new_price
+# price_reduced_on_the_n_th_product_only
+# one_price_with_and_one_price_without_the_card
+# money_spared_on_the_card
+# offer_without_price
+# offer_without_price_loyalty_card
+# size_chart
+# other_types
 
 #DE
-
 # simple_offers
 # two_products_in_one_offer
 # one_product_with_coupon
@@ -96,9 +105,7 @@ print(response)
 # stocks
 # several_products_with_different_prices
 
-#FR
-#one_price
-#one_old_and_one_new_price
+
 
 
    

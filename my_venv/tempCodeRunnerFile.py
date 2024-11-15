@@ -1,1 +1,1 @@
-two_products_in_one_offer
+image_path = "https://content-m
