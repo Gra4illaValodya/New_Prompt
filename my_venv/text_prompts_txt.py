@@ -9004,8 +9004,10 @@ input text
 
 # Instructions :
 "product_name" always has a value.
+If the text of the offer contains any type of quotation marks (for example: '„ “'), then they should be replaced with '\\\"'.
 In the "product_name" parameter, the product name must be written in full.
 Extract "deal_pricebybaseunit" from text segments containing only the price by base unit in the format <base-unit> = <price> or similar (for example, 1 l = € 1.50, Le kg : 5,20 €, 9,95 € le kg).
+Rule: "deal_pricebybaseunit" can have a value only if the word "Soit" is specified before the unit price (should be complete, for example: "Soit 23,34 € le kg, Soit le L : 10,35 €"), if this word is missing, specify the value "Null".
 The quantity of the product, such as weight or volume (ml, l, g, kg), is always recorded in the "product_description".
 The input text should be written grammatically correct in French, even if there are errors in the input text.
 Pay particular attention to broken words and hyphens.
@@ -9048,7 +9050,8 @@ Always write "Null" with a capital letter
 - "product_brand" cannot contain the words from "product_name" and "product_description".
 - deal_description cannot contain a price
 - at the very end, when everything is generated, check yourself again and remove the product name from the description IMPORTANT
-
+The "deal_maxPrice" and "deal_minPrice" entry must always follow the format f"{value:.2f}".
+The "deal_maxPrice" and "deal_minPrice" prices should be the same in a particular deal.
 
 # Check at the end:
 1. At the very end, cross-check that no words or phrases from "product_name" appear in "product_description". This is critical for accuracy.
@@ -9205,6 +9208,7 @@ Provide your answer in pure JSON format, without any additional explanation such
 }
 
 ### Instructions 1:
+- If the text of the offer contains any type of quotation marks (for example: '„ “'), then they should be replaced with '\\\"'.
 - "product_name" always has a value and cannot appear in "product_description".
 - "product_description" cannot contain information related to "product_name" or "deal_pricebybaseunit".
 - Avoid repeating words from "product_name" in "product_description."
@@ -9221,6 +9225,9 @@ Provide your answer in pure JSON format, without any additional explanation such
 - Age ratings (including toys) should be placed in "product_description", EXAMPLE ("à partir de 3 ans", "Dès 3 ans" , "Dès 6 mois")
 - deal_description cannot contain a price with tax "1.91€ TTC"
 - always write "Null" with a capital letter
+- dont record sku number in "product_description" and always write this in "product_sku" (for example:"485189/485146/485138/485170/485162.") 
+= if there is a TTC in the description, it should be written in deal_description, but if there is no TTC dont write this
+- if text has "Dont éco. contribution : 0,12€TTC" you want to be ignored and record Null
 
 # Important Points:
 - If loyalty terms (e.g., "compte", "cagnoté", "prix déduit") are mentioned, set "deal_loyaltycard" to "True".
@@ -9475,35 +9482,46 @@ Your answer should be purely in JSON, without any additional explanation or code
 
 ### Instructions 1:
 
+
 "product_name" must always have a value.
-Avoid repeating words from "product_name" in "product_description."
-"product_description" should not include data related to "product_name" or "deal_pricebybaseunit."
 Ensure "product_name" has the complete product name.
 Extract "deal_pricebybaseunit" only from segments containing the base unit price in the format <base-unit> = <price>, like "1 l = € 1.50," "Le kg : 5,20 €," or "9,95 € le kg."
 Data such price as litre and grams (e.g. 1 litre = € 1,50, Le kg : 5,20 €, 9,95 € le kg). must not be in product_description
+Avoid repeating words from "product_name" in "product_description."
+"product_description" cannot contain information related to "product_name" or "deal_pricebybaseunit".
 "product_description" should always include product quantity, like weight or volume (e.g., ml, l, g, kg).
+Any unassigned input data should go in "product_description."
+Age ratings (including toys) should be placed in "product_description", EXAMPLE ("à partir de 3 ans", "Dès 3 ans" , "Dès 6 mois")
+in main_format product_description should be has full descriptions about all price
+All available prices on the page should be displayed in the product_description. This will provide complete information, exclude only those prices if these prices are already in the deal_minPrice or deal_maxPrice fields. Include all prices in the product_description for a detailed description of each product.
 Ignore discounts (e.g., -13%, -5€, 2ème à - 50%) for all JSON parameters.
 Ensure French language accuracy, correcting broken or hyphenated words.
-Any unassigned input data should go in "product_description."
 record each individual "deal" sequentially (for example: "deal_1", "deal_2", "deal_3").
 If the category is unknown, use "Null" for "product_product_category."
 Set "product_product_category" as a French-language Google product category.
-The "deal_loyaltycard" can only be "Null" or "Yes."
-Age ratings (including toys) should be placed in "product_description", EXAMPLE ("à partir de 3 ans", "Dès 3 ans" , "Dès 6 mois")
+The "deal_loyaltycard" can only be "True" or "False."
 The price for one item should be recorded in a separate transaction (deal_1) with the REGULAR type, and the price for several items should be recorded in a separate transaction (deal_2) with the SALE type.
 The "deal_description" is used to describe the terms of the deal, for example, "Offre valable sur le moins cher".  This information must be complete and recorded in the "deal_conditions"
 write the unit price (for example: "soit l'unite") in regular and the discounted price (for example: "les 2") in sales
 record baseunit (for example:"soit le kg:10.77") in deal_pricebybaseunit
 in deal_conditions record only condition not full text and full text should be record in deal_description
 for each deal, the conditions should be recorded in separate deals (for example: "deal_1_conditions: les 2", "deal_2_conditions: soit l'unite")
-in main_format product_description should be has full descriptions about all price
-if deal_conditions and deal_description are duplicated, then write null in deal_description 
+if deal_conditions and deal_description are duplicated, then write "Null" in deal_description 
 if product_brand is (for example:"PAIC","kinder") then "product_name": (for example:"Exel","bueno") and so on
-All available prices on the page should be displayed in the product_description. This will provide complete information, exclude only those prices if these prices are already in the deal_minPrice or deal_maxPrice fields. Include all prices in the product_description for a detailed description of each product.
 
+- MAIN_FORMAT only the text below the product_name is written to the product_description, other text is ignored
+- always record descriptions in  deal_description if it exist otherwise null
+- "deal_frequency" always has the value "ONCE".
+- If the text of the offer contains any type of quotation marks (for example: '„ “'), then they should be replaced with '\\\"'.
+- IMPORTANT "price_type" can only have "SALES" or "BUNDLE". "BUNDLE" - only if there are two or more products in the offer at the same price.
+- all parameters that are empty or "" should always be written as Null
+- "is_product_family", "loyalty_card", "is_deal_family" can only have "true" or "false" values.
+- The "deal_maxPrice" and "deal_minPrice" entry must always follow the format f"{value:.2f}".
+- The "deal_maxPrice" and "deal_minPrice" prices should be the same in a particular deal.
+- IMPORTANT price per unit of measurement (for example: Le kg : 6,67 €, l) cannot be in product_descriptions
 ### Instructions 2:
-
-If the offer includes terms related to loyalty programs like "compte," "cagnoté," "prix déduit," "Prix payé en caisse," "Prix carte," or "Sans carte," set "deal_loyaltycard" to "Yes."
+p
+If the offer includes terms related to loyalty programs like "compte," "cagnoté," "prix déduit," "Prix payé en caisse," "Prix carte," or "Sans carte," set "deal_loyaltycard" to "True."
 Values in one JSON parameter should not duplicate in another.
 Adhere strictly to the example structure.
 "deal_type" can only be "SALES_PRICE" or "REGULAR_PRICE."
@@ -9515,6 +9533,7 @@ Be sure to record the price for one item and the price for multiple items in a s
 indicate only the price for one product and the price of the product that will cost at a discount
 if the deal_conditions contains the condition in a complete phrase , only in this case you need to write null in the deal_description
 each individual deal must be recorded in a separate deal_1 and deal_2
+
 
 
 """ 
@@ -9711,7 +9730,7 @@ Any unassigned input data should go in "product_description."
 Number each "deal" sequentially (e.g., deal_1, deal_2, deal_3).
 If the category is unknown, use "Null" for "product_product_category."
 Set "product_product_category" as a French-language Google product category.
-The "deal_loyaltycard" can only be "Null" or "Yes."
+ The "deal_loyaltycard" can only be "True" or "False."
 Age ratings (including toys) should be placed in "product_description", EXAMPLE ("à partir de 3 ans", "Dès 3 ans" , "Dès 6 mois")
 The "deal_description" is used to describe the terms of the deal, for example, "Offre valable sur le moins cher".  This information must be complete and recorded in the "deal_conditions"
 the full offer should be in the "deal_description" field (for example: "-50% sur le 2e:"), but then you do not need to duplicate it in deal_conditions and write only Null
@@ -9944,7 +9963,7 @@ Any unassigned input data should go in "product_description."
 Number each "deal" sequentially (for example: "deal_1", "deal_2", "deal_3").
 If the category is unknown, use "Null" for "product_product_category."
 Set "product_product_category" as a French-language Google product category.
-The "deal_loyaltycard" can only be "Null" or "Yes."
+ The "deal_loyaltycard" can only be "True" or "False."
 Age ratings (including toys) should be placed in "product_description", EXAMPLE ("à partir de 3 ans", "Dès 3 ans" , "Dès 6 mois")
 the price with the loyalty card should be recorded in the deal_n with deal_type SALE, and the price without the loyalty card should be recorded in a separate deal_n with deal_type REGULAR
  The "deal_description" is used to describe the terms of the deal, for example, "Offre valable sur le moins cher".  This information must be complete and recorded in the "deal_conditions"
@@ -10242,7 +10261,7 @@ Ensure French language accuracy, correcting broken or hyphenated words.
 Any unassigned input text should go in "product_description."
 If the category is unknown, use "Null" for "product_product_category."
 Set "product_product_category" as a French-language Google product category.
-The "deal_loyaltycard" can only be "Null" or "Yes."
+ The "deal_loyaltycard" can only be "True" or "False."
 Age ratings (including toys) should be placed in "product_description", EXAMPLE ("à partir de 3 ans", "Dès 3 ans" , "Dès 6 mois")
 The "deal_description" is used to describe the terms of the deal, for example, "Offre valable sur le moins cher".  This information must be complete and recorded in the "deal_conditions"
 the full offer should be in the "deal_description" field (for example: "-50% sur le 2e:"), but then you do not need to duplicate it in deal_conditions and write only null

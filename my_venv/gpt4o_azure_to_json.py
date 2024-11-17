@@ -1,7 +1,7 @@
 import openai
 import base64
 import re
-from text_prompts_txt import one_price              
+from text_prompts_txt import price_reduced_on_the_n_th_product_only              
  
 openai.api_type = "azure"
 openai.api_version = "2023-05-15"       
@@ -38,7 +38,7 @@ def chat_with_gpt4(prompt, image_path, model="bonial-gpt-4o", max_tokens=4096):
                                "type": "image_url",
                                "image_url": {
                                    "url": image_data
-                               }
+                               }    
                            }
                        ]
                        }
@@ -50,7 +50,7 @@ def chat_with_gpt4(prompt, image_path, model="bonial-gpt-4o", max_tokens=4096):
         prompt_tokens = response.usage.prompt_tokens
         completion_tokens = response.usage.completion_tokens
         total_tokens = response.usage.total_tokens
-
+    
         print(f"Prompt tokens: {prompt_tokens}")
         print(f"Completion tokens: {completion_tokens}")
         print(f"Total tokens: {total_tokens}")
@@ -61,12 +61,12 @@ def chat_with_gpt4(prompt, image_path, model="bonial-gpt-4o", max_tokens=4096):
 
 
 
-prompt = one_price
+prompt = price_reduced_on_the_n_th_product_only
 
-image_path = "https://content-media.bonial.biz/3232b170-eed3-4960-b482-c28e683e40f3/main.jpg"
+image_path = "https://content-media.bonial.biz/a0dbfb7d-6713-4a4e-aa23-2a5c456d6a06/main.jpg"
 #image_path = "vine__.jpg"          
 response = chat_with_gpt4(prompt, image_path)           
-print(response)     
+print(response)      
 
 #FR``
 # one_price
