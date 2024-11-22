@@ -1,7 +1,7 @@
 import openai
 import base64
 import re
-from text_prompts_txt import offer_without_price              
+from text_prompts_txt import offer_without_price
  
 openai.api_type = "azure"   
 openai.api_version = "2023-05-15"       
@@ -46,7 +46,7 @@ def chat_with_gpt4(prompt, image_path, model="bonial-gpt-4o", max_tokens=4096):
             max_tokens=max_tokens,
             temperature=0.1
         )
-
+        
         prompt_tokens = response.usage.prompt_tokens
         completion_tokens = response.usage.completion_tokens
         total_tokens = response.usage.total_tokens
@@ -60,32 +60,24 @@ def chat_with_gpt4(prompt, image_path, model="bonial-gpt-4o", max_tokens=4096):
         return f"Error: {e}"    
 
 
-
 prompt = offer_without_price
-
-image_path = "https://content-media.bonial.biz/5a65acdb-308f-465b-b647-a8ac5c59fdd2/main.jpg"
+image_path = "https://content-media.bonial.biz/0e3ab1e9-ee76-4f4e-9633-71b6e68929e3/main.jpg"
 #image_path = "vine__.jpg"
-response = chat_with_gpt4(prompt, image_path)           
-print(response)         
+response = chat_with_gpt4(prompt, image_path)                    
+print(response)
 
-# 1. https://content-media.bonial.biz/f925444b-e918-46e5-9b38-c7cfb17bce0c/main.jpg
-#     1. https://content-media.bonial.biz/803f40b6-5c80-47af-8240-3fdd329b3138/main.jpg
+# 1. https://content-media.bonial.biz/985ec85e-0c15-43a6-a99b-acd118acb711/main.jpg
+# 2. https://content-media.bonial.biz/9eeece72-a98f-416e-acb9-bc9752d49679/main.jpg
+# 3. https://content-media.bonial.biz/4fde78af-7974-4cf2-ba2b-614fc4d8da53/main.jpg
+# 4. https://content-media.bonial.biz/884938b5-d236-4e1e-b484-5d55851b6d1f/main.jpg
+# 5. https://content-media.bonial.biz/f3ed4bba-f6be-4a62-aac8-3a517c87c110/main.jpg
+# 6. https://content-media.bonial.biz/9c251ae2-83eb-459c-a1a2-637f78c0ff65/main.jpg
+# 7. https://content-media.bonial.biz/fedd7564-245a-4c73-b335-5abb36689a19/main.jpg
+# 8. https://content-media.bonial.biz/b555dc79-bcb6-4d54-ac4a-03a54c14a74e/main.jpg  ——
+# 9. https://content-media.bonial.biz/bdcaa722-35ad-4e57-8d3d-b395fcdd436b/main.jpg
+# 10. https://content-media.bonial.biz/f0eb8fae-02bc-4fd2-bb5e-2fe0debfa928/main.jpg
 
-# 2. https://content-media.bonial.biz/4f233637-fa7a-4422-94e6-088e0f87fce4/main.jpg
 
-# 3. https://content-media.bonial.biz/5a65acdb-308f-465b-b647-a8ac5c59fdd2/main.jpg
-  
-# 4. https://content-media.bonial.biz/5d53ca31-70d8-4915-bc02-3ddc2bca9210/main.jpg
-
-# 5. https://content-media.bonial.biz/1737d220-528f-4103-8b39-47dcfc753019/main.jpg
-
-# 6. https://content-media.bonial.biz/e2f80ea4-efe4-48ff-b8d9-9d18b025c532/main.jpg
-
-# 7. https://content-media.bonial.biz/b135847e-224e-4d5a-990c-1269dc40de55/main.jpg
-
-# 8. https://content-media.bonial.biz/e36faeec-3e78-4e94-8aff-75149aaf0dfd/main.jpg
-
-# 9. https://content-media.bonial.biz/0e24b535-05e8-4c03-8170-6ec0f368739a/main.jpg
 #FR
 # one_price
 # one_old_and_one_new_price
