@@ -54,28 +54,31 @@ def chat_with_gpt4(prompt, image_path, model="bonial-gpt-4o", max_tokens=4096):
         print(f"Prompt tokens: {prompt_tokens}")
         print(f"Completion tokens: {completion_tokens}")
         print(f"Total tokens: {total_tokens}")
+        print(f"URL : {image_path}")
     
         return response.choices[0].message['content'].strip()   
     except Exception as e:      
         return f"Error: {e}"    
 
-
 prompt = size_chart
-image_path = "https://content-media.bonial.biz/ec808ec8-191a-44c0-8dbe-f793fc96e80f/main.jpg"
-#image_path = "vine__.jpg"
+image_path = "https://content-media.bonial.biz/71629c21-ca73-42c6-896c-e2dbcfd4d443/main.jpg"
+#image_path = "vine__.jpg"˜
 response = chat_with_gpt4(prompt, image_path)                    
 print(response)
 
-    # 1. https://content-media.bonial.biz/ec808ec8-191a-44c0-8dbe-f793fc96e80f/main.jpg
-    # 2. https://content-media.bonial.biz/b2580888-4eb3-403e-b543-be1400b11588/main.jpg
-    # 3. https://content-media.bonial.biz/38190d46-b241-4017-85f2-0b2b43173b94/main.jpg
-    # 4. https://content-media.bonial.biz/b889484d-7dcd-41d2-ae8b-973db1646bd6/main.jpg
-    # 5. https://content-media.bonial.biz/8ac819fe-2aac-46bb-9092-d39625525563/main.jpg  тут що б не робив 1 діл не дораховує 
-    # 6. https://content-media.bonial.biz/fedbced9-b555-4d7a-bb4c-a84c5daexc4c4/main.jpg
-    # 7. https://content-media.bonial.biz/69c53b29-6087-4194-8884-d2dda11f1889/main.jpg
-    # 8. https://content-media.bonial.biz/8985d082-baa2-4ed7-8899-dee33a56fdc7/main.jpg
-    # 9. https://content-media.bonial.biz/8dd07775-9721-442e-9eb0-8abeca92d055/main.jpg
-    # 10. https://content-media.bonial.biz/0609ba05-52d1-4fd4-819f-67a0051a7267/main.jpg.      
+
+
+
+
+
+
+
+
+
+
+
+
+        
 #FR
 # one_price
 # one_old_and_one_new_price

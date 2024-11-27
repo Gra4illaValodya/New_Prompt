@@ -1907,7 +1907,7 @@ Your answer should be in JSON only "```json":
 }
 ### INCTRUCTIONS FOR GENERAL:
 
-
+= The "product_name" must always have a value.
 - Record "deal_pricebybaseunit" based only on exact formats like "<base-unit> = <price>" (e.g., "1 l = € 1.50").
 - Include quantity (e.g., ml, l, g, kg) in "product_description."
 - Correct any French grammar errors in the text, even if the original has mistakes.
@@ -1932,13 +1932,13 @@ Your answer should be in JSON only "```json":
 - The "deal_maxPrice" and "deal_minPrice" entry must always follow the format f"{value:.2f}".
 - The "deal_maxPrice" and "deal_minPrice" prices should be the same in a particular deal.
 - The "deal_maxPrice" and "deal_minPrice" must be recorded as a price per unit 
-- "type" can only have "SALES" by default.
+- "type" in additional_format can only have "SALES" by default.
 - in "deal_pricebybaseunit" cannot contain value in the "deal_maxPrice" and "deal_minPrice"
 - if "deal_description" and "deal_conditions" repead then you need record null in "deal_conditions"
 - All null must be Null with capitalize first later
 - if there is no loyalty card for the price, then deal_loyaltycard is always False
 - IMPORTANT in "product_brand", "product_description" , "product_name" cannot have the same values
-- cyrrency always € not EUR
+- currency always € not EUR
 - deal_description (from exmaple: "-30% de remise immédiate") with discount record only in deal_type "SALES_PRICE"
 - if "product_brand" and "product_name" identical  you need record in "product_brand" value "Null"
 - always for each price it is necessary to create a new deal_1 deal_2 and so on
@@ -1954,40 +1954,90 @@ Your answer should be in JSON only "```json":
 - After processing all the products, check that all items are numbered from 1 to the total number of products in the image, without gaps.
 - Ensure all items are individually recorded, even if they share similar or identical prices. Each item must be treated as a separate deal, with unique entries for each size or price, to account for every item individually.
 - "Record only the prices explicitly stated in the text. Do not generate or estimate any prices not present in the source material. If a price is missing, set the value to 'Null' instead of creating a new price."
+- that there can be more than 10 prices and you MUST write them all down in separate deal
+- Specify the price per roll, set, or bag in the maxPrice and minPrice fields ( for example:"39€50","39€92") Record the price per square meter, cubic meter, or kilogram in the deal_pricebybaseunit field ( for example:"le m² 6€58","le m² 13€86").. Ensure each field contains the correct price information.
+- Do not create separate deals for the price per kg, m² or m³. These prices should be recorded in the deal_pricebybaseunit field, not in separate transactions. Make sure that these prices are only listed in the deal_pricebybaseunit field and not duplicated in other fields or deals.
+- If there are several deals with the deal_pricebybaseunit field filled in, create only those deals. If a deal has a Null deal_pricebybaseunit field, exclude it from the general list of deals if there are other deals with these fields filled in. However, if all deals have a Null deal_pricebybaseunit field, create all deals without exception.
+- IMPORTANT: Never write the deal_pricebybaseunit value into maxPrice or minPrice. These fields are for the total product price, while deal_pricebybaseunit is strictly for unit-based pricing.
 
-
-> that there can be more than 10 prices and you MUST write them all down in separate deal
-> in "deal_pricebybaseunit" need to record "58,93 € le m²"
-> in deal_conditions cannot contain price number only "l'unité" and so on
-> in deal_description need to record size "220 x 12 cm. Ep. 19mm" and so on
 
 ### INCTRUCTIONS FOR discount:
 - Do not record discounts (like -13%, -5€, 2ème à -50%) in any JSON parameter except the discount field.
 
+
 ### INCTRUCTIONS FOR product_description:
-= The "product_name" must always have a value.
+
+- IMPORTAN in product_description cannot feed values from deal_pricebybaseunit
 - Avoid duplicating words from "product_name" in "product_description."
 - "product_description" should not contain details related to "product_name" or "deal_pricebybaseunit."
 - Text not assigned to specific parameters should go in "product_description."
-- IMPORTANT price per unit of measurement (for example: Le kg : 6,67 €, l) cannot be in product_descriptions
+- IMPORTANT price per unit of measurement (for example: Le kg : 6,67 €, l, 87 40mm) cannot be in product_description
+- remove information about the diameter and degrees from product_description
 
 ### INCTRUCTIONS FOR deal_description:
 - always record descriptions in  deal_description if it exist otherwise null
-- IMPORTAN in product_description cannot feed values from deal_pricebybaseunit
-- in "deal_description" connot contain price
-- - if there are different dimensions (for example:"À partir de 35€ La valise 65 cm","À partir de 65€ La valise 85 cm"), all of them must be entered in the deal_description
+- this information ("Réduction excentrée 100-40","Coude male 87° 40","é égal femelle 87° 40") must be in deal_description
+- in "deal_description" cannot contain price
+- always ignored price in deal_description
+- in deal_description need to record size "220 x 12 cm. Ep. 19mm" and so on
+- always write the dimensions in the deal_description
+- text must be same dimensions different (but not always)
+- if not information write Null
+- It is IMPORTANT to write only dimensions without unnecessary text
+- exclude text "La valise 75 cm" in deal_description,  leave only 75 cm
+- if there is a capacity (3 L, 10 L, 30 L) and a diameter (Ø 60x47 cm, Ø 80x66 cm, Ø 44x53 cm), then the capacity should be written and the diameter should be written in deal_deascription , output must be (3 L, Ø 60x47 cm)
+- always if there are dimensions, specify them in each deal in deal_description
+
 
 ### INCTRUCTIONS FOR deal_conditions:
-- if the condition always record in "deal_conditions"
+- if the condition always record in "deal_conditions" 
+- in deal_conditions cannot contain price number only "l'unité" and so on
+- information dont repeat in deal_description
+- if not information write Null
+- exclude text "le kg" shoud be write Null
+- IMPORTANT, if there is no explicit condition, we do not write the text (“l'unité”) in deal_conditions, but write Null, we write it only when the text (“l'unité”) is explicitly specified, we write it in deal_conditions
+
+
+### INCTRUCTIONS FOR deal_pricebybaseunit:
+- In the deal_pricebybaseunit field, record the value 58,93 € le m. Ensure that this value is properly stored and displayed in the specified field.
+- IMPORTANT ALWAYS if there is an offer with a filled deal_pricebybaseunit, then other deals that do not have a deal_pricebybaseunit should be excluded 
 
 ### Check yourself 
-- IMPORTANT Always check all the prices on the offer and always put each price in a separate deal 
+- IMPORTANT Always check all the prices on the offer and always put each price in a separate deal, except for prices per kilogram m2 m3
+- Check if you accidentally wrote the price in a separate deal that should be in deal_pricebybaseunit
 - check only in "deals" froms "additional_format" in "type" field should contain only the value  "SALES" not "SALES_PRICE"
 - check in "price_type" must be only value "SALES_PRICE" or "REGULAR_PRICE" not "REGULAR"
 - if there are many sizes, then you need to look at each of them carefully and write down each one and do not need to generate anything yourself
 - spend a little more time, but check all the dimensions again and write them down carefully in separate deal
 - you often miss some deals 
 - always write down the age category if it is in the "deal_description" not "product_description"
+- check that the price  (À partir de 35€) is excluded from the deal_description
+- check that the full text record in  deal_description
+- Check that the number of deals in the array is correct. Remember:
+  A deal is defined as a unique combination of price and size.
+  The price can repeat, but each size must be unique for that price.
+  If the price is the same but the sizes are different, they should be counted as separate deals.
+  Return the exact number of unique deals by checking both parameters: price and size.
+- Check if text information is missing about (l'unité,le kg) then write  Null in deal_conditions
+- Please note that if the prices are the same but have different sizes, they all need to be recorded in separate deals
+- please note to whether there is a text ("l'unité") on the offer, if so, write it down in deal_conditionst
+- always please note to whether you have recorded all possible options for recording in separate deals
+- IMPORTANT: never miss offers with the same prices
+- please make sure that the product_name and product_description are not repeated
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 """ 

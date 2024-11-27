@@ -1,2 +1,1 @@
-biz/9eeece72-a98f-416e-acb9-bc9752d49679/main.jpg
-# 3. https://content-media.bonial.
+https://content-media.bonial.biz/b889484d-7dcd-41d2-ae8b-973db1646bd6/main.jpg
