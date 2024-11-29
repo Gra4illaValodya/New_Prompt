@@ -1,7 +1,7 @@
 import openai
 import base64
 import re
-from text_prompts_txt import size_chart
+from text_prompts_txt import one_old_and_one_new_price
  
 openai.api_type = "azure"   
 openai.api_version = "2023-05-15"       
@@ -60,22 +60,20 @@ def chat_with_gpt4(prompt, image_path, model="bonial-gpt-4o", max_tokens=4096):
     except Exception as e:      
         return f"Error: {e}"    
 
-prompt = size_chart
-image_path = "https://content-media.bonial.biz/71629c21-ca73-42c6-896c-e2dbcfd4d443/main.jpg"
-#image_path = "vine__.jpg"˜
+prompt = one_old_and_one_new_price
+image_path = "https://content-media.bonial.biz/8384861d-6a36-42bd-9578-6548c3000a3e/main.jpg"
+#image_path = "vine__.jpg"˜e
 response = chat_with_gpt4(prompt, image_path)                    
-print(response)
 
 
 
 
 
-
-
-
-
-
-
+# 1. https://content-media.bonial.biz/571cdfca-9cad-4c6c-a1d8-e9ca6753aa19/main.jpg — цей якись заглючений
+# 2. https://content-media.bonial.biz/bdf807a3-379c-48d5-a230-6659821c0c24/main.jpg
+# 3. https://content-media.bonial.biz/2e515d10-c5a9-4ddf-8812-7f7983a43fe0/main.jpg
+# 4. https://content-media.bonial.biz/c6552e4b-a73d-4684-af7e-c00cee0f918f/main.jpg
+# 5. https://content-media.bonial.biz/c7b603da-16f4-42db-acf1-44914d7b0b7c/main.jpg
 
 
         
