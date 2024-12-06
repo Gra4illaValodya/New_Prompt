@@ -47,13 +47,17 @@ def chat_with_gpt4(prompt, image_path,  model="bonial-gpt-4o", max_tokens=4096):
 
 prompt = one_old_and_one_new_price
 
-image_path = "https://content-media.bonial.biz/6d48e46c-7e2c-4a3c-951a-e9c376d2e722/main.jpg"
+image_path = "https://content-media.bonial.biz/00797340-4897-47da-bace-3bcc114ca2ae/main.jpg"
 
 response = chat_with_gpt4(prompt, image_path)
 
 print(response) 
 
-
+ 
+# https://content-media.bonial.biz/c851eeca-517e-45c6-b727-781943f6e159/main.jpg
+# https://content-media.bonial.biz/00797340-4897-47da-bace-3bcc114ca2ae/main.jpg
+# https://content-media.bonial.biz/cf785f31-0068-48e8-a821-260f54d3f0f5/main.jpg
+# https://content-media.bonial.biz/6d48e46c-7e2c-4a3c-951a-e9c376d2e722/main.jpg
 
 # one_old_and_one_new_price
 #     1. https://content-media.bonial.biz/0e24b535-05e8-4c03-8170-6ec0f368739a/main.jpg

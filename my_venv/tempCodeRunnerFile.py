@@ -1,2 +1,1 @@
-essage['content'].strip()
-    except Exception as e:
+- if "deal_conditions" has value ("Le L","Le lot au choix","Le produit") you need ALWAYS IMMEDIATELY delete ("Le L","Le lot au choix","Le produit") in other deal_condition from REGULAR_PRICE

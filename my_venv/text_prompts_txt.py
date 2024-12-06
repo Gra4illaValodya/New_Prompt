@@ -415,8 +415,7 @@ All information must be in its respective fields:Size: Record only in unit_size.
 - If there’s an age rating (e.g., "à partir de 3 ans"), it should be placed in `product_description`.
 - ALWAYS exclude  TTC value from the "deal_description" if it is nowhere IMPORTANT
 - always ignore the discount in the deal_description section if it is present: “4€ de remise immédiate”, "1€ de remise immédiate", "34% de remise immédiate" and write the discount in the discount field
-
-
+- if TTC cannot contain in page immediately exclude from deal_description
 
 ### INSTRUCTION FOR deal_pricebybaseunit:
 - IMPORTANT When the unit price (liter or kilogram) is listed directly below the main price: Check whether the base unit information (e.g. “Le L : 18.95€”) is located directly next to the main price If this is the case, only write the base unit in deal_conditions, for example: “deal_conditions": “Le L”. Do not add anything to the deal_pricebybaseunit field.
@@ -438,6 +437,7 @@ All information must be in its respective fields:Size: Record only in unit_size.
 - No value in deal_conditions and deal_pricebybaseunit can duplicate information about displacement, weight, or minPrice and maxPrice.
 - if the deal_pricebybaseunit contains the total weight for the product, then it should first be in REGULAR_PRICE
 - If both fields contain the same information (for example, “Le L” in deal_conditions and “Le L : 18.95 €” in deal_pricebybaseunit), only one field remains: deal_conditions with a unit of measure (for example:“Le L”) only in one group of conditions and **IMPORTANT ALWAYS Null in the other.**
+- IMPORTANT If only one base unit (for example:"Le kg : 27.91 €") in offer she must to write only in  deal_pricebybaseunit in "REGULAR_PRICE"
 
 ### INSTRUCTION FOR discount:
 - Ignore discounts in all parameters except “discount” (for example: "-13%", "-5€", "from 2 to -50%").
@@ -452,7 +452,10 @@ All information must be in its respective fields:Size: Record only in unit_size.
 - If the condition (for example: “le product”) appears in SALES_PRICE, remove it from REGULAR_PRICE (by setting it to “Null”), but keep it in SALES_PRICE if it is present on the offer.
 - Exclude (le produit) from REGULAR_PRICE
 - there cannot be a duplicate deal (for example: “Le L”,"Le produit") in “deal_conditions” (there can be only one, then it must be included immediately before generating JSON)
--if there is such text under the price in SALES_PRICE (for example: “Le lot au choix”, "Le L"), then it should be written only in the condition to SALES_PRICE 
+- if there is such text under the price in SALES_PRICE (for example: “Le lot au choix”, "Le L" and so on), then it should be written only in the condition to SALES_PRICE  and IMPORTANT write Null in REGULAR_PRICE!
+- For each deal, if the condition is a SALES_PRICE and contains specific text (e.g., 'Le lot au choix'), write it in deal_conditions for SALES_PRICE, and set deal_conditions to Null for REGULAR_PRICE in the same set of deals."
+- You can implement this by ensuring that for each pair of deal_1 and deal_2, if deal_conditions for SALES_PRICE contains "Le lot au choix", you remove it from deal_conditions for the REGULAR_PRICE.
+- if in  deal_pricebybaseunit is exist (for example:"9.90 € le kg","6.53 € le kg") you must exclude all information about base unit from "deal_conditions" (for example:"Le kg") and write Null
 
 ### HIGHT PRIORITY INSTRUCTIONS:
 - Leave only deals with “deal_description”: “TTC”.
@@ -462,19 +465,19 @@ All information must be in its respective fields:Size: Record only in unit_size.
 - there can be no identical conditions in two deals 
 - If “deal_conditions” and “deal_pricebybaseunit” occur simultaneously in one deal: “Le L” and "deal_pricebybaseunit": “Le L : 18.95 €”, then you need to leave only deal_conditions
 - ALWAYS, if the offer does not contain prices with TTC tax, immediately exclude them from the deal_description
-- IMPORTANT Write words such as (“les 2”, “Les 2 pour”, “soit la bouteile”, “la barquette”, “le product”, “les 3 pour”, “Vendu seul”, “le lot" and so on) in deal_conditions but it is important that there is only one deal_condition in one deal_condition instead of repetitions write Null
+- IMPORTANT Write words such as (“les 2”, “Les 2 pour”, “soit la bouteile”, “la barquette”, “le product”, “les 3 pour”, “Vendu seul”, “le lot","Le produit" and so on) in deal_conditions but it is important that there is only one deal_condition  in one deal_condition in SALES_PRICE  instead of repetitions write Null
 
 
 ### Check yourself:
 - IMPORTANT delete extra deal with information about price or crossed out price (HT) and leave only TTC
 - ALWAYS if the offer has more than 2 prices (regular_price and sales_price), they also need to be recorded
 - always check the correctness of the discount in euros, especially in the following cases (1€ de remise immédiate )
-- IMPORTANT always check whether it is necessary to record information about “<1.59€HT>”, “<43.29€HT>” in product_description sometimes you do not add the correctly crossed out price from HT or add it where there are no prices from HT at all
-- IMPORTANT: check whether the offer contains information about taxes, if not, then exclude all references to the information from the product_description “<1.59 €HT>”, “<43.29 €HT>” 
+- IMPORTANT: always check whether you need to write information about “<1.59 €HT>”, “<43.29 €HT>” in the product_description sometimes you do not add a correctly crossed out HT price or add it where there are no HT prices at all
+- IMPORTANT: check if the offer contains information about taxes, if not, immediately remove all references to information from the product_description “<1.59 €HT>”, “<43.29 €HT>” 
 - IMPORTANT if there is a discount, be sure to record it in the sales price discount
 - IMPORTANT: if there is no HT price, exclude data from product_description 
 - IMPORTANT never create another deal if be in the offer price taxes TTC!
-- IMPORTANT never include a price with “TTC” tax in the deal_de description if it does not exist 
+- IMPORTANT never specify a price with “TTC” tax in the deal_description, it will immediately exclude it from the listing if it does not exist 
 - never write to the TTC if there is no tax on the offer price, instead write Null
 - always only write in deal_deascription if there is a TTC price 
 - IMPORTANT Always add a base unit if it is available and does not interfere with other rules
@@ -487,8 +490,9 @@ All information must be in its respective fields:Size: Record only in unit_size.
 - IMPORTANT: make sure that the product_description contains all prices without HT tax, if there are such prices (“<1.59 €HT>”, “<43.29 €HT>”) immediately add them to the product_description and only then generate JSON 
 - if not TTC in the page you need to exclude all information from deal_description about TTC
 - if in page exist base unit (“Le kg : 27.91 €”) immediately write information about base unit in "deal_pricebybaseunit" field
-- if "deal_conditions" has value "Le L" you need ALWAYS IMMEDIATELY delete "Le L" in other deal_condition
- 
+- if  SALES_PRICE "deal_conditions" has value ("Le L","Le lot au choix","Le produit") you need ALWAYS IMMEDIATELY delete ("Le L","Le lot au choix","Le produit") in REGULAR_PRICE deal_condition
+- if there are several base units for each deal on the page, you must write each to its own type in SALES_PRICE and REGULAR PRICE in deal_pricebybaseunit and exclude them from deal_conditions
+
  
 
 
