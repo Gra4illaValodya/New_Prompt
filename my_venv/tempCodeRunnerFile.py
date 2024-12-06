@@ -1,1 +1,1 @@
-- if "deal_conditions" has value ("Le L","Le lot au choix","Le produit") you need ALWAYS IMMEDIATELY delete ("Le L","Le lot au choix","Le produit") in other deal_condition from REGULAR_PRICE
+https://content-media.bonial.biz/0ca99942-cc94-4da7-9585-0e8104646281/main.jpg
