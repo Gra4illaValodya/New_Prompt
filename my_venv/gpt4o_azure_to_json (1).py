@@ -50,8 +50,15 @@ prompt = other_types
 image_path = "https://content-media.bonial.biz/63b20a99-2bff-477d-9d0d-a1568e633f72/main.jpg"
 
 response = chat_with_gpt4(prompt, image_path) 
-
+ 
 print(response)     
+
+# loyalty program: with a discount from the store
+# 1. https://content-media.bonial.biz/ecd523ca-e31b-445b-9f9e-f62de6252130/main.jpg
+# 1. https://content-media.bonial.biz/b72f94a7-1002-479f-ae75-993b3724a865/main.jpg
+# 2. https://content-media.bonial.biz/65b8e869-865e-4c9b-ad5b-aa0e8406e3ec/main.jpg
+# 3. https://content-media.bonial.biz/892beb4c-0bcd-44bb-86f9-b0c762186df4/main.jpg
+# 4. https://content-media.bonial.biz/1238de9e-5a23-4d8f-990d-1f1a96b74d51/main.jpg
 
 # scene with different product and price :
 # 1. https://content-media.bonial.biz/1017da95-fa90-4e8f-985e-48856f7e7f17/main.jpg
@@ -88,12 +95,7 @@ print(response)
 # 4. https://content-media.bonial.biz/5809b76c-3070-48c6-9ce2-fc46fcc8e7cb/main.jpg
 # 5. https://content-media.bonial.biz/9428911a-f6b4-4eb0-aa7e-8e2da71c419d/main.jpg
 
-# loyalty program: with a discount from the store
-# 1. https://content-media.bonial.biz/ecd523ca-e31b-445b-9f9e-f62de6252130/main.jpg
-# 1. https://content-media.bonial.biz/b72f94a7-1002-479f-ae75-993b3724a865/main.jpg
-# 2. https://content-media.bonial.biz/65b8e869-865e-4c9b-ad5b-aa0e8406e3ec/main.jpg
-# 3. https://content-media.bonial.biz/892beb4c-0bcd-44bb-86f9-b0c762186df4/main.jpg
-# 4. https://content-media.bonial.biz/1238de9e-5a23-4d8f-990d-1f1a96b74d51/main.jpg
+
 
 # offer with several products and with loyalty card :
 # 1. https://content-media.bonial.biz/571cdfca-9cad-4c6c-a1d8-e9ca6753aa19/main.jpg 
