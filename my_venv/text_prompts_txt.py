@@ -2832,32 +2832,22 @@ Your answer should be purely json, without any additional explanation such as "`
 - Never repeat the product name in the `product_description`.
 - If there’s an age rating (e.g., "à partir de 3 ans"), it should be placed in "product_description".
 - The discounted price from the store will be SALES_PRICE and the old price will be REGULAR_PRICE
+- The deal_description and deal_conditions fields in the deal must always be filled in
 - IMPORTANT all deal must be in separate deal
 - Always write down the age category if it is in the "deal_description" not "product_description"
-- in product_description cannot contain information about   price and information about base unit ("Le produit de 426 g")
 - Text (for example:"Sans carte","Prix Carte") must be only in deal_condition and exclude from deal_description
 - The product name and product size is written only in SALES_PRICE in deal_description otherwise write Null
 - Always check that all deal have been included
 - There can't be only two deals
-- Always write ("Prix avant remise") if this exist in offer
+- IMPORTANT Always write deal_conditions text about loyalty carte ("Prix Carte","Sans carte")  if it exist 
 - if not exist information about loyalty carte IMPORTANT you need to write Null  but if exist you need to record relevant value
-- IMPORTANT exclude deal_pricebybaseunit
-- deal_description cannot contain information about price
-- IMPORTANT add each price to a separate transaction (“Soit 70.01”, “Soit 62.25”, etc.)
-- EXCLUDE (soit 70,01 € le carton and so on) from all deal_description
-- if the price is 33.90, write Null to price_by_base_unit which is equal to “le m² = 33.90”
-- write (“Prix Carte”, “Sans carte”) in deal_conditions where there is a loyalty card
-- in one deal group SALES_PRICE and REGULAR_PRICE there can be only one unique value in deal_description (“Porte de douche pivotante 90 cm”, “Porte pivotante + paroi” and so on) all other repetitions must be equal to Null.
-- You cannot repeat the text in DEAL_DEASCRIPTION more than once
-- IMPORTANT if there is no description for deal_description, then you do not need to write anything but Null
-- always enter the condition whether the card is loyalty or not 
-- if there is text in the deal_deascription in REGULAR_PRICE (for example: “2 têtes”, “3 têtes”, “1 têtes”), then it should be left in REGULAR_PRICE and should be excluded from SALES_PRICE and not written in the deal_description SALES_PRICE
-- IMPORTANT deal_description in SALES_PRICE must be Null 
-- EXCLUDE ALL INFORMATIONN ABOUT price with (HT) FROM product_description offer with several products and with loyalty card 
-- IMPORTANT if there is a value in deal_descriptions in REGULAR_PRICE, be sure to remove this value from SALES_PRICE if it is identical and replace it with Null
 - Data cannot be repeated in product_name product_brand product_description deal_conditions deal_description
 
 ### instructions for SCENE WITH DIFFERENT PRODUCT AND PRICE **:
+- in product_description we write only the description of the general offer and the description of the individual product should be written in deal_description 
+- The text written in the deal_description for deals with the “REGULAR_PRICE” type cannot be written in the deal_description for deals with the “SALES_PRICE” type, and vice versa.
+- If duplication is detected, replace the deal_description for one of the deals with “Null”.
+- “SALES_PRICE” deal_description  must be Null
 - IMPORTANT If there is a scene of products, then you need to write each product into a separate deal with the SALES_PRICE type
 - always write down every price that is clearly on the page and do not come up with your own 
 - There can be no loyalty card in a scene with a different product and price
@@ -2868,6 +2858,14 @@ Your answer should be purely json, without any additional explanation such as "`
 - description about product should be only in deal_description in REGULAR_PRICE
 - IMPORTANT ALWAYS description about product should be only in deal_description in REGULAR_PRICE exclude and delete from deal_description in SALES_PRICE 
 - Data cannot be repeated in product_name product_brand product_description deal_conditions deal_description
+- conditions  "Prix avant remise" must be write only in REGULAR_PRICE
+- In product_description, we write only the description of the general offer. Any specific details about an individual product, such as size, weight, or additional characteristics, must be recorded in deal_description.
+- Ensure that product_description does not duplicate content from deal_description or deal_conditions.
+- If the description of the individual product is missing, leave the product_description field blank or write "Null."
+- If there are multiple products in an offer, their specific details should each correspond to separate deals and must be recorded individually in deal_description.
+- Do not include pricing or discount information in product_description; this information belongs in deal_description or other relevant fields.
+- ALWAYS in deal_conditions cannot contain information about discount
+- condition "Prix avant remise" must be only in REGULAR_PRICE
 
 ### instructions for LOYALTY PROGRAM: WITH A DISCOUNT FROM THE STORE **:
 - IMPORTANT If there is a store name with a card discount, then the deal_conditions must specify the loyalty card discount from the store with the store name (for example: “Prix Carte lidl plus","Prix Carte ryobi","Prix Carte €urocora")
@@ -2904,14 +2902,16 @@ Your answer should be purely json, without any additional explanation such as "`
 - exclude from deal_description information about ("Le produit de 426 g") and write Null
 
 ### instructions for OFFER WITH TWO SALES PRICE AND ONE REGULAR PRICE **:
-- IMPORTANT always write Null in deal_description 
-- Always write ("Prix avant remise" , "de ramise immediate","de ramise defferee") if this exist in offer
+- When filling in the deal_description field, make sure that no words from the product_name are duplicated in this field.
+- If a word or phrase from the product_name is present in the deal_description, replace this field with “Null”.
+- Compare the text in deal_description with the text in product_name.
+- Use a case-insensitive check (no matter if it's uppercase or lowercase).
+- If there is even a partial match, remove the text from the deal_description or set it to “Null”.
+- write ("Prix avant remise" , "de ramise immediate","de ramise defferee") if this exist in offer
 - Make sure that the values in the deal_conditions field do not repeat between different deals. If any value remains after exclusion, it can only be recorded in one deal. In the rest - it is replaced by Null.
-- IMPORTANT The “Sans carte”, "Prix Carte" text is always removed from deal_conditions.
-- IMPORTANT all information about discount must be ignored and exclude all except  additional_format in discount
 - Data cannot be repeated in product_name product_brand product_description deal_conditions deal_description
-- if not contain in offer text "Prix avant remise" write null
-
+- IMPORTANT all information about discount must be ignored and exclude all except  additional_format in discount
+- You cannot write words to deal_description that have already been written to product_name, product_brand, product_description 
 
 ### instructions for OFFER WITH SEVERAL PRODUCT **:
 

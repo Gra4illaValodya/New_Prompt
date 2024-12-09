@@ -1,7 +1,7 @@
 import openai
 # from text_prompts_txt import offer_without_price
 # from text_prompts_txt import deposit_price    
-from text_prompts_2 import other_types
+from text_prompts_txt import other_types
 openai.api_type = "azure"   
 openai.api_version = "2023-05-15"
 openai.api_base = "https://bonial-openai-test-004.openai.azure.com/"
@@ -47,14 +47,20 @@ def chat_with_gpt4(prompt, image_path,  model="bonial-gpt-4o", max_tokens=4096):
 
 prompt = other_types
 
-image_path = "https://content-media.bonial.biz/c7b603da-16f4-42db-acf1-44914d7b0b7c/main.jpg"
+image_path = "https://content-media.bonial.biz/63b20a99-2bff-477d-9d0d-a1568e633f72/main.jpg"
 
 response = chat_with_gpt4(prompt, image_path) 
 
 print(response)     
 
-# offer with several products and with loyalty card :
+# scene with different product and price :
+# 1. https://content-media.bonial.biz/1017da95-fa90-4e8f-985e-48856f7e7f17/main.jpg
+# 2. https://content-media.bonial.biz/3c664db8-011b-4d9d-81c6-0d516527467c/main.jpg
+# 3. https://content-media.bonial.biz/90fec59f-2015-4e40-b5c9-44896b87e288/main.jpg
+# 4. https://content-media.bonial.biz/6b3cc57e-fcfb-42c7-bced-74bc2fc80e64/main.jpg
+# 5. https://content-media.bonial.biz/63b20a99-2bff-477d-9d0d-a1568e633f72/main.jpg
 
+# offer with several products and with loyalty card :
 # 1. https://content-media.bonial.biz/571cdfca-9cad-4c6c-a1d8-e9ca6753aa19/main.jpg 
 # 2. https://content-media.bonial.biz/0bd2e999-a540-4067-95ad-33abc5b1fb8c/main.jpg
 # 3. https://content-media.bonial.biz/ae8a8c75-3e3a-48e5-93f9-dfd56387f329/main.jpg 
@@ -96,9 +102,3 @@ print(response)
 # 4. https://content-media.bonial.biz/c6552e4b-a73d-4684-af7e-c00cee0f918f/main.jpg
 # 5. https://content-media.bonial.biz/c7b603da-16f4-42db-acf1-44914d7b0b7c/main.jpg
 
-# scene with different product and price :
-# 1. https://content-media.bonial.biz/1017da95-fa90-4e8f-985e-48856f7e7f17/main.jpg
-# 2. https://content-media.bonial.biz/3c664db8-011b-4d9d-81c6-0d516527467c/main.jpg
-# 3. https://content-media.bonial.biz/90fec59f-2015-4e40-b5c9-44896b87e288/main.jpg
-# 4. https://content-media.bonial.biz/6b3cc57e-fcfb-42c7-bced-74bc2fc80e64/main.jpg
-# 5. https://content-media.bonial.biz/63b20a99-2bff-477d-9d0d-a1568e633f72/main.jpg
