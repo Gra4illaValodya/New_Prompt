@@ -2815,6 +2815,9 @@ Your answer should be purely json, without any additional explanation such as "`
 - deal_frequency always "ONCE"
 - IMPORTANT all deal must have unique numeric (for example:"deal_1","deal_2")
 - If the text is already present in the deal_description (for example:"Le produit de 426 g") for the “SALES_PRICE” deal type, it should not be duplicated in the deal_description of the “REGULAR_PRICE” deal type, leave this field blank or use an alternative text.
+- in deal_description should be record
+- IMPORTANT if there is no HT price on the page, then do not write in product_description
+- IMPORTANT write the price without tax in the HT product_description only if it is explicitly stated
 
 
 ### Instructions for "additional_format".
@@ -2822,7 +2825,6 @@ Your answer should be purely json, without any additional explanation such as "`
 - check in "price_type" must be only value "SALES_PRICE" or "REGULAR_PRICE" not "REGULAR"
 - "type" should always be "SALES".
 - discount ("50€","-20€","-25%","34%") must be in "additional_format" in "discount" field
-- product_id must always match the deal quantity
 
 ### instructions for OFFER WITH SEVERAL PRODUCT AND WITH LOYALTY CARD **:
 - price with a card is always written to the SALES_PRICE type price without a card is always in REGULAR 
@@ -2851,7 +2853,7 @@ Your answer should be purely json, without any additional explanation such as "`
 - You cannot repeat the text in DEAL_DEASCRIPTION more than once
 - IMPORTANT if there is no description for deal_description, then you do not need to write anything but Null
 - always enter the condition whether the card is loyalty or not 
-- if there is text in the deal_deascription in REGULAR_PRICE (for example: “2 têtes”, “3 têtes”, “1 têtes”), then it should be left in REGULAR_PRICE and should be excluded from SALES_PRICE and not written in the deal_description SALES_PRICE
+- if in REGULAR_PRICE contain in deal_deascription  ("2 têtes","3 têtes" and so on) IMMEDIATELY EXCLUDE from SALES_PRICE and write Null
 - IMPORTANT deal_description in SALES_PRICE must be Null 
 - EXCLUDE ALL INFORMATIONN ABOUT price with (HT) FROM product_description offer with several products and with loyalty card 
 - IMPORTANT if there is a value in deal_descriptions in REGULAR_PRICE, be sure to remove this value from SALES_PRICE if it is identical and replace it with Null
@@ -2914,31 +2916,7 @@ Your answer should be purely json, without any additional explanation such as "`
 
 
 ### instructions for OFFER WITH SEVERAL PRODUCT **:
-
--Zeroing the deal_description:
-
-First, set the deal_description field in all deals to Null.
-Uniqueness check:
-
-For each deal (deal_1, deal_2, etc.), check if the deal_description value is repeated in previous deals:
-If the value is already used, change it to Null.
-If the value is unique, leave it unchanged.
-Processing rules:
-
-The deal_description field cannot be repeated in any deal, even if the deal_type is different (for example, SALES_PRICE and REGULAR_PRICE).
-If the deal_description field contains text that already exists in another deal, it is replaced with Null.
-How to work:
-
-Store unique deal_description values in an internal list or set.
-When adding a new value, check if it is in the list:
-If the value already exists, do not add it to the list, but set deal_description to Null.
-Result format:
-
-Each deal must have a unique deal_description field.
-If there are several deals, the structure is written in the format deal_1, deal_2, deal_3, etc.
-
-
-Translated with www.DeepL.com/Translator (free version)
+- VERY IMPORTANT Dont create a separate deal with price (HT) 
 - In any case, do not write down the deal for the price without tax (HT)
 - Note that prices without tax (HT) should be ignored and not recorded at all.
 - IMPORTANT:
@@ -2957,9 +2935,10 @@ Translated with www.DeepL.com/Translator (free version)
 - Price HT always should be ignored
 - if there are prices with different prices, they should all be REGULAR_PRICE if they do not have a discount
 - crossed out price always REGULAR_PRICE
-- IMPORTANT delete all deal with a price without HT tax, even the price that is simply identical to HT, always delete 
-- IMPORTANT never create a separate deal with price (HT) 
-
+- exclude from product_description  information ("H.150cm, H.180cm, H.210cm") that is in deal_description and write Null in product_description
+- IMPORTANT ALWAYS description about product should be only in deal_description in REGULAR_PRICE exclude and delete from deal_description in SALES_PRICE ("H.210cm","H.180cm","H.150cm")
+- IMPORTANT if there is no HT price on the page, then do not write in product_description
+- IMPORTANT write the price without tax in the HT product_description only if it is explicitly stated
 
 ### instructions for OFFER WITH SEVERAL DEALS WITHOUT PRICE **:
 - IMPORTANT The in an offer with multiple transactions without a price cannot contain be type REGULAR_PRICE only SALES_PRICE always exclude REGULAR_PRICE

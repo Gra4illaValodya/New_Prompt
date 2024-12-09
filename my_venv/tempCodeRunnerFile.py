@@ -1,1 +1,1 @@
-https://content-media.bonial.biz/0ca99942-cc94-4da7-9585-0e8104646281/main.jpg
+https://content-media.bonial.biz/ae8a8c75-3e3a-48e5-93f9-dfd56387f329/main.jpg
