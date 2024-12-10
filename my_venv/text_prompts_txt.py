@@ -6,6 +6,1214 @@ prompt_models = {
 
 
 
+
+other_types = """
+Your Role:
+You will be provided with text relating to an offer from a promotional brochure.
+
+Output Format:
+Your answer should be purely json, without any additional explanation such as "```json", for example.
+{
+    "main_format":{
+        "product_brand": "",
+        "product_description": "",
+        "product_name": "",
+        "product_sku": "",
+        "product_Product_category": "",
+        "deal_1": [
+            {
+            "deal_conditions": "",
+            "deal_currency": "",
+            "deal_description": "",
+            "deal_frequency": "",
+            "deal_maxPrice": "",
+            "deal_minPrice": "",
+            "deal_pricebybaseunit": "",
+            "deal_loyaltycard": "",
+            "deal_type": ""
+            }
+        ]
+
+    },
+
+    "additional_format": {
+        "products": [
+            {
+              "product_id": "1",
+              "brand": "",
+              "name": "",
+              "details": {
+                "unit_size": "",
+                "bundle_size": "",
+                "deposit": "",
+                "origin_country": "",
+                "product_description": ""
+              },
+              "is_product_family": ""
+            }
+          ],
+          "deals": [
+                {
+                  "deal_id": "1",
+                  "type": "",
+                  "pricing": "",
+                  "price_type": "",
+                  "requirements": {
+                    "terms_and_conditions": "",
+                    "loyalty_card": "",
+                    "validity_period": ""
+                  },
+                  "details": {
+                    "price_by_base_unit": "",
+                    "discount": "",
+                    "deal_description": ""
+                  },
+                  "applied_to": "product-id",
+                  "is_deal_family": ""
+                }
+          ]
+    }
+}
+### Instructions for "main_format".
+
+- "product_name" must always have a value.
+- Avoid including "product_name" words in "product_description."
+- "product_description" should not contain details that relate to "product_name" or "deal_pricebybaseunit."
+- Record "deal_pricebybaseunit" only from text segments that follow the format <base-unit> = <price> (e.g., "1 l = € 1.50").
+- Always include product quantity (ml, l, g, kg) in "product_description."
+- Correct any French grammar errors, even if they appear in the source text.
+- Assign any unallocated text to "product_description."
+- in product_description cannot contain information about price(for example:"Existe aussi en ton pierre à 59,95 €")
+- if the product description has an additional price (for example: "ton pierre a") then you need to write it in "main_format" in "deals": "deal_description" 
+- If there’s no category data, use "Null" for "product_product_category."
+- "product_product_category" should follow Google product category guidelines and be in French.
+- "deal_loyaltycard" should be "True" or "False"
+- The "deal_maxPrice" and "deal_minPrice" entry must always follow the format f"{value:.2f}".
+- Record only the prices explicitly stated in the text. Do not generate or estimate any prices not present in the source material.
+- min and max price always should be identical
+- IMPORTANT ALWASY Each deal should be recorded in the format deal_1, deal_2, deal_3, and so on, even if they belong to the same product.
+- Each deal must be recorded in a separate array under a unique key, for example, “deal_1”, “deal_2”, with one deal object in the array.
+- Each deal should always display all prices available on the text.
+- If multiple prices or sizes appear in the text, each should have a separate "deal" entry within a single JSON response.
+- Set "deal_loyaltycard" to "True" if loyalty terms like "compte," "cagnoté," "prix déduit" appear.
+- Ensure each parameter value is unique to its assigned field.
+- Follow the structure and details in the examples without deviation.
+- "deal_type" should only be "REGULAR_PRICE","SALES_PRICE" or "OTHER"
+- If the deal contains prices (maxPrice or minPrice), the deal type must be “SALES_PRICE” or “REGULAR_PRICE”, definitely not “OTHER”.
+- Do not record discounts (e.g., -13%, -5€) unless "deal_type" is "OTHER."
+- For prices referring to the same product (different sizes, adult/junior), combine them within one JSON. Do not split into separate JSONs.
+- check if all the available prices from the page have been fixed accurately.
+- if some field is empty you must record Null
+- Always write "Null" with a capital letter
+- ALWAYS check yourself, all possible prices should be written down in separate deal
+- price cannot contain in deal_description 
+- if in description contain text ("Uni 31,37 € le carton de 1,31 m²") you need record only ("le carton de 1,31 m²")
+- if the price is indicated by mm, m2, m3, kg, L then it should be written in deal_pricebybaseunit (for example: “le m² = 29.95”) but if the price is not indicated by unit (for example “le carton de 1.31 m² = 31.37”) then you should write Null
+- the price specified per unit of measurement must be recorded in deal_pricebybaseunit price per 
+- quantity of goods for different weights (for example, “le carton de 1.31 m²”) should be recorded in deal_description and the minPrice and maxPrice should be recorded based on (1.31 m² * per unit price) but the price can be calculated and it is important to write exactly what is written on the offer
+- write only the data that is on the offer, do not make up your own 
+- deal_frequency always "ONCE"
+- IMPORTANT all deal must have unique numeric (for example:"deal_1","deal_2")
+
+- IMPORTANT: In the product_description, only add the price in the format <799.99€HT> if it is clearly marked as HT on the page. If there is no “HT” marking, the price must be ALWAYS is excluded <799.99€HT> in product_description.
+- if product_name and product_sku are the same, then you need to write null in product_sku
+- in TTC, deal_conditions will always be Null
+- Check each field (“product_description”, “deal_conditions”, “deal_description”) for the words “Dont éco. contribution”,"éco-contribution", "TTC".
+- Remove all references to contributions from these fields.
+- if the offer contains a price without tax (“HT”), you should ignore it and not create a separate deal for it
+- create deal only TTC price and exclude all information about HT
+- Price TTC always SALES_PRICE 
+- if the text contains “Dont éco. contribution : 0,42 €HT, 0,50 €TTC”, it should be ignored in the product_descriptions
+- if text has "Dont éco. contribution : 0,50€TTC" you want to be ignored and record Null
+- Always record in product_description prices  without tax (HT) in a format that includes cents.
+- If the price is crossed out or not crossed out, enter it in triangular brackets in the following format: <whole.cents€HT>. Examples: <27.23€HT>, <43.46€HT>, <19.31€HT>.
+    Be sure:
+    Make sure that all prices without tax, even crossed out prices, are stored exclusively in the product_description field.
+    Never record prices without tax (HT) in any other field.
+    If there is only one price without tax, be sure to write only one price and do not invent others that do not exist
+    whether the cents after the decimal point are correct, the product_description should be <4.23€HT> or <4.15€HT>. 
+
+
+### Instructions for "additional_format".
+- in "additional_format" must product_id must always match the deal quantity (for example: "deal_1","deal_2").
+- IMPORTANT check only in "deals" froms "additional_format" in "type" field should contain only the value only "SALES" not "SALES_PRICE" and "REGULAR".
+- check in "price_type" must be only value "SALES_PRICE" or "REGULAR_PRICE" not "REGULAR".
+- "type" should always be "SALES".
+- discount ("50€","-20€","-25%","34%") must be in "additional_format" in "discount" field.
+
+### GENERAL INSTRUCTIONS**:
+- you need to scan the entire text and write out all possible prices that are written even in the smallest print in the descriptions of a separate agreement.
+- if “main_format” in "deal": "deal_description" there can be no repetitions of the text from "deal":"SALES_PRICE" and "REGULAR_PRICE" if there are such repetitions, then you need to leave the text in the "deal": "REGULAR_PRICE" and from the "deal": "SALES_PRICE" you need to exclude the text and write Null.
+- if duplicates appear in the same REGULA_PRICE and SALES_PRICE group at the same time, then leave one duplicate in REGULAR_PRICE and replace the other in SALES_PRICE with Null
+- If there is no clearly spelled out text, then do not come up with something of your own and replace it with Null
+- if there is a scene with different products and prices, then you need to write all the names of the products in"main_format" in the "product_name" separated by a comma (for example: “MAILLOT DE BAIN”, “CHAPEAU DE PAILLE”)
+- if there is a scene with different products and prices, there are cases when the price per unit is specified in text (for example: L`unite), then you need to write it in “main_format” in “deals”: “deal_description”  
+- if there is a description near the price “Prix avant remise” then it must be written in the "main_format" in "deals": "deal_conditions" from "deals": "REGULAR_PRICE"
+- 
+""" 
+
+
+other_types_client_ocr = (
+
+    """
+Input:
+manche en acier réglable de 109 à 140 cm
+balai avec franges et tête articulée 360°,
+contient : manche + seau 6 L + panier d’essorage,
+LEIFHEIT
+Set Clean Twist Mop Ergo
+en5€
+34,90
+29,90*
+déduit
+!urocora
+prix
+
+Output:
+{
+    "product_brand": "LEIFHEIT",
+    "product_description": "contient : manche + seau 6 L + panier d’essorage, balai avec franges et tête articulée 360°, manche en acier réglable de 109 à 140 cm",
+    "product_name": "Set Clean Twist Mop Ergo",
+    "product_sku": "Null",
+    "product_Product_category": "Produits de nettoyage",
+    "deal_1": [
+      {
+        "deal_conditions": "Prix €urocora déduit",
+        "deal_currency": "EUR",
+        "deal_description": "Null",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 29.90,
+        "deal_minPrice": 29.90,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Yes",
+        "deal_type": "SALES_PRICE"
+      }
+    ],
+    "deal_2": [ 
+      {
+        "deal_conditions": "L'unité",
+        "deal_currency": "EUR",
+        "deal_description": "Null",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 34.90,
+        "deal_minPrice": 34.90,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Null",
+        "deal_type": "REGULAR_PRICE"
+      }
+    ]
+},
+
+Input:
+2,4L
+Garantie légale 2 ans
+• Parois transparentes #d
+• Utilisable avec de l'huile/beurre
+• Cuisson à l'air chaud
+mélanger
+• Panier anti-adhésif avec cuillère à
+Réf. : ARI-2953-XL
+iMachine à pop corn XL
+D’ÉCONOMIES(2)
+30€
+REMISE FIDÉLITÉ DÉDUITE
+99
+29€
+Soit
+d'éco-participation
+dont 0,30 €
+99
+59€
+99x
+99€
+Prix payé en caisse
+
+Output:
+{
+    "product_brand": "Null",
+    "product_description": "2,4L, Garantie légale 2 ans, Parois transparentes #d, Utilisable avec de l'huile/beurre, Cuisson à l'air chaud, Panier anti-adhésif avec cuillère à mélanger, dont 0,30 € d'éco-participation",
+    "product_name": "Machine à pop corn XL",
+    "product_sku": "ARI-2953-XL",
+    "product_Product_category": "Appareils de cuisine",
+    "deal_1": [
+      {
+        "deal_conditions": "Prix payé en caisse",
+        "deal_currency": "EUR",
+        "deal_description": "Null",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 59.99,
+        "deal_minPrice": 59.99,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Null",
+        "deal_type": "SALES_PRICE"
+      }
+    ],
+    "deal_2": [ 
+      {
+        "deal_conditions": "REMISE FIDÉLITÉ DÉDUITE",
+        "deal_currency": "EUR",
+        "deal_description": "Null",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 29.99,
+        "deal_minPrice": 29.99,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Yes",
+        "deal_type": "SALES_PRICE"
+      }
+    ],
+    "deal_3": [ 
+      {
+        "deal_conditions": "Null",
+        "deal_currency": "EUR",
+        "deal_description": "Null",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 99.99,
+        "deal_minPrice": 99.99,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Null",
+        "deal_type": "REGULAR_PRICE"
+      }
+    ]
+},
+
+Input:
+DÈS 500 € D’ACHATS
+-5%(a)
+DÈS 1000 € D’ACHATS
+OU COMPOSITE
+DALLES EN BOIS
+DE TERRASSE ET
+SUR LES LAMES
+-10%(a)
+CARTE
+EXCLU
+
+Output:
+{
+    "product_brand": "Null",
+    "product_description": "EXCLU CARTE",
+    "product_name": "-10% SUR LES LAMES DE TERRASSE ET DALLES EN BOIS OU COMPOSITE DÈS 1000 € D’ACHATS",
+    "product_sku": "Null",
+    "product_Product_category": "Matériaux de construction",
+    "deal_1": [
+      {
+        "deal_conditions": "Null",
+        "deal_currency": "Null",
+        "deal_description": "-10% DÈS 1000 € D’ACHATS",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": "Null",
+        "deal_minPrice": "Null",
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Yes",
+        "deal_type": "OTHER"
+      }
+    ],
+    "deal_2": [ 
+      {
+        "deal_conditions": "Null",
+        "deal_currency": "Null",
+        "deal_description": "-5% DÈS 500 € D’ACHATS",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": "Null",
+        "deal_minPrice": "Null",
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Yes",
+        "deal_type": "OTHER"
+      }
+    ]
+},
+
+Input:
+Lavabo XL
+intégré
+Porte-savon
+Douche
+Bain-douche
+Économie d’eau : débit réduit de 6 L/min
+Mitigeur lavabo
+90
+89€
+industriel
+Design
+Réf. 5059340583136.
+Mitigeur thermostatique bain-douche 119 €
+Réf. 5059340582757.
+Mitigeur thermostatique douche 109 €
+Mitigeur lavabo XL 129 € Réf. 5059340582658.
+Mitigeur lavabo 89,90 € Réf. 5059340582573.
+En laiton et zinc. Noir.
+Série mitigeurs Selenga
+
+Output:
+{
+    "product_brand": "Null",
+    "product_description": "Lavabo XL, Porte-savon intégré, Douche, Bain-douche, Économie d’eau : débit réduit de 6 L/min, Design industriel, En laiton et zinc. Noir.",
+    "product_name": "Série mitigeurs Selenga",
+    "product_sku": "5059340582573, 5059340582658, 5059340582757, 5059340583136",
+    "product_Product_category": "Plomberie",
+    "deal_1": [
+      {
+        "deal_conditions": "Null",
+        "deal_currency": "EUR",
+        "deal_description": "Mitigeur lavabo",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 89.90,
+        "deal_minPrice": 89.90,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Null",
+        "deal_type": "SALES_PRICE"
+      }
+    ],
+    "deal_2": [ 
+      {
+        "deal_conditions": "Null",
+        "deal_currency": "EUR",
+        "deal_description": "Mitigeur lavabo XL",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 129.00,
+        "deal_minPrice": 129.00,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Null",
+        "deal_type": "SALES_PRICE"
+      }
+    ],
+    "deal_3": [ 
+      {
+        "deal_conditions": "Null",
+        "deal_currency": "EUR",
+        "deal_description": "Mitigeur thermostatique douche",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 109.00,
+        "deal_minPrice": 109.00,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Null",
+        "deal_type": "SALES_PRICE"
+      }
+    ],
+    "deal_4": [ 
+      {
+        "deal_conditions": "Null",
+        "deal_currency": "EUR",
+        "deal_description": "Mitigeur thermostatique bain-douche",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 119.00,
+        "deal_minPrice": 119.00,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Null",
+        "deal_type": "SALES_PRICE"
+      }
+    ]
+},
+
+Input:
+120 x 170 cm
+Rectangle
+Rond Ø 80 cm
+le tapis
+90
+39€
+À partir de
+jute et coton
+Tressage
+jute naturel(1) :
+Existe en version
+Grand 59,90 € l. 120 x L. 170 cm. Réf. 5059340473956.
+Moyen 39,90 € l. 80 x L. 150 cm. Réf. 5059340474151.
+En jute et coton. Coloris noir.
+Tapis
+
+Output:
+{
+    "product_brand": "Null",
+    "product_description": "Tressage jute et coton, Existe en version jute naturel(1). Moyen l. 80 x L. 150 cm. En jute et coton. Coloris noir. Rond Ø 80 cm",
+    "product_name": "Tapis",
+    "product_sku": "5059340473956, 5059340474151",
+    "product_Product_category": "Tapis",
+    "deal_1": [
+      {
+        "deal_conditions": "À partir de le tapis",
+        "deal_currency": "EUR",
+        "deal_description": "Null",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 39.90,
+        "deal_minPrice": 39.90,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Null",
+        "deal_type": "SALES_PRICE"
+      }
+    ],
+    "deal_2": [ 
+      {
+        "deal_conditions": "Null",
+        "deal_currency": "EUR",
+        "deal_description": "Grand l. 120 x L. 170 cm",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 59.90,
+        "deal_minPrice": 59.90,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Null",
+        "deal_type": "SALES_PRICE"
+      }
+    ]
+},
+
+Input:
+Douche
+ANS
+5
+Bain-douche
+84,90 €
+Sans carte :
+Mitigeur lavabo
+90
+69€
+carte
+Prix
+Bain-douche 99 € Réf. 4059625168882. Prix sans la carte : 119 €
+Douche 89,90 € Réf. 4011097753508. Prix sans la carte : 109 €
+Réf. 4059625168813. Prix sans la carte : 84,90 €
+Lavabo M 69,90 € À installer sur vasque avec cuve profonde.
+En laiton chromé.
+Série mitigeurs Mysport
+
+Output:
+{
+    "product_brand": "Null",
+    "product_description": "Mitigeur lavabo. À installer sur vasque avec cuve profonde. En laiton chromé.",
+    "product_name": "Série mitigeurs Mysport",
+    "product_sku": "4059625168813, 4011097753508, 4059625168882",
+    "product_Product_category": "Plomberie",
+    "deal_1": [
+      {
+        "deal_conditions": "Prix carte",
+        "deal_currency": "EUR",
+        "deal_description": "Null",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 69.90,
+        "deal_minPrice": 69.90,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Yes",
+        "deal_type": "SALES_PRICE"
+      }
+    ],
+    "deal_2": [ 
+      {
+        "deal_conditions": "Sans carte",
+        "deal_currency": "EUR",
+        "deal_description": "Null",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 84.90,
+        "deal_minPrice": 84.90,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Null",
+        "deal_type": "REGULAR_PRICE"
+      }
+    ],
+    "deal_3": [ 
+      {
+        "deal_conditions": "Prix carte",
+        "deal_currency": "EUR",
+        "deal_description": "Douche",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 89.90,
+        "deal_minPrice": 89.90,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Yes",
+        "deal_type": "SALES_PRICE"
+      }
+    ],
+    "deal_4": [ 
+      {
+        "deal_conditions": "Sans carte",
+        "deal_currency": "EUR",
+        "deal_description": "Null",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 109.00,
+        "deal_minPrice": 109.00,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Null",
+        "deal_type": "REGULAR_PRICE"
+      }
+    ],
+    "deal_5": [ 
+      {
+        "deal_conditions": "Prix carte",
+        "deal_currency": "EUR",
+        "deal_description": "Bain-douche",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 99.00,
+        "deal_minPrice": 99.00,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Yes",
+        "deal_type": "SALES_PRICE"
+      }
+    ],
+    "deal_6": [ 
+      {
+        "deal_conditions": "Sans carte",
+        "deal_currency": "EUR",
+        "deal_description": "Null",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 119.00,
+        "deal_minPrice": 119.00,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Null",
+        "deal_type": "REGULAR_PRICE"
+      }
+    ]
+},
+
+Input:
+ZOOM BRODERIE
+d'OEKO-TEX®
+Label STANDARD 100
+Divers coloris selon les magasins
+Du 38 au 54
+100% coton
+INEXTENSO
+BERMUDA HOMME
+99
+9€
+d'OEKO-TEX®
+Label STANDARD 100
+Du S au XXL
+100% coton
+INEXTENSO
+TEE-SHIRT HOMME
+99
+5€
+
+Output:
+[
+  {
+      "product_brand": "INEXTENSO",
+      "product_description": "ZOOM BRODERIE, Label STANDARD 100 d'OEKO-TEX®, Divers coloris selon les magasins, 100% coton, Du 38 au 54",
+      "product_name": "BERMUDA HOMME",
+      "product_sku": "Null",
+      "product_Product_category": "Vêtements pour hommes",
+      "deal_1": [
+        {
+          "deal_conditions": "Null",
+          "deal_currency": "EUR",
+          "deal_description": "Null",
+          "deal_frequency": "ONCE",
+          "deal_maxPrice": 9.99,
+          "deal_minPrice": 9.99,
+          "deal_pricebybaseunit": "",
+          "deal_loyaltycard": "Null",
+          "deal_type": "SALES_PRICE"
+        }
+      ]
+  },
+  {
+      "product_brand": "INEXTENSO",
+      "product_description": "Label STANDARD 100 d'OEKO-TEX®, 100% coton, Du S au XXL",
+      "product_name": "TEE-SHIRT HOMME",
+      "product_sku": "Null",
+      "product_Product_category": "Vêtements pour hommes",
+      "deal_1": [
+        {
+          "deal_conditions": "Null",
+          "deal_currency": "EUR",
+          "deal_description": "Null",
+          "deal_frequency": "ONCE",
+          "deal_maxPrice": 5.99,
+          "deal_minPrice": 5.99,
+          "deal_pricebybaseunit": "",
+          "deal_loyaltycard": "Null",
+          "deal_type": "SALES_PRICE"
+        }
+      ]
+  }
+],
+
+Input:
+JUNIOR
+T-SHIRT ANTI-UV
+-43%
+29,99€
+16,99€
+du 2 au 7 ans. Taille junior : du 8 au 16 ans.
+Taille bébé : du 6 au 18 mois. Taille cadet :
+86% polyester recyclé','14% élasthanne.
+Indice de protection solaire UPF 50.
+CADET/BÉBÉ
+T-SHIRT ANTI-UV
+-32%
+24,99€
+16,99€
+texturisée
+antidérapante
+supérieure
+Semelle
+
+Output:
+{
+    "product_brand": "Null",
+    "product_description": "Indice de protection solaire UPF 50.\n86% polyester recyclé, 14% élasthanne.\nTaille bébé : du 6 au 18 mois. \nTaille cadet : du 2 au 7 ans. \nTaille junior : du 8 au 16 ans.",
+    "product_name": "T-SHIRT ANTI-UV",
+    "product_sku": "Null",
+    "product_Product_category": "Vêtements pour enfants",
+    "deal_1": [
+      {
+        "deal_conditions": "CADET/BÉBÉ",
+        "deal_currency": "EUR",
+        "deal_description": "Null",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 16.99,
+        "deal_minPrice": 16.99,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Null",
+        "deal_type": "SALES_PRICE"
+      }
+    ],
+    "deal_2": [ 
+      {
+        "deal_conditions": "CADET/BÉBÉ",
+        "deal_currency": "EUR",
+        "deal_description": "Null",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 24.99,
+        "deal_minPrice": 24.99,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Null",
+        "deal_type": "REGULAR_PRICE"
+      }
+    ],
+    "deal_3": [
+      {
+        "deal_conditions": "JUNIOR",
+        "deal_currency": "EUR",
+        "deal_description": "Null",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 16.99,
+        "deal_minPrice": 16.99,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Null",
+        "deal_type": "SALES_PRICE"
+      }
+    ],
+    "deal_4": [ 
+      {
+        "deal_conditions": "JUNIOR",
+        "deal_currency": "EUR",
+        "deal_description": "Null",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 29.99,
+        "deal_minPrice": 29.99,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Null",
+        "deal_type": "REGULAR_PRICE"
+      }
+    ]
+},
+
+    """
+
+)
+
+other_types_our_ocr = (
+
+    """
+Input:
+prix Eurocora déduit \n 5 € \n 34 € 90 \n en \n Euro cora \n 29 € 90 * \n Set Clean Twist Mop Ergo LEIFHEIT \n contient : manche + seau 6 L + panier d'essorage , balai avec franges et tête articulée 360 ° , manche en acier réglable de 109 à 140 cm \n
+
+Output:
+{
+    "product_brand": "LEIFHEIT",
+    "product_description": "contient : manche + seau 6 L + panier d’essorage, balai avec franges et tête articulée 360°, manche en acier réglable de 109 à 140 cm",
+    "product_name": "Set Clean Twist Mop Ergo",
+    "product_sku": "Null",
+    "product_Product_category": "Produits de nettoyage",
+    "deal_1": [
+      {
+        "deal_conditions": "Prix €urocora déduit",
+        "deal_currency": "EUR",
+        "deal_description": "Null",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 29.90,
+        "deal_minPrice": 29.90,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Yes",
+        "deal_type": "SALES_PRICE"
+      }
+    ],
+    "deal_2": [ 
+      {
+        "deal_conditions": "L'unité",
+        "deal_currency": "EUR",
+        "deal_description": "Null",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 34.90,
+        "deal_minPrice": 34.90,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Null",
+        "deal_type": "REGULAR_PRICE"
+      }
+    ]
+},
+
+Input:
+Capacité \n 2,4L \n Prix payé en caisse \n 9999 5999 \n € \n dont 0,30 € d'éco - participation \n 30 \n D'ÉCONOMIES ( 2 ) \n Soit \n 2999 \n REMISE FIDÉLITÉ DÉDUITE \n Popcern \n i Machine à pop corn XL \n Réf . : ARI - 2953 - XL \n • Panier anti - adhésif avec cuillère à mélanger \n • Cuisson à l'air chaud \n • Utilisable avec de l'huile / beurre \n • Parois transparentes Garantie légale 2 ans -Ariete \n
+
+Output:
+{
+    "product_brand": "Ariete",
+    "product_description": "Machine à pop corn XL, Panier anti-adhésif avec cuillère à mélanger, Cuisson à l'air chaud, Utilisable avec de l'huile/beurre, Parois transparentes, Garantie légale 2 ans, dont 0,30 € d'éco-participation",
+    "product_name": "Machine à pop corn XL",
+    "product_sku": "ARI-2953-XL",
+    "product_Product_category": "Appareils de cuisine",
+    "deal_1": [
+      {
+        "deal_conditions": "Prix payé en caisse",
+        "deal_currency": "EUR",
+        "deal_description": "Null",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 59.99,
+        "deal_minPrice": 59.99,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Null",
+        "deal_type": "SALES_PRICE"
+      }
+    ],
+    "deal_2": [ 
+      {
+        "deal_conditions": "REMISE FIDÉLITÉ DÉDUITE",
+        "deal_currency": "EUR",
+        "deal_description": "Null",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 29.99,
+        "deal_minPrice": 29.99,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Yes",
+        "deal_type": "SALES_PRICE"
+      }
+    ],
+    "deal_3": [ 
+      {
+        "deal_conditions": "Null",
+        "deal_currency": "EUR",
+        "deal_description": "Null",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 99.99,
+        "deal_minPrice": 99.99,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Null",
+        "deal_type": "REGULAR_PRICE"
+      }
+    ]
+},
+
+Input:
+EXCLU castorama CARTE \n la \n -10 % \n SUR LES LAMES DE TERRASSE ET DALLES EN BOIS OU COMPOSITE DÈS 1000 € D'ACHATS \n -5 % \n DÈS 500 € D'ACHATS \n
+
+Output:
+{
+    "product_brand": "Null",
+    "product_description": "EXCLU castorama CARTE",
+    "product_name": "-10% SUR LES LAMES DE TERRASSE ET DALLES EN BOIS OU COMPOSITE DÈS 1000 € D’ACHATS",
+    "product_sku": "Null",
+    "product_Product_category": "Matériaux de construction",
+    "deal_1": [
+      {
+        "deal_conditions": "Null",
+        "deal_currency": "Null",
+        "deal_description": "-10% DÈS 1000 € D’ACHATS",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": "Null",
+        "deal_minPrice": "Null",
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Yes",
+        "deal_type": "OTHER"
+      }
+    ],
+    "deal_2": [ 
+      {
+        "deal_conditions": "Null",
+        "deal_currency": "Null",
+        "deal_description": "-5% DÈS 500 € D’ACHATS",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": "Null",
+        "deal_minPrice": "Null",
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Yes",
+        "deal_type": "OTHER"
+      }
+    ]
+},
+
+Input:
+SUR \n LE \n L'UNITÉ : \n 15€90 \n SUR LE \n E O \n 3⁰ \n Queues de Homard Crues surgelées CASINO \n 2 x 100 g ( 200 g ) \n Autres variétés ou poids disponibles à des prix différents Le kg : 79 € 50 \n + \n Casino \n AVANTAGE carte \n -20 % -30 % -40 % \n CAGNOTTÉS + \n CAGNOTTÉS \n E O \n CAGNOTTÉS \n 45 \n FLOBN \n SUR LE \n QUEUES \n de Homard \n Atlantique Nord Quest SURGELÉES \n 200 g \n
+
+Output:
+{
+    "product_brand": "CASINO",
+    "product_description": "Queues de Homard Crues surgelées, 2 x 100 g (200 g), Autres variétés ou poids disponibles à des prix différents",
+    "product_name": "Queues de Homard Crues surgelées",
+    "product_sku": "Null",
+    "product_Product_category": "Fruits de mer",
+    "deal_1": [
+      {
+        "deal_conditions": "L'UNITÉ",
+        "deal_currency": "EUR",
+        "deal_description": "Null",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 15.90,
+        "deal_minPrice": 15.90,
+        "deal_pricebybaseunit": "Le kg : 79€50",
+        "deal_loyaltycard": "Null",
+        "deal_type": "SALES_PRICE"
+      }
+    ],
+    "deal_2": [ 
+      {
+        "deal_conditions": "Null",
+        "deal_currency": "EUR",
+        "deal_description": "-20% CAGNOTTÉS",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": "Null",
+        "deal_minPrice": "Null",
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Yes",
+        "deal_type": "OTHER"
+      }
+    ],
+    "deal_3": [ 
+      {
+        "deal_conditions": "Null",
+        "deal_currency": "EUR",
+        "deal_description": "-30% CAGNOTTÉS",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": "Null",
+        "deal_minPrice": "Null",
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Yes",
+        "deal_type": "OTHER"
+      }
+    ],
+    "deal_4": [ 
+      {
+        "deal_conditions": "Null",
+        "deal_currency": "EUR",
+        "deal_description": "-40% CAGNOTTÉS",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": "Null",
+        "deal_minPrice": "Null",
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Yes",
+        "deal_type": "OTHER"
+      }
+    ]
+},
+
+Input:
+BON BON \n 8990 \n Mitigeur lavabo \n + Design industriel \n Mitigeur thermostatique bain - douche 119 € \n Réf . 5059340583136 . \n Série mitigeurs Selenga \n En laiton et zinc . Noir . \n Mitigeur lavabo 89,90 € Réf . 5059340582573 . \n Mitigeur lavabo XL 129 € Réf . 5059340582658 . \n Mitigeur thermostatique douche 109 € \n Réf . 5059340582757 . \n Économie d'eau : débit réduit de 6 L / min \n OF \n Lavabo XL \n Douche \n + \n Porte - savon intégré \n Bain - douche \n 大 \n
+
+Output:
+{
+    "product_brand": "BON BON",
+    "product_description": "Lavabo XL, Porte-savon intégré, Douche, Bain-douche, Économie d’eau : débit réduit de 6 L/min, Design industriel, En laiton et zinc. Noir.",
+    "product_name": "Série mitigeurs Selenga",
+    "product_sku": "5059340582573, 5059340582658, 5059340582757, 5059340583136",
+    "product_Product_category": "Plomberie",
+    "deal_1": [
+      {
+        "deal_conditions": "Null",
+        "deal_currency": "EUR",
+        "deal_description": "Mitigeur lavabo",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 89.90,
+        "deal_minPrice": 89.90,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Null",
+        "deal_type": "SALES_PRICE"
+      }
+    ],
+    "deal_2": [ 
+      {
+        "deal_conditions": "Null",
+        "deal_currency": "EUR",
+        "deal_description": "Mitigeur lavabo XL",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 129.00,
+        "deal_minPrice": 129.00,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Null",
+        "deal_type": "SALES_PRICE"
+      }
+    ],
+    "deal_3": [ 
+      {
+        "deal_conditions": "Null",
+        "deal_currency": "EUR",
+        "deal_description": "Mitigeur thermostatique douche",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 109.00,
+        "deal_minPrice": 109.00,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Null",
+        "deal_type": "SALES_PRICE"
+      }
+    ],
+    "deal_4": [ 
+      {
+        "deal_conditions": "Null",
+        "deal_currency": "EUR",
+        "deal_description": "Mitigeur thermostatique bain-douche",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 119.00,
+        "deal_minPrice": 119.00,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Null",
+        "deal_type": "SALES_PRICE"
+      }
+    ]
+},
+
+Input:
+À partir de \n € \n 3990 \n le tapis \n Moyen 39,90 € 1.80 x L. 150 cm . Réf . 5059340474151 . Grand 59,90 € I. 120 x L. 170 cm . Réf . 5059340473956 . \n Tapis \n En jute et coton . Coloris noir . \n Tressage jute et coton \n Existe en jute 120 x Rond Ø
+
+Output:
+{
+    "product_brand": "Null",
+    "product_description": "Tressage jute et coton, Existe en jute. Moyen l. 80 x L. 150 cm. En jute et coton. Coloris noir. Rond Ø",
+    "product_name": "Tapis",
+    "product_sku": "5059340473956, 5059340474151",
+    "product_Product_category": "Tapis",
+    "deal_1": [
+      {
+        "deal_conditions": "À partir de le tapis",
+        "deal_currency": "EUR",
+        "deal_description": "Null",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 39.90,
+        "deal_minPrice": 39.90,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Null",
+        "deal_type": "SALES_PRICE"
+      }
+    ],
+    "deal_2": [ 
+      {
+        "deal_conditions": "Null",
+        "deal_currency": "EUR",
+        "deal_description": "Grand l. 120 x L. 170 cm",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 59.90,
+        "deal_minPrice": 59.90,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Null",
+        "deal_type": "SALES_PRICE"
+      }
+    ]
+},
+
+Input:
+Prix carte \n castorama \n 69 % \n Mitigeur lavabo Sans carte : \n 84,90 € \n hansgrohe \n GARANTIE \n LO \n 5 \n ANS \n Bain - douche \n Série mitigeurs Mysport \n En laiton chromé . \n Lavabo M 69,90 € À installer sur vasque avec cuve profonde . Réf . 4059625168813. Prix sans la carte : 84,90 € \n Douche \n Douche 89,90 € Réf . 4011097753508. Prix sans la carte : 109 € Bain - douche 99 € Réf . 4059625168882. Prix sans la carte : 119 € \n
+
+Output:
+{
+    "product_brand": "Null",
+    "product_description": "Mitigeur lavabo. À installer sur vasque avec cuve profonde. En laiton chromé.hansgrohe, GARANTIE 5 ANS",
+    "product_name": "Série mitigeurs Mysport",
+    "product_sku": "4059625168813, 4011097753508, 4059625168882",
+    "product_Product_category": "Plomberie",
+    "deal_1": [
+      {
+        "deal_conditions": "Prix carte",
+        "deal_currency": "EUR",
+        "deal_description": "Null",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 69.90,
+        "deal_minPrice": 69.90,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Yes",
+        "deal_type": "SALES_PRICE"
+      }
+    ],
+    "deal_2": [ 
+      {
+        "deal_conditions": "Sans carte",
+        "deal_currency": "EUR",
+        "deal_description": "Null",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 84.90,
+        "deal_minPrice": 84.90,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Null",
+        "deal_type": "REGULAR_PRICE"
+      }
+    ],
+    "deal_3": [ 
+      {
+        "deal_conditions": "Prix carte",
+        "deal_currency": "EUR",
+        "deal_description": "Douche",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 89.90,
+        "deal_minPrice": 89.90,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Yes",
+        "deal_type": "SALES_PRICE"
+      }
+    ],
+    "deal_4": [ 
+      {
+        "deal_conditions": "Sans carte",
+        "deal_currency": "EUR",
+        "deal_description": "Null",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 109.00,
+        "deal_minPrice": 109.00,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Null",
+        "deal_type": "REGULAR_PRICE"
+      }
+    ],
+    "deal_5": [ 
+      {
+        "deal_conditions": "Prix carte",
+        "deal_currency": "EUR",
+        "deal_description": "Bain-douche",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 99.00,
+        "deal_minPrice": 99.00,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Yes",
+        "deal_type": "SALES_PRICE"
+      }
+    ],
+    "deal_6": [ 
+      {
+        "deal_conditions": "Sans carte",
+        "deal_currency": "EUR",
+        "deal_description": "Null",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 119.00,
+        "deal_minPrice": 119.00,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Null",
+        "deal_type": "REGULAR_PRICE"
+      }
+    ]
+},
+
+Input:
+ZOOM BRODERIE \n OEKO - TEX® CONFIDENCE IN TEXTILES ge STANDARD 100 CQ 1203/6 IFTH \n Tasted for harmful substances www.oko-tx.com/and \n € \n 5 , ⁹⁹9 \n 99 \n OEKO - TEX® \n CONFIDENCE IN TEXTILES \n STANDARD 100 CQ 1203/6 IFTH Tested for harmful substances www.eko-tex.com/standard 00 \n € \n 99⁹⁹9 \n EXISTE \n JUSQU'AU \n 54 \n Inextenso \n TEE - SHIRT HOMME INEXTENSO 100 % coton \n Du S au XXL Label STANDARD 100 d'OEKO - TEX® \n **** \n BERMUDA HOMME \n INEXTENSO \n 100 % coton \n Du 38 au 54 \n Divers coloris selon les magasins Label STANDARD 100 d'OEKO - TEX® \n
+
+Output:
+[
+  {
+      "product_brand": "INEXTENSO",
+      "product_description": "ZOOM BRODERIE, Label STANDARD 100 d'OEKO-TEX®, Divers coloris selon les magasins, 100% coton, Du 38 au 54, CONFIDENCE IN TEXTILES IN TEXTILES ge STANDARD 100 CQ 1203/6 IFTH, Tasted for harmful substances www.oko-tx.com",
+      "product_name": "BERMUDA HOMME",
+      "product_sku": "Null",
+      "product_Product_category": "Vêtements pour hommes",
+      "deal_1": [
+        {
+          "deal_conditions": "Null",
+          "deal_currency": "EUR",
+          "deal_description": "Null",
+          "deal_frequency": "ONCE",
+          "deal_maxPrice": 9.99,
+          "deal_minPrice": 9.99,
+          "deal_pricebybaseunit": "",
+          "deal_loyaltycard": "Null",
+          "deal_type": "SALES_PRICE"
+        }
+      ]
+  },
+  {
+      "product_brand": "INEXTENSO",
+      "product_description": "Label STANDARD 100 d'OEKO-TEX®, 100% coton, Du S au XXL, CONFIDENCE IN TEXTILES IN TEXTILES ge STANDARD 100 CQ 1203/6 IFTH, Tasted for harmful substances www.oko-tx.com",
+      "product_name": "TEE-SHIRT HOMME",
+      "product_sku": "Null",
+      "product_Product_category": "Vêtements pour hommes",
+      "deal_1": [
+        {
+          "deal_conditions": "Null",
+          "deal_currency": "EUR",
+          "deal_description": "Null",
+          "deal_frequency": "ONCE",
+          "deal_maxPrice": 5.99,
+          "deal_minPrice": 5.99,
+          "deal_pricebybaseunit": "",
+          "deal_loyaltycard": "Null",
+          "deal_type": "SALES_PRICE"
+        }
+      ]
+  }
+],
+
+Input:
+Semelle + \n BORN \n 16.99 € 16.990 \n , 99 € \n 29,99 € -43 % \n T - SHIRT ANTI - UV JUNIOR \n 24,99 € -32 % \n T - SHIRT ANTI - UV CADET / BÉBÉ \n Indice de protection solaire UPF 50 . 86 % polyester recyclé , 14 % élasthanne . Taille bébé : du 6 au 18 mois . Taille cadet : du 2 au 7 ans . Taille junior : du 8 au 16 ans . \n
+
+Output:
+{
+    "product_brand": "Null",
+    "product_description": "Indice de protection solaire UPF 50.\n86% polyester recyclé, 14% élasthanne.\nTaille bébé : du 6 au 18 mois. \nTaille cadet : du 2 au 7 ans. \nTaille junior : du 8 au 16 ans.",
+    "product_name": "T-SHIRT ANTI-UV",
+    "product_sku": "Null",
+    "product_Product_category": "Vêtements pour enfants",
+    "deal_1": [
+      {
+        "deal_conditions": "CADET/BÉBÉ",
+        "deal_currency": "EUR",
+        "deal_description": "Null",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 16.99,
+        "deal_minPrice": 16.99,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Null",
+        "deal_type": "SALES_PRICE"
+      }
+    ],
+    "deal_2": [ 
+      {
+        "deal_conditions": "CADET/BÉBÉ",
+        "deal_currency": "EUR",
+        "deal_description": "Null",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 24.99,
+        "deal_minPrice": 24.99,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Null",
+        "deal_type": "REGULAR_PRICE"
+      }
+    ],
+    "deal_3": [
+      {
+        "deal_conditions": "JUNIOR",
+        "deal_currency": "EUR",
+        "deal_description": "Null",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 16.99,
+        "deal_minPrice": 16.99,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Null",
+        "deal_type": "SALES_PRICE"
+      }
+    ],
+    "deal_4": [ 
+      {
+        "deal_conditions": "JUNIOR",
+        "deal_currency": "EUR",
+        "deal_description": "Null",
+        "deal_frequency": "ONCE",
+        "deal_maxPrice": 29.99,
+        "deal_minPrice": 29.99,
+        "deal_pricebybaseunit": "",
+        "deal_loyaltycard": "Null",
+        "deal_type": "REGULAR_PRICE"
+      }
+    ]
+},
+
+    """
+
+)
+
+
 one_price = """
 #Your Role:
 You will be provided with image relating to offer from the promotional brochure.
@@ -2702,1336 +3910,6 @@ Output:
       }
     ]
 }
-
-    """
-
-)
-
-other_types = """
-Your Role:
-You will be provided with text relating to an offer from a promotional brochure.
-
-Output Format:
-Your answer should be purely json, without any additional explanation such as "```json", for example.
-{
-    "main_format":{
-        "product_brand": "",
-        "product_description": "",
-        "product_name": "",
-        "product_sku": "",
-        "product_Product_category": "",
-        "deal_1": [
-            {
-            "deal_conditions": "",
-            "deal_currency": "",
-            "deal_description": "",
-            "deal_frequency": "",
-            "deal_maxPrice": "",
-            "deal_minPrice": "",
-            "deal_pricebybaseunit": "",
-            "deal_loyaltycard": "",
-            "deal_type": ""
-            }
-        ]
-
-    },
-
-    "additional_format": {
-        "products": [
-            {
-              "product_id": "1",
-              "brand": "",
-              "name": "",
-              "details": {
-                "unit_size": "",
-                "bundle_size": "",
-                "deposit": "",
-                "origin_country": "",
-                "product_description": ""
-              },
-              "is_product_family": ""
-            }
-          ],
-          "deals": [
-                {
-                  "deal_id": "1",
-                  "type": "",
-                  "pricing": "",
-                  "price_type": "",
-                  "requirements": {
-                    "terms_and_conditions": "",
-                    "loyalty_card": "",
-                    "validity_period": ""
-                  },
-                  "details": {
-                    "price_by_base_unit": "",
-                    "discount": "",
-                    "deal_description": ""
-                  },
-                  "applied_to": "product-id",
-                  "is_deal_family": ""
-                }
-          ]
-    }
-}
-### Instructions for "main_format".
-
-- "product_name" must always have a value.
-- Avoid including "product_name" words in "product_description."
-- "product_description" should not contain details that relate to "product_name" or "deal_pricebybaseunit."
-- Record "deal_pricebybaseunit" only from text segments that follow the format <base-unit> = <price> (e.g., "1 l = € 1.50").
-- Always include product quantity (ml, l, g, kg) in "product_description."
-- Correct any French grammar errors, even if they appear in the source text.
-- Assign any unallocated text to "product_description."
-- If there’s no category data, use "Null" for "product_product_category."
-- "product_product_category" should follow Google product category guidelines and be in French.
-- "deal_loyaltycard" should be "True" or "False"
-- The "deal_maxPrice" and "deal_minPrice" entry must always follow the format f"{value:.2f}".
-- IMPORTANT if the offer contains a description of the age category (for example:"à partir de 3 ans", "Dès 3 ans" , "Dès 6 mois"), it must be written in deal_description 
-- The “deal_description” is used to describe the terms of the transaction, for example, “Offre valable sur le moins cher”.  This information should be complete and recorded in “deal_conditions” only if it is present on the offer
-- Record only the prices explicitly stated in the text. Do not generate or estimate any prices not present in the source material.
-- min and max price always should be identical
-- IMPORTANT ALWASY Each deal should be recorded in the format deal_1, deal_2, deal_3, and so on, even if they belong to the same product.
-- Each deal must be recorded in a separate array under a unique key, for example, “deal_1”, “deal_2”, with one deal object in the array.
-- Each deal should always display all prices available on the text.
-- If multiple prices or sizes appear in the text, each should have a separate "deal" entry within a single JSON response.
-- Set "deal_loyaltycard" to "True" if loyalty terms like "compte," "cagnoté," "prix déduit" appear.
-- Ensure each parameter value is unique to its assigned field.
-- Follow the structure and details in the examples without deviation.
-- "deal_type" should only be "REGULAR_PRICE","SALES_PRICE" or "OTHER"
-- If the deal contains prices (maxPrice or minPrice), the deal type must be “SALES_PRICE” or “REGULAR_PRICE”, definitely not “OTHER”.
-- Do not record discounts (e.g., -13%, -5€) unless "deal_type" is "OTHER."
-- For prices referring to the same product (different sizes, adult/junior), combine them within one JSON. Do not split into separate JSONs.
-- check if all the available prices from the page have been fixed accurately.
-- if some field is empty you must record Null
-- Always write "Null" with a capital letter
-- ALWAYS check yourself, all possible prices should be written down in separate deal
-- price cannot contain in deal_description 
-- if in description contain text ("Uni 31,37 € le carton de 1,31 m²") you need record only ("le carton de 1,31 m²")
-- if the price is indicated by mm, m2, m3, kg, L then it should be written in deal_pricebybaseunit (for example: “le m² = 29.95”) but if the price is not indicated by unit (for example “le carton de 1.31 m² = 31.37”) then you should write Null
-- the price specified per unit of measurement must be recorded in deal_pricebybaseunit price per 
-- quantity of goods for different weights (for example, “le carton de 1.31 m²”) should be recorded in deal_description and the minPrice and maxPrice should be recorded based on (1.31 m² * per unit price) but the price can be calculated and it is important to write exactly what is written on the offer
-- write only the data that is on the offer, do not make up your own 
-- deal_frequency always "ONCE"
-- IMPORTANT all deal must have unique numeric (for example:"deal_1","deal_2")
-- If the text is already present in the deal_description (for example:"Le produit de 426 g") for the “SALES_PRICE” deal type, it should not be duplicated in the deal_description of the “REGULAR_PRICE” deal type, leave this field blank or use an alternative text.
-
-
-### Instructions for "additional_format".
-- IMPORTANT check only in "deals" froms "additional_format" in "type" field should contain only the value only "SALES" not "SALES_PRICE" and "REGULAR"
-- check in "price_type" must be only value "SALES_PRICE" or "REGULAR_PRICE" not "REGULAR"
-- "type" should always be "SALES".
-- discount ("50€","-20€","-25%","34%") must be in "additional_format" in "discount" field
-- product_id must always match the deal quantity
-
-### instructions for OFFER WITH SEVERAL PRODUCT AND WITH LOYALTY CARD **:
-- price with a card is always written to the SALES_PRICE type price without a card is always in REGULAR 
-- write in the condition "Prix Carte" if there is a loyalty card, and "Sans carte" if there is not, BUT only if there was at least one card in the total offerer.
-- always write down each deal in a separate deal IMPORTANT
-- always check whether you have used all possible prices on the page and recorded them in a separate deal IMPORTANT
-- Never repeat the product name in the `product_description`.
-- If there’s an age rating (e.g., "à partir de 3 ans"), it should be placed in "product_description".
-- The discounted price from the store will be SALES_PRICE and the old price will be REGULAR_PRICE
-- The deal_description and deal_conditions fields in the deal must always be filled in
-- IMPORTANT all deal must be in separate deal
-- Always write down the age category if it is in the "deal_description" not "product_description"
-- Text (for example:"Sans carte","Prix Carte") must be only in deal_condition and exclude from deal_description
-- The product name and product size is written only in SALES_PRICE in deal_description otherwise write Null
-- Always check that all deal have been included
-- There can't be only two deals
-- IMPORTANT Always write deal_conditions text about loyalty carte ("Prix Carte","Sans carte")  if it exist 
-- if not exist information about loyalty carte IMPORTANT you need to write Null  but if exist you need to record relevant value
-- Data cannot be repeated in product_name product_brand product_description deal_conditions deal_description
-
-### instructions for SCENE WITH DIFFERENT PRODUCT AND PRICE **:
-- in product_description we write only the description of the general offer and the description of the individual product should be written in deal_description 
-- The text written in the deal_description for deals with the “REGULAR_PRICE” type cannot be written in the deal_description for deals with the “SALES_PRICE” type, and vice versa.
-- If duplication is detected, replace the deal_description for one of the deals with “Null”.
-- “SALES_PRICE” deal_description  must be Null
-- IMPORTANT If there is a scene of products, then you need to write each product into a separate deal with the SALES_PRICE type
-- always write down every price that is clearly on the page and do not come up with your own 
-- There can be no loyalty card in a scene with a different product and price
-- IMPORTANT to check the full text of the offer, where price information may be hidden (for example, in small print or in the product description or product text), it is important to immediately write down all prices that are available.
-- IMPORTANT write always all price in serarate deal
-- IMPORTANT there cannot be only 2 agreements in main_format
-- IMPORTANT all information about discount must be ignored and exclude all except  additional_format in discount
-- description about product should be only in deal_description in REGULAR_PRICE
-- IMPORTANT ALWAYS description about product should be only in deal_description in REGULAR_PRICE exclude and delete from deal_description in SALES_PRICE 
-- Data cannot be repeated in product_name product_brand product_description deal_conditions deal_description
-- conditions  "Prix avant remise" must be write only in REGULAR_PRICE
-- In product_description, we write only the description of the general offer. Any specific details about an individual product, such as size, weight, or additional characteristics, must be recorded in deal_description.
-- Ensure that product_description does not duplicate content from deal_description or deal_conditions.
-- If the description of the individual product is missing, leave the product_description field blank or write "Null."
-- If there are multiple products in an offer, their specific details should each correspond to separate deals and must be recorded individually in deal_description.
-- Do not include pricing or discount information in product_description; this information belongs in deal_description or other relevant fields.
-- ALWAYS in deal_conditions cannot contain information about discount
-- condition "Prix avant remise" must be only in REGULAR_PRICE
-
-### instructions for LOYALTY PROGRAM: WITH A DISCOUNT FROM THE STORE **:
-- IMPORTANT If there is a store name with a card discount, then the deal_conditions must specify the loyalty card discount from the store with the store name (for example: “Prix Carte lidl plus","Prix Carte ryobi","Prix Carte €urocora")
-- It is not allowed to come up with new data to uniquely identify the deal_description. If the value already exists in another deal, it should be replaced with Null.
-- deal_description cannot repeat in deal
-- All deals should have its own unique number 
-- The store name must be specified in deal_condition 
-- The discounted price will always be SALES_PRICE
-- If REGULAR_PRICE has no condition or description, you should write Null
-- if "deal_type"  contain "deal_maxPrice" or "deal_minPrice" then it's definitely not "OTHER" 
-- Dont create a separate deal with price (HT) 
-- In any case, do not write down the deal for the price without tax (HT)
-- Note that prices without tax (HT) should be ignored and not recorded at all.
-- IMPORTANT:
-    Always record in product_description prices  without tax (HT) in a format that includes cents.
-    If the price is crossed out or not crossed out, enter it in triangular brackets in the following format: <whole.cents€HT>.
-    Examples: <27.23€HT>, <43.46€HT>, <19.31€HT>.
-    Be sure:
-    Make sure that all prices without tax, even crossed out prices, are stored exclusively in the product_description field.
-    Never record prices without tax (HT) in any other field.
-    If there is only one price without tax, be sure to write only one price and do not invent others that do not exist
-    whether the cents after the decimal point are correct, the product_description should be <4.23€HT> or <4.15€HT>. 
-- IMPORTANT: In the product_description, only add the price in the format <799.99€HT> if it is clearly marked as HT on the page. If there is no “HT” marking, the price must be ALWAYS is excluded <799.99€HT> in product_description.
-- Always indicate the price, the crossed-out price excluding tax and the price excluding tax in the product description (for example: "Inner and outer polypropylene. metal fittings. 8 cm diameter.   <1.59€HT>, <43.29€HT>") and always indicate the price with HT in brackets
-- Price TTC always SALES_PRICE 
-- if text has "Dont éco. contribution : 0,12€TTC" you want to be ignored and record Null
-- Price HT always should be ignored
-- IMPORTANT If contain text ("Offre de remboursement 50€ soit 499€*","Offre de remboursement 60 € soit 139 €") this must be in SALES_PRICE only!!!, but without a price only ("Offre de remboursement 50€","Offre de remboursement 60 €")
-- delete price from deal_description
-- IMPORTANT the lower price will always be SALEC_PRICE and the higher price will always be REGULAR_PRICE
-- IMPORTANT ALWAYS description about product should be only in deal_description in REGULAR_PRICE exclude and delete from deal_description in SALES_PRICE 
-- ALWAYS EXCLUDE ALL INFORMATION ABOUT PRICE WITHOUT TAX (HT) FROM ALL DEAL MUST BE WRITE ONLY TTC 
-- IMPORTANT Data cannot be repeated in "product_name" "product_brand" "product_description" "deal_conditions" "deal_description" !!!
-- exclude from deal_description information about ("Le produit de 426 g") and write Null
-
-### instructions for OFFER WITH TWO SALES PRICE AND ONE REGULAR PRICE **:
-- When filling in the deal_description field, make sure that no words from the product_name are duplicated in this field.
-- If a word or phrase from the product_name is present in the deal_description, replace this field with “Null”.
-- Compare the text in deal_description with the text in product_name.
-- Use a case-insensitive check (no matter if it's uppercase or lowercase).
-- If there is even a partial match, remove the text from the deal_description or set it to “Null”.
-- write ("Prix avant remise" , "de ramise immediate","de ramise defferee") if this exist in offer
-- Make sure that the values in the deal_conditions field do not repeat between different deals. If any value remains after exclusion, it can only be recorded in one deal. In the rest - it is replaced by Null.
-- Data cannot be repeated in product_name product_brand product_description deal_conditions deal_description
-- IMPORTANT all information about discount must be ignored and exclude all except  additional_format in discount
-- You cannot write words to deal_description that have already been written to product_name, product_brand, product_description 
-
-### instructions for OFFER WITH SEVERAL PRODUCT **:
-
--Zeroing the deal_description:
-
-First, set the deal_description field in all deals to Null.
-Uniqueness check:
-
-For each deal (deal_1, deal_2, etc.), check if the deal_description value is repeated in previous deals:
-If the value is already used, change it to Null.
-If the value is unique, leave it unchanged.
-Processing rules:
-
-The deal_description field cannot be repeated in any deal, even if the deal_type is different (for example, SALES_PRICE and REGULAR_PRICE).
-If the deal_description field contains text that already exists in another deal, it is replaced with Null.
-How to work:
-
-Store unique deal_description values in an internal list or set.
-When adding a new value, check if it is in the list:
-If the value already exists, do not add it to the list, but set deal_description to Null.
-Result format:
-
-Each deal must have a unique deal_description field.
-If there are several deals, the structure is written in the format deal_1, deal_2, deal_3, etc.
-
-
-Translated with www.DeepL.com/Translator (free version)
-- In any case, do not write down the deal for the price without tax (HT)
-- Note that prices without tax (HT) should be ignored and not recorded at all.
-- IMPORTANT:
-    Always record in product_description prices  without tax (HT) in a format that includes cents.
-    If the price is crossed out or not crossed out, enter it in triangular brackets in the following format: <whole.cents€HT>.
-    Examples: <27.23€HT>, <43.46€HT>, <19.31€HT>.
-    Be sure:
-    Make sure that all prices without tax, even crossed out prices, are stored exclusively in the product_description field.
-    Never record prices without tax (HT) in any other field.
-    If there is only one price without tax, be sure to write only one price and do not invent others that do not exist
-    whether the cents after the decimal point are correct, the product_description should be <4.23€HT> or <4.15€HT>. 
-- IMPORTANT: In the product_description, only add the price in the format <799.99€HT> if it is clearly marked as HT on the page. If there is no “HT” marking, the price must be ALWAYS is excluded <799.99€HT> in product_description.
-- Always indicate the price, the crossed-out price excluding tax and the price excluding tax in the product description (for example: "Inner and outer polypropylene. metal fittings. 8 cm diameter.   <1.59€HT>, <43.29€HT>") and always indicate the price with HT in brackets
-- Price TTC always SALES_PRICE 
-- if text has "Dont éco. contribution : 0,12€TTC" you want to be ignored and record Null
-- Price HT always should be ignored
-- if there are prices with different prices, they should all be REGULAR_PRICE if they do not have a discount
-- crossed out price always REGULAR_PRICE
-- IMPORTANT delete all deal with a price without HT tax, even the price that is simply identical to HT, always delete 
-- IMPORTANT never create a separate deal with price (HT) 
-
-
-### instructions for OFFER WITH SEVERAL DEALS WITHOUT PRICE **:
-- IMPORTANT The in an offer with multiple transactions without a price cannot contain be type REGULAR_PRICE only SALES_PRICE always exclude REGULAR_PRICE
-- IMPORTANT "deal_type" should only be "SALES_PRICE" or "OTHER"
-- If the offer contains the “REGULAR_PRICE” type, it should be excluded immediately.
-- If offer has price his must be always SALES_PRICE and other type must be always type OTHER
-- IMPORTANT If the price per unit (“L'unité”) is specified, be sure to specify it in deal_conditions only in SALES_PRICE and delete in OTHER
-- IMPORTANT If price cannot contain in deal_deascription ("L'unité : 1€32") must be write only ("L'unité") without price
-- Information about discount ("-20% cagnotés sur le 2e (i)") must be in deal_description
-- In SALES_PRICE may not contain (“Prix Carte”) in deal_conditions always exclude immediately any mention of (“Prix Carte”) in SALES_PRICE
-- type OTHER cannot contain price always exclude min and max price
-- write in deal_pricebybaseunit information about base unit  ("Le kg : 3€30") only in SALES_PRICE
-- IMPORTANT to write in deal_conditions if there are clearly written on the page (“L'unité”) only in SALES_PRICE and exclude from OTHER
-- IMPORTANT IMMEDIATELY EXCLUDE FROM OTHER TYPE FROM deal_conditions (“L'unité”)
-""" 
-
-
-other_types_client_ocr = (
-
-    """
-Input:
-manche en acier réglable de 109 à 140 cm
-balai avec franges et tête articulée 360°,
-contient : manche + seau 6 L + panier d’essorage,
-LEIFHEIT
-Set Clean Twist Mop Ergo
-en5€
-34,90
-29,90*
-déduit
-!urocora
-prix
-
-Output:
-{
-    "product_brand": "LEIFHEIT",
-    "product_description": "contient : manche + seau 6 L + panier d’essorage, balai avec franges et tête articulée 360°, manche en acier réglable de 109 à 140 cm",
-    "product_name": "Set Clean Twist Mop Ergo",
-    "product_sku": "Null",
-    "product_Product_category": "Produits de nettoyage",
-    "deal_1": [
-      {
-        "deal_conditions": "Prix €urocora déduit",
-        "deal_currency": "EUR",
-        "deal_description": "Null",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 29.90,
-        "deal_minPrice": 29.90,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Yes",
-        "deal_type": "SALES_PRICE"
-      }
-    ],
-    "deal_2": [ 
-      {
-        "deal_conditions": "L'unité",
-        "deal_currency": "EUR",
-        "deal_description": "Null",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 34.90,
-        "deal_minPrice": 34.90,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Null",
-        "deal_type": "REGULAR_PRICE"
-      }
-    ]
-},
-
-Input:
-2,4L
-Garantie légale 2 ans
-• Parois transparentes #d
-• Utilisable avec de l'huile/beurre
-• Cuisson à l'air chaud
-mélanger
-• Panier anti-adhésif avec cuillère à
-Réf. : ARI-2953-XL
-iMachine à pop corn XL
-D’ÉCONOMIES(2)
-30€
-REMISE FIDÉLITÉ DÉDUITE
-99
-29€
-Soit
-d'éco-participation
-dont 0,30 €
-99
-59€
-99x
-99€
-Prix payé en caisse
-
-Output:
-{
-    "product_brand": "Null",
-    "product_description": "2,4L, Garantie légale 2 ans, Parois transparentes #d, Utilisable avec de l'huile/beurre, Cuisson à l'air chaud, Panier anti-adhésif avec cuillère à mélanger, dont 0,30 € d'éco-participation",
-    "product_name": "Machine à pop corn XL",
-    "product_sku": "ARI-2953-XL",
-    "product_Product_category": "Appareils de cuisine",
-    "deal_1": [
-      {
-        "deal_conditions": "Prix payé en caisse",
-        "deal_currency": "EUR",
-        "deal_description": "Null",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 59.99,
-        "deal_minPrice": 59.99,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Null",
-        "deal_type": "SALES_PRICE"
-      }
-    ],
-    "deal_2": [ 
-      {
-        "deal_conditions": "REMISE FIDÉLITÉ DÉDUITE",
-        "deal_currency": "EUR",
-        "deal_description": "Null",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 29.99,
-        "deal_minPrice": 29.99,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Yes",
-        "deal_type": "SALES_PRICE"
-      }
-    ],
-    "deal_3": [ 
-      {
-        "deal_conditions": "Null",
-        "deal_currency": "EUR",
-        "deal_description": "Null",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 99.99,
-        "deal_minPrice": 99.99,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Null",
-        "deal_type": "REGULAR_PRICE"
-      }
-    ]
-},
-
-Input:
-DÈS 500 € D’ACHATS
--5%(a)
-DÈS 1000 € D’ACHATS
-OU COMPOSITE
-DALLES EN BOIS
-DE TERRASSE ET
-SUR LES LAMES
--10%(a)
-CARTE
-EXCLU
-
-Output:
-{
-    "product_brand": "Null",
-    "product_description": "EXCLU CARTE",
-    "product_name": "-10% SUR LES LAMES DE TERRASSE ET DALLES EN BOIS OU COMPOSITE DÈS 1000 € D’ACHATS",
-    "product_sku": "Null",
-    "product_Product_category": "Matériaux de construction",
-    "deal_1": [
-      {
-        "deal_conditions": "Null",
-        "deal_currency": "Null",
-        "deal_description": "-10% DÈS 1000 € D’ACHATS",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": "Null",
-        "deal_minPrice": "Null",
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Yes",
-        "deal_type": "OTHER"
-      }
-    ],
-    "deal_2": [ 
-      {
-        "deal_conditions": "Null",
-        "deal_currency": "Null",
-        "deal_description": "-5% DÈS 500 € D’ACHATS",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": "Null",
-        "deal_minPrice": "Null",
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Yes",
-        "deal_type": "OTHER"
-      }
-    ]
-},
-
-Input:
-Lavabo XL
-intégré
-Porte-savon
-Douche
-Bain-douche
-Économie d’eau : débit réduit de 6 L/min
-Mitigeur lavabo
-90
-89€
-industriel
-Design
-Réf. 5059340583136.
-Mitigeur thermostatique bain-douche 119 €
-Réf. 5059340582757.
-Mitigeur thermostatique douche 109 €
-Mitigeur lavabo XL 129 € Réf. 5059340582658.
-Mitigeur lavabo 89,90 € Réf. 5059340582573.
-En laiton et zinc. Noir.
-Série mitigeurs Selenga
-
-Output:
-{
-    "product_brand": "Null",
-    "product_description": "Lavabo XL, Porte-savon intégré, Douche, Bain-douche, Économie d’eau : débit réduit de 6 L/min, Design industriel, En laiton et zinc. Noir.",
-    "product_name": "Série mitigeurs Selenga",
-    "product_sku": "5059340582573, 5059340582658, 5059340582757, 5059340583136",
-    "product_Product_category": "Plomberie",
-    "deal_1": [
-      {
-        "deal_conditions": "Null",
-        "deal_currency": "EUR",
-        "deal_description": "Mitigeur lavabo",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 89.90,
-        "deal_minPrice": 89.90,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Null",
-        "deal_type": "SALES_PRICE"
-      }
-    ],
-    "deal_2": [ 
-      {
-        "deal_conditions": "Null",
-        "deal_currency": "EUR",
-        "deal_description": "Mitigeur lavabo XL",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 129.00,
-        "deal_minPrice": 129.00,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Null",
-        "deal_type": "SALES_PRICE"
-      }
-    ],
-    "deal_3": [ 
-      {
-        "deal_conditions": "Null",
-        "deal_currency": "EUR",
-        "deal_description": "Mitigeur thermostatique douche",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 109.00,
-        "deal_minPrice": 109.00,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Null",
-        "deal_type": "SALES_PRICE"
-      }
-    ],
-    "deal_4": [ 
-      {
-        "deal_conditions": "Null",
-        "deal_currency": "EUR",
-        "deal_description": "Mitigeur thermostatique bain-douche",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 119.00,
-        "deal_minPrice": 119.00,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Null",
-        "deal_type": "SALES_PRICE"
-      }
-    ]
-},
-
-Input:
-120 x 170 cm
-Rectangle
-Rond Ø 80 cm
-le tapis
-90
-39€
-À partir de
-jute et coton
-Tressage
-jute naturel(1) :
-Existe en version
-Grand 59,90 € l. 120 x L. 170 cm. Réf. 5059340473956.
-Moyen 39,90 € l. 80 x L. 150 cm. Réf. 5059340474151.
-En jute et coton. Coloris noir.
-Tapis
-
-Output:
-{
-    "product_brand": "Null",
-    "product_description": "Tressage jute et coton, Existe en version jute naturel(1). Moyen l. 80 x L. 150 cm. En jute et coton. Coloris noir. Rond Ø 80 cm",
-    "product_name": "Tapis",
-    "product_sku": "5059340473956, 5059340474151",
-    "product_Product_category": "Tapis",
-    "deal_1": [
-      {
-        "deal_conditions": "À partir de le tapis",
-        "deal_currency": "EUR",
-        "deal_description": "Null",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 39.90,
-        "deal_minPrice": 39.90,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Null",
-        "deal_type": "SALES_PRICE"
-      }
-    ],
-    "deal_2": [ 
-      {
-        "deal_conditions": "Null",
-        "deal_currency": "EUR",
-        "deal_description": "Grand l. 120 x L. 170 cm",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 59.90,
-        "deal_minPrice": 59.90,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Null",
-        "deal_type": "SALES_PRICE"
-      }
-    ]
-},
-
-Input:
-Douche
-ANS
-5
-Bain-douche
-84,90 €
-Sans carte :
-Mitigeur lavabo
-90
-69€
-carte
-Prix
-Bain-douche 99 € Réf. 4059625168882. Prix sans la carte : 119 €
-Douche 89,90 € Réf. 4011097753508. Prix sans la carte : 109 €
-Réf. 4059625168813. Prix sans la carte : 84,90 €
-Lavabo M 69,90 € À installer sur vasque avec cuve profonde.
-En laiton chromé.
-Série mitigeurs Mysport
-
-Output:
-{
-    "product_brand": "Null",
-    "product_description": "Mitigeur lavabo. À installer sur vasque avec cuve profonde. En laiton chromé.",
-    "product_name": "Série mitigeurs Mysport",
-    "product_sku": "4059625168813, 4011097753508, 4059625168882",
-    "product_Product_category": "Plomberie",
-    "deal_1": [
-      {
-        "deal_conditions": "Prix carte",
-        "deal_currency": "EUR",
-        "deal_description": "Null",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 69.90,
-        "deal_minPrice": 69.90,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Yes",
-        "deal_type": "SALES_PRICE"
-      }
-    ],
-    "deal_2": [ 
-      {
-        "deal_conditions": "Sans carte",
-        "deal_currency": "EUR",
-        "deal_description": "Null",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 84.90,
-        "deal_minPrice": 84.90,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Null",
-        "deal_type": "REGULAR_PRICE"
-      }
-    ],
-    "deal_3": [ 
-      {
-        "deal_conditions": "Prix carte",
-        "deal_currency": "EUR",
-        "deal_description": "Douche",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 89.90,
-        "deal_minPrice": 89.90,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Yes",
-        "deal_type": "SALES_PRICE"
-      }
-    ],
-    "deal_4": [ 
-      {
-        "deal_conditions": "Sans carte",
-        "deal_currency": "EUR",
-        "deal_description": "Null",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 109.00,
-        "deal_minPrice": 109.00,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Null",
-        "deal_type": "REGULAR_PRICE"
-      }
-    ],
-    "deal_5": [ 
-      {
-        "deal_conditions": "Prix carte",
-        "deal_currency": "EUR",
-        "deal_description": "Bain-douche",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 99.00,
-        "deal_minPrice": 99.00,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Yes",
-        "deal_type": "SALES_PRICE"
-      }
-    ],
-    "deal_6": [ 
-      {
-        "deal_conditions": "Sans carte",
-        "deal_currency": "EUR",
-        "deal_description": "Null",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 119.00,
-        "deal_minPrice": 119.00,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Null",
-        "deal_type": "REGULAR_PRICE"
-      }
-    ]
-},
-
-Input:
-ZOOM BRODERIE
-d'OEKO-TEX®
-Label STANDARD 100
-Divers coloris selon les magasins
-Du 38 au 54
-100% coton
-INEXTENSO
-BERMUDA HOMME
-99
-9€
-d'OEKO-TEX®
-Label STANDARD 100
-Du S au XXL
-100% coton
-INEXTENSO
-TEE-SHIRT HOMME
-99
-5€
-
-Output:
-[
-  {
-      "product_brand": "INEXTENSO",
-      "product_description": "ZOOM BRODERIE, Label STANDARD 100 d'OEKO-TEX®, Divers coloris selon les magasins, 100% coton, Du 38 au 54",
-      "product_name": "BERMUDA HOMME",
-      "product_sku": "Null",
-      "product_Product_category": "Vêtements pour hommes",
-      "deal_1": [
-        {
-          "deal_conditions": "Null",
-          "deal_currency": "EUR",
-          "deal_description": "Null",
-          "deal_frequency": "ONCE",
-          "deal_maxPrice": 9.99,
-          "deal_minPrice": 9.99,
-          "deal_pricebybaseunit": "",
-          "deal_loyaltycard": "Null",
-          "deal_type": "SALES_PRICE"
-        }
-      ]
-  },
-  {
-      "product_brand": "INEXTENSO",
-      "product_description": "Label STANDARD 100 d'OEKO-TEX®, 100% coton, Du S au XXL",
-      "product_name": "TEE-SHIRT HOMME",
-      "product_sku": "Null",
-      "product_Product_category": "Vêtements pour hommes",
-      "deal_1": [
-        {
-          "deal_conditions": "Null",
-          "deal_currency": "EUR",
-          "deal_description": "Null",
-          "deal_frequency": "ONCE",
-          "deal_maxPrice": 5.99,
-          "deal_minPrice": 5.99,
-          "deal_pricebybaseunit": "",
-          "deal_loyaltycard": "Null",
-          "deal_type": "SALES_PRICE"
-        }
-      ]
-  }
-],
-
-Input:
-JUNIOR
-T-SHIRT ANTI-UV
--43%
-29,99€
-16,99€
-du 2 au 7 ans. Taille junior : du 8 au 16 ans.
-Taille bébé : du 6 au 18 mois. Taille cadet :
-86% polyester recyclé','14% élasthanne.
-Indice de protection solaire UPF 50.
-CADET/BÉBÉ
-T-SHIRT ANTI-UV
--32%
-24,99€
-16,99€
-texturisée
-antidérapante
-supérieure
-Semelle
-
-Output:
-{
-    "product_brand": "Null",
-    "product_description": "Indice de protection solaire UPF 50.\n86% polyester recyclé, 14% élasthanne.\nTaille bébé : du 6 au 18 mois. \nTaille cadet : du 2 au 7 ans. \nTaille junior : du 8 au 16 ans.",
-    "product_name": "T-SHIRT ANTI-UV",
-    "product_sku": "Null",
-    "product_Product_category": "Vêtements pour enfants",
-    "deal_1": [
-      {
-        "deal_conditions": "CADET/BÉBÉ",
-        "deal_currency": "EUR",
-        "deal_description": "Null",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 16.99,
-        "deal_minPrice": 16.99,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Null",
-        "deal_type": "SALES_PRICE"
-      }
-    ],
-    "deal_2": [ 
-      {
-        "deal_conditions": "CADET/BÉBÉ",
-        "deal_currency": "EUR",
-        "deal_description": "Null",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 24.99,
-        "deal_minPrice": 24.99,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Null",
-        "deal_type": "REGULAR_PRICE"
-      }
-    ],
-    "deal_3": [
-      {
-        "deal_conditions": "JUNIOR",
-        "deal_currency": "EUR",
-        "deal_description": "Null",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 16.99,
-        "deal_minPrice": 16.99,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Null",
-        "deal_type": "SALES_PRICE"
-      }
-    ],
-    "deal_4": [ 
-      {
-        "deal_conditions": "JUNIOR",
-        "deal_currency": "EUR",
-        "deal_description": "Null",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 29.99,
-        "deal_minPrice": 29.99,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Null",
-        "deal_type": "REGULAR_PRICE"
-      }
-    ]
-},
-
-    """
-
-)
-
-other_types_our_ocr = (
-
-    """
-Input:
-prix Eurocora déduit \n 5 € \n 34 € 90 \n en \n Euro cora \n 29 € 90 * \n Set Clean Twist Mop Ergo LEIFHEIT \n contient : manche + seau 6 L + panier d'essorage , balai avec franges et tête articulée 360 ° , manche en acier réglable de 109 à 140 cm \n
-
-Output:
-{
-    "product_brand": "LEIFHEIT",
-    "product_description": "contient : manche + seau 6 L + panier d’essorage, balai avec franges et tête articulée 360°, manche en acier réglable de 109 à 140 cm",
-    "product_name": "Set Clean Twist Mop Ergo",
-    "product_sku": "Null",
-    "product_Product_category": "Produits de nettoyage",
-    "deal_1": [
-      {
-        "deal_conditions": "Prix €urocora déduit",
-        "deal_currency": "EUR",
-        "deal_description": "Null",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 29.90,
-        "deal_minPrice": 29.90,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Yes",
-        "deal_type": "SALES_PRICE"
-      }
-    ],
-    "deal_2": [ 
-      {
-        "deal_conditions": "L'unité",
-        "deal_currency": "EUR",
-        "deal_description": "Null",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 34.90,
-        "deal_minPrice": 34.90,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Null",
-        "deal_type": "REGULAR_PRICE"
-      }
-    ]
-},
-
-Input:
-Capacité \n 2,4L \n Prix payé en caisse \n 9999 5999 \n € \n dont 0,30 € d'éco - participation \n 30 \n D'ÉCONOMIES ( 2 ) \n Soit \n 2999 \n REMISE FIDÉLITÉ DÉDUITE \n Popcern \n i Machine à pop corn XL \n Réf . : ARI - 2953 - XL \n • Panier anti - adhésif avec cuillère à mélanger \n • Cuisson à l'air chaud \n • Utilisable avec de l'huile / beurre \n • Parois transparentes Garantie légale 2 ans -Ariete \n
-
-Output:
-{
-    "product_brand": "Ariete",
-    "product_description": "Machine à pop corn XL, Panier anti-adhésif avec cuillère à mélanger, Cuisson à l'air chaud, Utilisable avec de l'huile/beurre, Parois transparentes, Garantie légale 2 ans, dont 0,30 € d'éco-participation",
-    "product_name": "Machine à pop corn XL",
-    "product_sku": "ARI-2953-XL",
-    "product_Product_category": "Appareils de cuisine",
-    "deal_1": [
-      {
-        "deal_conditions": "Prix payé en caisse",
-        "deal_currency": "EUR",
-        "deal_description": "Null",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 59.99,
-        "deal_minPrice": 59.99,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Null",
-        "deal_type": "SALES_PRICE"
-      }
-    ],
-    "deal_2": [ 
-      {
-        "deal_conditions": "REMISE FIDÉLITÉ DÉDUITE",
-        "deal_currency": "EUR",
-        "deal_description": "Null",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 29.99,
-        "deal_minPrice": 29.99,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Yes",
-        "deal_type": "SALES_PRICE"
-      }
-    ],
-    "deal_3": [ 
-      {
-        "deal_conditions": "Null",
-        "deal_currency": "EUR",
-        "deal_description": "Null",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 99.99,
-        "deal_minPrice": 99.99,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Null",
-        "deal_type": "REGULAR_PRICE"
-      }
-    ]
-},
-
-Input:
-EXCLU castorama CARTE \n la \n -10 % \n SUR LES LAMES DE TERRASSE ET DALLES EN BOIS OU COMPOSITE DÈS 1000 € D'ACHATS \n -5 % \n DÈS 500 € D'ACHATS \n
-
-Output:
-{
-    "product_brand": "Null",
-    "product_description": "EXCLU castorama CARTE",
-    "product_name": "-10% SUR LES LAMES DE TERRASSE ET DALLES EN BOIS OU COMPOSITE DÈS 1000 € D’ACHATS",
-    "product_sku": "Null",
-    "product_Product_category": "Matériaux de construction",
-    "deal_1": [
-      {
-        "deal_conditions": "Null",
-        "deal_currency": "Null",
-        "deal_description": "-10% DÈS 1000 € D’ACHATS",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": "Null",
-        "deal_minPrice": "Null",
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Yes",
-        "deal_type": "OTHER"
-      }
-    ],
-    "deal_2": [ 
-      {
-        "deal_conditions": "Null",
-        "deal_currency": "Null",
-        "deal_description": "-5% DÈS 500 € D’ACHATS",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": "Null",
-        "deal_minPrice": "Null",
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Yes",
-        "deal_type": "OTHER"
-      }
-    ]
-},
-
-Input:
-SUR \n LE \n L'UNITÉ : \n 15€90 \n SUR LE \n E O \n 3⁰ \n Queues de Homard Crues surgelées CASINO \n 2 x 100 g ( 200 g ) \n Autres variétés ou poids disponibles à des prix différents Le kg : 79 € 50 \n + \n Casino \n AVANTAGE carte \n -20 % -30 % -40 % \n CAGNOTTÉS + \n CAGNOTTÉS \n E O \n CAGNOTTÉS \n 45 \n FLOBN \n SUR LE \n QUEUES \n de Homard \n Atlantique Nord Quest SURGELÉES \n 200 g \n
-
-Output:
-{
-    "product_brand": "CASINO",
-    "product_description": "Queues de Homard Crues surgelées, 2 x 100 g (200 g), Autres variétés ou poids disponibles à des prix différents",
-    "product_name": "Queues de Homard Crues surgelées",
-    "product_sku": "Null",
-    "product_Product_category": "Fruits de mer",
-    "deal_1": [
-      {
-        "deal_conditions": "L'UNITÉ",
-        "deal_currency": "EUR",
-        "deal_description": "Null",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 15.90,
-        "deal_minPrice": 15.90,
-        "deal_pricebybaseunit": "Le kg : 79€50",
-        "deal_loyaltycard": "Null",
-        "deal_type": "SALES_PRICE"
-      }
-    ],
-    "deal_2": [ 
-      {
-        "deal_conditions": "Null",
-        "deal_currency": "EUR",
-        "deal_description": "-20% CAGNOTTÉS",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": "Null",
-        "deal_minPrice": "Null",
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Yes",
-        "deal_type": "OTHER"
-      }
-    ],
-    "deal_3": [ 
-      {
-        "deal_conditions": "Null",
-        "deal_currency": "EUR",
-        "deal_description": "-30% CAGNOTTÉS",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": "Null",
-        "deal_minPrice": "Null",
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Yes",
-        "deal_type": "OTHER"
-      }
-    ],
-    "deal_4": [ 
-      {
-        "deal_conditions": "Null",
-        "deal_currency": "EUR",
-        "deal_description": "-40% CAGNOTTÉS",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": "Null",
-        "deal_minPrice": "Null",
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Yes",
-        "deal_type": "OTHER"
-      }
-    ]
-},
-
-Input:
-BON BON \n 8990 \n Mitigeur lavabo \n + Design industriel \n Mitigeur thermostatique bain - douche 119 € \n Réf . 5059340583136 . \n Série mitigeurs Selenga \n En laiton et zinc . Noir . \n Mitigeur lavabo 89,90 € Réf . 5059340582573 . \n Mitigeur lavabo XL 129 € Réf . 5059340582658 . \n Mitigeur thermostatique douche 109 € \n Réf . 5059340582757 . \n Économie d'eau : débit réduit de 6 L / min \n OF \n Lavabo XL \n Douche \n + \n Porte - savon intégré \n Bain - douche \n 大 \n
-
-Output:
-{
-    "product_brand": "BON BON",
-    "product_description": "Lavabo XL, Porte-savon intégré, Douche, Bain-douche, Économie d’eau : débit réduit de 6 L/min, Design industriel, En laiton et zinc. Noir.",
-    "product_name": "Série mitigeurs Selenga",
-    "product_sku": "5059340582573, 5059340582658, 5059340582757, 5059340583136",
-    "product_Product_category": "Plomberie",
-    "deal_1": [
-      {
-        "deal_conditions": "Null",
-        "deal_currency": "EUR",
-        "deal_description": "Mitigeur lavabo",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 89.90,
-        "deal_minPrice": 89.90,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Null",
-        "deal_type": "SALES_PRICE"
-      }
-    ],
-    "deal_2": [ 
-      {
-        "deal_conditions": "Null",
-        "deal_currency": "EUR",
-        "deal_description": "Mitigeur lavabo XL",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 129.00,
-        "deal_minPrice": 129.00,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Null",
-        "deal_type": "SALES_PRICE"
-      }
-    ],
-    "deal_3": [ 
-      {
-        "deal_conditions": "Null",
-        "deal_currency": "EUR",
-        "deal_description": "Mitigeur thermostatique douche",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 109.00,
-        "deal_minPrice": 109.00,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Null",
-        "deal_type": "SALES_PRICE"
-      }
-    ],
-    "deal_4": [ 
-      {
-        "deal_conditions": "Null",
-        "deal_currency": "EUR",
-        "deal_description": "Mitigeur thermostatique bain-douche",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 119.00,
-        "deal_minPrice": 119.00,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Null",
-        "deal_type": "SALES_PRICE"
-      }
-    ]
-},
-
-Input:
-À partir de \n € \n 3990 \n le tapis \n Moyen 39,90 € 1.80 x L. 150 cm . Réf . 5059340474151 . Grand 59,90 € I. 120 x L. 170 cm . Réf . 5059340473956 . \n Tapis \n En jute et coton . Coloris noir . \n Tressage jute et coton \n Existe en jute 120 x Rond Ø
-
-Output:
-{
-    "product_brand": "Null",
-    "product_description": "Tressage jute et coton, Existe en jute. Moyen l. 80 x L. 150 cm. En jute et coton. Coloris noir. Rond Ø",
-    "product_name": "Tapis",
-    "product_sku": "5059340473956, 5059340474151",
-    "product_Product_category": "Tapis",
-    "deal_1": [
-      {
-        "deal_conditions": "À partir de le tapis",
-        "deal_currency": "EUR",
-        "deal_description": "Null",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 39.90,
-        "deal_minPrice": 39.90,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Null",
-        "deal_type": "SALES_PRICE"
-      }
-    ],
-    "deal_2": [ 
-      {
-        "deal_conditions": "Null",
-        "deal_currency": "EUR",
-        "deal_description": "Grand l. 120 x L. 170 cm",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 59.90,
-        "deal_minPrice": 59.90,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Null",
-        "deal_type": "SALES_PRICE"
-      }
-    ]
-},
-
-Input:
-Prix carte \n castorama \n 69 % \n Mitigeur lavabo Sans carte : \n 84,90 € \n hansgrohe \n GARANTIE \n LO \n 5 \n ANS \n Bain - douche \n Série mitigeurs Mysport \n En laiton chromé . \n Lavabo M 69,90 € À installer sur vasque avec cuve profonde . Réf . 4059625168813. Prix sans la carte : 84,90 € \n Douche \n Douche 89,90 € Réf . 4011097753508. Prix sans la carte : 109 € Bain - douche 99 € Réf . 4059625168882. Prix sans la carte : 119 € \n
-
-Output:
-{
-    "product_brand": "Null",
-    "product_description": "Mitigeur lavabo. À installer sur vasque avec cuve profonde. En laiton chromé.hansgrohe, GARANTIE 5 ANS",
-    "product_name": "Série mitigeurs Mysport",
-    "product_sku": "4059625168813, 4011097753508, 4059625168882",
-    "product_Product_category": "Plomberie",
-    "deal_1": [
-      {
-        "deal_conditions": "Prix carte",
-        "deal_currency": "EUR",
-        "deal_description": "Null",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 69.90,
-        "deal_minPrice": 69.90,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Yes",
-        "deal_type": "SALES_PRICE"
-      }
-    ],
-    "deal_2": [ 
-      {
-        "deal_conditions": "Sans carte",
-        "deal_currency": "EUR",
-        "deal_description": "Null",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 84.90,
-        "deal_minPrice": 84.90,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Null",
-        "deal_type": "REGULAR_PRICE"
-      }
-    ],
-    "deal_3": [ 
-      {
-        "deal_conditions": "Prix carte",
-        "deal_currency": "EUR",
-        "deal_description": "Douche",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 89.90,
-        "deal_minPrice": 89.90,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Yes",
-        "deal_type": "SALES_PRICE"
-      }
-    ],
-    "deal_4": [ 
-      {
-        "deal_conditions": "Sans carte",
-        "deal_currency": "EUR",
-        "deal_description": "Null",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 109.00,
-        "deal_minPrice": 109.00,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Null",
-        "deal_type": "REGULAR_PRICE"
-      }
-    ],
-    "deal_5": [ 
-      {
-        "deal_conditions": "Prix carte",
-        "deal_currency": "EUR",
-        "deal_description": "Bain-douche",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 99.00,
-        "deal_minPrice": 99.00,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Yes",
-        "deal_type": "SALES_PRICE"
-      }
-    ],
-    "deal_6": [ 
-      {
-        "deal_conditions": "Sans carte",
-        "deal_currency": "EUR",
-        "deal_description": "Null",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 119.00,
-        "deal_minPrice": 119.00,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Null",
-        "deal_type": "REGULAR_PRICE"
-      }
-    ]
-},
-
-Input:
-ZOOM BRODERIE \n OEKO - TEX® CONFIDENCE IN TEXTILES ge STANDARD 100 CQ 1203/6 IFTH \n Tasted for harmful substances www.oko-tx.com/and \n € \n 5 , ⁹⁹9 \n 99 \n OEKO - TEX® \n CONFIDENCE IN TEXTILES \n STANDARD 100 CQ 1203/6 IFTH Tested for harmful substances www.eko-tex.com/standard 00 \n € \n 99⁹⁹9 \n EXISTE \n JUSQU'AU \n 54 \n Inextenso \n TEE - SHIRT HOMME INEXTENSO 100 % coton \n Du S au XXL Label STANDARD 100 d'OEKO - TEX® \n **** \n BERMUDA HOMME \n INEXTENSO \n 100 % coton \n Du 38 au 54 \n Divers coloris selon les magasins Label STANDARD 100 d'OEKO - TEX® \n
-
-Output:
-[
-  {
-      "product_brand": "INEXTENSO",
-      "product_description": "ZOOM BRODERIE, Label STANDARD 100 d'OEKO-TEX®, Divers coloris selon les magasins, 100% coton, Du 38 au 54, CONFIDENCE IN TEXTILES IN TEXTILES ge STANDARD 100 CQ 1203/6 IFTH, Tasted for harmful substances www.oko-tx.com",
-      "product_name": "BERMUDA HOMME",
-      "product_sku": "Null",
-      "product_Product_category": "Vêtements pour hommes",
-      "deal_1": [
-        {
-          "deal_conditions": "Null",
-          "deal_currency": "EUR",
-          "deal_description": "Null",
-          "deal_frequency": "ONCE",
-          "deal_maxPrice": 9.99,
-          "deal_minPrice": 9.99,
-          "deal_pricebybaseunit": "",
-          "deal_loyaltycard": "Null",
-          "deal_type": "SALES_PRICE"
-        }
-      ]
-  },
-  {
-      "product_brand": "INEXTENSO",
-      "product_description": "Label STANDARD 100 d'OEKO-TEX®, 100% coton, Du S au XXL, CONFIDENCE IN TEXTILES IN TEXTILES ge STANDARD 100 CQ 1203/6 IFTH, Tasted for harmful substances www.oko-tx.com",
-      "product_name": "TEE-SHIRT HOMME",
-      "product_sku": "Null",
-      "product_Product_category": "Vêtements pour hommes",
-      "deal_1": [
-        {
-          "deal_conditions": "Null",
-          "deal_currency": "EUR",
-          "deal_description": "Null",
-          "deal_frequency": "ONCE",
-          "deal_maxPrice": 5.99,
-          "deal_minPrice": 5.99,
-          "deal_pricebybaseunit": "",
-          "deal_loyaltycard": "Null",
-          "deal_type": "SALES_PRICE"
-        }
-      ]
-  }
-],
-
-Input:
-Semelle + \n BORN \n 16.99 € 16.990 \n , 99 € \n 29,99 € -43 % \n T - SHIRT ANTI - UV JUNIOR \n 24,99 € -32 % \n T - SHIRT ANTI - UV CADET / BÉBÉ \n Indice de protection solaire UPF 50 . 86 % polyester recyclé , 14 % élasthanne . Taille bébé : du 6 au 18 mois . Taille cadet : du 2 au 7 ans . Taille junior : du 8 au 16 ans . \n
-
-Output:
-{
-    "product_brand": "Null",
-    "product_description": "Indice de protection solaire UPF 50.\n86% polyester recyclé, 14% élasthanne.\nTaille bébé : du 6 au 18 mois. \nTaille cadet : du 2 au 7 ans. \nTaille junior : du 8 au 16 ans.",
-    "product_name": "T-SHIRT ANTI-UV",
-    "product_sku": "Null",
-    "product_Product_category": "Vêtements pour enfants",
-    "deal_1": [
-      {
-        "deal_conditions": "CADET/BÉBÉ",
-        "deal_currency": "EUR",
-        "deal_description": "Null",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 16.99,
-        "deal_minPrice": 16.99,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Null",
-        "deal_type": "SALES_PRICE"
-      }
-    ],
-    "deal_2": [ 
-      {
-        "deal_conditions": "CADET/BÉBÉ",
-        "deal_currency": "EUR",
-        "deal_description": "Null",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 24.99,
-        "deal_minPrice": 24.99,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Null",
-        "deal_type": "REGULAR_PRICE"
-      }
-    ],
-    "deal_3": [
-      {
-        "deal_conditions": "JUNIOR",
-        "deal_currency": "EUR",
-        "deal_description": "Null",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 16.99,
-        "deal_minPrice": 16.99,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Null",
-        "deal_type": "SALES_PRICE"
-      }
-    ],
-    "deal_4": [ 
-      {
-        "deal_conditions": "JUNIOR",
-        "deal_currency": "EUR",
-        "deal_description": "Null",
-        "deal_frequency": "ONCE",
-        "deal_maxPrice": 29.99,
-        "deal_minPrice": 29.99,
-        "deal_pricebybaseunit": "",
-        "deal_loyaltycard": "Null",
-        "deal_type": "REGULAR_PRICE"
-      }
-    ]
-},
 
     """
 
