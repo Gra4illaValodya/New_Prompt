@@ -41,13 +41,13 @@ def chat_with_gpt4(prompt, image_path,  model="bonial-gpt-4o", max_tokens=4096):
         print(f"Total tokens: {total_tokens}")
 
         return response.choices[0].message['content'].strip()
-    except Exception as e:
+    except Exception as e:  
             return f"Error: {e}"    
 
 
 prompt = other_types
 
-image_path = "https://content-media.bonial.biz/03fb1ed5-e99f-466a-a770-6ff88d432887/main.jpg"
+image_path = "https://content-media.bonial.biz/571cdfca-9cad-4c6c-a1d8-e9ca6753aa19/main.jpg    ;"
 
 response = chat_with_gpt4(prompt, image_path) 
 
