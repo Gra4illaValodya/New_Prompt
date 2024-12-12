@@ -46,9 +46,9 @@ def chat_with_gpt4(prompt, image_path,  model="bonial-gpt-4o", max_tokens=4096):
 
 
 prompt = other_types
-    
-image_path = "https://content-media.bonial.biz/d20216d3-1e36-464a-b11b-87a4075d795d/main.jpg"
-    
+
+image_path = "https://content-media.bonial.biz/f126c210-399f-475c-b68e-00115a6f9b96/main.jpg"
+
 response = chat_with_gpt4(prompt, image_path) 
 
 print(response)

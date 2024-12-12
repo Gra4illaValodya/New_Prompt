@@ -171,9 +171,9 @@ Your answer should be purely json, without any additional explanation such as "`
 - if the offer clearly indicates the price without tax (HT), write it in the "main_format" in the "product_description"
 - if there is a loyalty program: with a discount from the store, then there can only be "REGULAR_PRICE" , "SALES_PRICE" "SPECIAL_PRICE" without "OTHER"
 - IMPORTANT sif the price is crossed out, it refers to the "main_format" in "deals" with the "deal_type": "REGULAR_PRICE".
-- IMPORTANT if you found a condition (“Withdraw immediately”,"remise immediate","REMISE IMMEDIATE"), write it in the “main_format” in “deals” in “deal_conditions” and it refers to the “main_format” in “deals” of the “deal_type” type: SALES_PRICE.
+- IMPORTANT if you found a condition ("remise immediate","REMISE IMMEDIATE","REMIS IMMEDIATE"), write it in the "main_format" in "deal" in "deal_conditions" and it refers to the "main_format" in "deals" of the "deal_type": "SALES_PRICE".
 - if there is a loyalty program: with a discount from the store, the discounted price will always be "main_format" in "deals" of "deal_type":"SPECIAL_PRICE"
-- IMPORTANT: if you find a condition (“remise différée”, “DE REMISE DIFFÉRÉE”), write it in the “main_format” in “deals” in “deal_conditions” and it refers to the “main_format” in “deals” of the “deal_type” type: “SPECIAL_PRICE”.
+- IMPORTANT: if the offer has a condition (“de remise différée”, “DE REMISE DIFFÉRÉE”), write it in the “main_format” in “deal” in “deal_conditions” and it will always be “SPECIAL_PRICE”.
 - the discounted price from the store must be written in "main_format" in "deals" in "deal_type": "SPECIAL_PRICE"
 - if the offer has several deals without a price, then the deal with a price will be "SALES_PRICE" and without a price will be "OTHER"
 - In "OTHER" cannot be price
@@ -182,7 +182,7 @@ Your answer should be purely json, without any additional explanation such as "`
 - IMPORTANT ALWAYS If the description (deal_description) is repeated in one group of deals, then this description is written to the deal from “main_format” in “deal” in “deal_description” with “deal_type” type: “REGULAR_PRICE”, and in the deal from "main_format" in "deal" in "deal_description" with the type "deal_type": “SALES_PRICE”, the deal_description field is filled with NULL.
 - always remove duplicate descriptions in main_format in deal in deal_type:SALES_PRICE
 - if the information relates to the product description, then you need to write it in the “main_format” “product_description” and in the “main_format” in “deal” in “deal_description” write Null
-
+- if the offer with two sale prices and one regular price has a size description ("T. XS à XL", "T. XS à XXL"), you need  always to write it in “main_format” in “deals” in “deal_description”.
  
 ### CHECK YOURSELF 
 - if the offer clearly indicates the price without tax HT 799.99 €HT, it must be written in the product_description in the format <799.99 €HT>
@@ -190,7 +190,8 @@ Your answer should be purely json, without any additional explanation such as "`
 - ALWAYS check in the offer with several products and with a loyalty card that in the main_format in the deal there are no repetitions in the deal_description, if there are such repetitions, then in the "main_format" in the "deal" with "deal_type":"SALES_PRICE" you need to write Null and in the “main_format” in the "deal" with “deal_type”: “REGULAR_PRICE” you need to leave unchanged 
 - check offer with several products and with a loyalty card should only type "REGULAR_PRICE" and "SALES_PRICE" without "SPECIAL_PRICE" and "OTHER"
 - check that the information in deal_pricebybaseunit remains only in deal_pricebybaseunit and is removed from all remaining ones
-
+- Check if we have an offer with two sales prices and one regular price, then we will have the following types “REGULAR_PRICE” “SALES_PRICE” “SPECIAL_PRICE” without “OTHER”
+- Check if it is always and everywhere ignored (“Dont éco-participation 10,00 €”, “Dont éco-participation 20,00 €”)
 """ 
 
 
