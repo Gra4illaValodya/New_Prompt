@@ -86,7 +86,7 @@ Your answer should be purely json, without any additional explanation such as "`
 - Always include product quantity (ml, l, g, kg) in "product_description."
 - Correct any French grammar errors, even if they appear in the source text.
 - in product_description cannot contain information about price(for example:"Existe aussi en ton pierre à 59,95 €")
-- if the product description clearly indicates an additional price (for example, “a ton of Pierre A”), then it should be written in the “main_format” in “deals” “deal_description” but it cannot be repeated in different deals, we replace it with Null in “main_format” in “deals” with "deal_type":"SALES_PRICE"
+- if the product description clearly indicates an additional price (for example, “a ton of Pierre A”), then it should be written in the “main_format” in “deal” “deal_description” but it cannot be repeated in different deals, we replace it with Null in “main_format” in “deal” with "deal_type":"SALES_PRICE"
 - If there’s no category data, use "Null" for "product_product_category."
 - "product_product_category" should follow Google product category guidelines and be in French.
 - "deal_loyaltycard" should be "True" or "False"
@@ -158,7 +158,7 @@ Your answer should be purely json, without any additional explanation such as "`
 - If there is no clearly spelled out text, then do not come up with something of your own and replace it with Null
 - if there is a scene with different products and prices, then you need to write all the names of the products in"main_format" in the "product_name" separated by a comma (for example: “MAILLOT DE BAIN” oder “CHAPEAU DE PAILLE”)
 - if there is a scene with different products and prices, there are cases when the price per unit is specified in text (for example: L`unite), then you need to write it in “main_format” in “deals”: “deal_description”  
-- if the price contains the text “Prix avant remise”, then it must be written in the “main_format” in “deals”: “deal_conditions” with ‘deals’: “REGULAR_PRICE”
+- if the price contains the text “Prix avant remise”, then it must be written in the “main_format” in “deals”: “deal_conditions” with "deals": “REGULAR_PRICE”
 - when there is a loyalty program: with a discount from the store, and there is a clearly written description, then you need to write a full description (for example:"Offre cumulable dans la limite d'un remboursement de 100 €, Voir conditions en magasin","Offre cumulable dans la limite d'un remboursement de 80 €, Voir conditions en magasin")  in the "deal_type":"SALES_PRICE"
 - when there is a loyalty program: with a discount from the store, then you need to write in the "main_format" in the "deals" in the "deal_conditions" write full condition (for example:"Offre de remboursement 60€","Offre de remboursement 40€","Offre de remboursement 30€") only in the "deal_type":"SALES_PRICE"
 - in the "main_format" in "deals" in "SALES_PRICE" and "REGULAR_PRICE" there must be a price if it is not there then do not create a deal. 
@@ -178,15 +178,15 @@ Your answer should be purely json, without any additional explanation such as "`
 - In "OTHER" cannot be price
 - if there is no explicit text (“Prix avant remise”,"prix avant remise), then in the “main_format” in “deals” where “deal_type”: “REGULAR_PRICE” in “deal_conditions” you need to write Nulls
 - If in the "main_format" in "product_name" there is information about the size for each deal, then you need to exclude it from "product_name" and add it to "deal_description"
-- IMPORTANT If the offer has a separate unique description, you do not need to specify the full description in "main_format" in "product_description" (L. 1.98 x H. 1.53 m. En acier galvanisé plastifié. Fil Ø 4 mm. Maille 200 x 55 mm. Anthracite. Also available in height. 1.73 m ou haut. 1.93 m et en vert.) and write it as NULL, and split the description into separate “deals” in "main_format" in "deals" "deal_description": ("L. 1.98 x H. 1.53 m. En acier galvanisé plastifié. Fil Ø 4 mm. Maille 200 x 55 mm. Anthracite.”, ”Existe aussi en haut. 1,73 m ou haut. 1.93 m et en vert.") is written in the maindeal_description field without duplication.**
-- IMPORTANT ALWAYS If the description (deal_description) is repeated in one group of deals, then this description is written to the deal with the “main_format” in “deals” in “deal_description” with “deal_type”:"REGULAR_PRICE" type, and in the deal with the “main_format” in “deals” in “deal_description” with “deal_type”:"SALES_PRICE" type, the deal_description field is filled in as NULL.
-
+- IMPORTANT ALWAYS If the description (deal_description) is repeated in one group of deals, then this description is written to the deal from “main_format” in “deal” in “deal_description” with “deal_type” type: “REGULAR_PRICE”, and in the deal from "main_format" in "deal" in "deal_description" with the type "deal_type": “SALES_PRICE”, the deal_description field is filled with NULL.
+- always remove duplicate descriptions in main_format in deal in deal_type:SALES_PRICE
 
 ### CHECK YOURSELF 
 - if the offer clearly indicates the price without tax HT 799.99 €HT, it must be written in the product_description in the format <799.99 €HT>
-- check if the deal has a clearly specified size(for example:"L. 1,98 x H. 1,53 m. En acier galvanisé plastifié. Fil 0 4 mm.Maille 200 x 55 mm. Anthracite.","Existe aussi en haut. 1,73 m ou haut. 1,93 m et en vert".") for the corresponding price, then this size should be written in full with the text in main_format in the deals in deal_description 
-- ALWAYS check in the offer with several products and with a loyalty card that in the main_format in the deals there are no repetitions in the deal_description, if there are such repetitions, then in the "main_format" in the "deals" with "deal_type":"SALES_PRICE" you need to write Null and in the “main_format” in the "deals" with “deal_type”: “REGULAR_PRICE” you need to leave unchanged 
+- check if the deal has a clearly specified size(for example:"L. 1,98 x H. 1,53 m. En acier galvanisé plastifié. Fil 0 4 mm.Maille 200 x 55 mm. Anthracite.","Existe aussi en haut. 1,73 m ou haut. 1,93 m et en vert","2 têtes, L. 33 x P. 15 x H. 14 cm.","L. 33 x P. 15 x H. 14 cm.") for the corresponding price, then this size should be written in full with the text in main_format in the deal in deal_description  with "deal_type":"REGULAR_PRICE" 
+- ALWAYS check in the offer with several products and with a loyalty card that in the main_format in the deal there are no repetitions in the deal_description, if there are such repetitions, then in the "main_format" in the "deal" with "deal_type":"SALES_PRICE" you need to write Null and in the “main_format” in the "deal" with “deal_type”: “REGULAR_PRICE” you need to leave unchanged 
 - check offer with several products and with a loyalty card should only type "REGULAR_PRICE" and "SALES_PRICE" without "SPECIAL_PRICE" and "OTHER"
+
 
 """ 
 
