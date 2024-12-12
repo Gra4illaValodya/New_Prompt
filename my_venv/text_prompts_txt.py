@@ -126,24 +126,25 @@ Your answer should be purely json, without any additional explanation such as "`
 - the art number (for example: "Art. 8207849", "Art. 8207594", Ref. 8203539"), should always be written in the "main_format" in "product_sku"
 - IMPORTANT when there is a loyalty program with a clearly specified discount and a store, you need to write the store's discount in “main_format” in “deals” in “deal_conditions” (for example: “Prix Lidl plus deduit”) 
 - IMPORTANT when loyalty program with a clearly specified discount and a store in the “main_format” in “deals” in deal_conditions it is written ( for example:“Prix Lidl plus deduit” and so on), you need  to write "main_format" in "deal" in  “deal_type”:"SPECIAL_PRICE" 
-
-- IMPORTANT In the product_description, only add the price in the format <799.99€HT> if it is clearly marked as HT on the page. If there is no “HT” marking, the price must be ALWAYS is excluded <799.99€HT> in product_description.
-- in TTC, deal_conditions will always be Null
-- Check each field (“product_description”, “deal_conditions”, “deal_description”) for the words “Dont éco. contribution”,"éco-contribution", "TTC".
-- Remove all references to contributions from these fields.
-- if the offer contains a price without tax (“HT”), you should ignore it and not create a separate deal for it
-- create deal only TTC price and exclude all information about HT
-- Price TTC always SALES_PRICE 
-- if the text contains “Dont éco. contribution : 0,42 €HT, 0,50 €TTC”, it should be ignored in the product_descriptions
-- if text has "Dont éco. contribution : 0,50€TTC" you want to be ignored and record Null
-- Always record in product_description prices  without tax (HT) in a format that includes cents.
-- IMPORTANT If the price is crossed out or not crossed out, enter it in triangular brackets in the following format: <whole.cents€HT>. Examples: <27.23€HT>, <43.46€HT>, <19.31€HT>.
-    Be sure:
-    Make sure that all prices without tax, even crossed out prices, are stored exclusively in the product_description field.
-    Never record prices without tax (HT) in any other field.
-    If there is only one price without tax, be sure to write only one price and do not invent others that do not exist
-    whether the cents after the decimal point are correct, the product_description should be <4.23€HT> or <4.15€HT>. 
-
+- **THESE RULES ARE SUITABLE FOR BOTH ONE PRODUCT AND SEVERAL** 
+(
+  - IMPORTANT In the product_description, only add the price in the format <799.99€HT> if it is clearly marked as HT on the page. If there is no “HT” marking, the price must be ALWAYS is excluded <799.99€HT> in product_description.
+  - in TTC, deal_conditions will always be Null
+  - Check each field (“product_description”, “deal_conditions”, “deal_description”) for the words “Dont éco. contribution”,"éco-contribution", "TTC".
+  - Remove all references to contributions from these fields.
+  - if the offer contains a price without tax (“HT”), you should ignore it and not create a separate deal for it
+  - create deal only TTC price and exclude all information about HT
+  - Price TTC always SALES_PRICE 
+  - if the text contains “Dont éco. contribution : 0,42 €HT, 0,50 €TTC”, it should be ignored in the product_descriptions
+  - if text has "Dont éco. contribution : 0,50€TTC" you want to be ignored and record Null
+  - Always record in product_description prices  without tax (HT) in a format that includes cents.
+  - IMPORTANT If the price is crossed out or not crossed out, enter it in triangular brackets in the following format: <whole.cents€HT>. Examples: <27.23€HT>, <43.46€HT>, <19.31€HT>.
+      Be sure:
+      Make sure that all prices without tax, even crossed out prices, are stored exclusively in the product_description field.
+      Never record prices without tax (HT) in any other field.
+      If there is only one price without tax, be sure to write only one price and do not invent others that do not exist
+      whether the cents after the decimal point are correct, the product_description should be <4.23€HT> or <4.15€HT>. 
+)
 ### Instructions for "additional_format".
 - in "additional_format" must product_id must always match the deal quantity (for example: "deal_1","deal_2").
 - IMPORTANT check only in "deals" froms "additional_format" in "type" field should contain only the value only "SALES" not "SALES_PRICE" and "REGULAR".
@@ -175,7 +176,7 @@ Your answer should be purely json, without any additional explanation such as "`
 - if there is a loyalty program: with a discount from the store, the discounted price will always be "main_format" in "deals" of "deal_type":"SPECIAL_PRICE"
 - IMPORTANT: if the offer has a condition (“de remise différée”, “DE REMISE DIFFÉRÉE”), write it in the “main_format” in “deal” in “deal_conditions” and it will always be “SPECIAL_PRICE”.
 - the discounted price from the store must be written in "main_format" in "deals" in "deal_type": "SPECIAL_PRICE"
-- if the offer has several deals without a price, then the deal with a price will be "SALES_PRICE" and without a price will be "OTHER"
+- if the offer has several deals without a price, then the deal with a price will be "REGULAR_PRICE" and without a price will be "OTHER"
 - In "OTHER" cannot be price
 - if there is no explicit text (“Prix avant remise”,"prix avant remise), then in the “main_format” in “deals” where “deal_type”: “REGULAR_PRICE” in “deal_conditions” you need to write Nulls
 - If in the "main_format" in "product_name" there is information about the size for each deal, then you need to exclude it from "product_name" and add it to "deal_description"
@@ -183,15 +184,22 @@ Your answer should be purely json, without any additional explanation such as "`
 - always remove duplicate descriptions in main_format in deal in deal_type:SALES_PRICE
 - if the information relates to the product description, then you need to write it in the “main_format” “product_description” and in the “main_format” in “deal” in “deal_description” write Null
 - if the offer with two sale prices and one regular price has a size description ("T. XS à XL", "T. XS à XXL"), you need  always to write it in “main_format” in “deals” in “deal_description”.
- 
+- IMPORTANT if the offer with several products In the product_description, only add the price in the format <799.99€HT> if it is clearly marked as HT on the page. If there is no “HT” marking, the price must be ALWAYS is excluded <799.99€HT> in product_description.
+- IMPORTANTif an offer with several transactions without a price, then we will always have 1 price recorded in REGULAR_PRICE and everything else must be recorded in OTHER and exclude the price  
+
+
 ### CHECK YOURSELF 
 - if the offer clearly indicates the price without tax HT 799.99 €HT, it must be written in the product_description in the format <799.99 €HT>
 - check if the deal has a clearly specified size(for example:"L. 1,98 x H. 1,53 m. En acier galvanisé plastifié. Fil 0 4 mm.Maille 200 x 55 mm. Anthracite.","Existe aussi en haut. 1,73 m ou haut. 1,93 m et en vert","2 têtes, L. 33 x P. 15 x H. 14 cm.","L. 33 x P. 15 x H. 14 cm.") for the corresponding price, then this size should be written in full with the text in main_format in the deal in deal_description  with "deal_type":"REGULAR_PRICE" 
 - ALWAYS check in the offer with several products and with a loyalty card that in the main_format in the deal there are no repetitions in the deal_description, if there are such repetitions, then in the "main_format" in the "deal" with "deal_type":"SALES_PRICE" you need to write Null and in the “main_format” in the "deal" with “deal_type”: “REGULAR_PRICE” you need to leave unchanged 
 - check offer with several products and with a loyalty card should only type "REGULAR_PRICE" and "SALES_PRICE" without "SPECIAL_PRICE" and "OTHER"
+if we have the following condition (“-20% of the cagnotés sur le 2e (i)”, “-30% of the cagnotés sur le 3e (i)”, “-40% of the cagnotés sur le 4e (i)”) then it will always be of type “OTHER”
 - check that the information in deal_pricebybaseunit remains only in deal_pricebybaseunit and is removed from all remaining ones
 - Check if we have an offer with two sales prices and one regular price, then we will have the following types “REGULAR_PRICE” “SALES_PRICE” “SPECIAL_PRICE” without “OTHER”
 - Check if it is always and everywhere ignored (“Dont éco-participation 10,00 €”, “Dont éco-participation 20,00 €”)
+- make sure that the price without tax (“HT”) is always ignored everywhere except main_format in the product_description in the format (“<27.23€HT>”, “<43.46€HT>”, “<19.31€HT”)
+- check if the HT price is clearly indicated on the offer then it should be written in the product_description
+
 """ 
 
 

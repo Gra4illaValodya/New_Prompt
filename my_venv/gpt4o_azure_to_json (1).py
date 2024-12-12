@@ -47,7 +47,7 @@ def chat_with_gpt4(prompt, image_path,  model="bonial-gpt-4o", max_tokens=4096):
 
 prompt = other_types
 
-image_path = "https://content-media.bonial.biz/f126c210-399f-475c-b68e-00115a6f9b96/main.jpg"
+image_path = "https://content-media.bonial.biz/03fb1ed5-e99f-466a-a770-6ff88d432887/main.jpg"
 
 response = chat_with_gpt4(prompt, image_path) 
 
@@ -88,13 +88,13 @@ print(response)
 # 5. https://content-media.bonial.biz/f126c210-399f-475c-b68e-00115a6f9b96/main.jpg
 
 # offer with several products
-# 1. https://content-media.bonial.biz/2f282406-e82a-48fa-a6cc-9b8b1f59cc0a/main.jpg
-# 2. https://content-media.bonial.biz/03fb1ed5-e99f-466a-a770-6ff88d432887/main.jpg
+# 1. https://content-media.bonial.biz/2f282406-e82a-48fa-a6cc-9b8b1f59cc0a/main.jpg --- тут проблема 
+# 2. https://content-media.bonial.biz/03fb1ed5-e99f-466a-a770-6ff88d432887/main.jpg --- тут проблема 
 # 3. https://content-media.bonial.biz/b17d7fb6-44a0-4089-aa24-d2dd63178d0f/main.jpg
 # 4. https://content-media.bonial.biz/0082a858-712c-42f8-b09a-6a8780a98c4a/main.jpg
 # 5. https://content-media.bonial.biz/306bab6e-496c-44a9-8bb9-a42479e97d79/main.jpg
 
-#	
+#offer with several transactions without a price
 # 1. https://content-media.bonial.biz/ad73e320-48e5-477a-9b74-301cc7848fd1/main.jpg
 # 2. https://content-media.bonial.biz/9ca0b951-e344-4075-9702-c901cd288680/main.jpg
 # 3. https://content-media.bonial.biz/9770d5fe-15f4-4d3e-b03c-32399b6a4b4d/main.jpg
