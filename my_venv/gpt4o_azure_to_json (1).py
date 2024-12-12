@@ -42,13 +42,13 @@ def chat_with_gpt4(prompt, image_path,  model="bonial-gpt-4o", max_tokens=4096):
 
         return response.choices[0].message['content'].strip()
     except Exception as e:
-            return f"Error: {e}"
+            return f"Error: {e}"    
 
 
 prompt = other_types
-
-image_path = "https://content-media.bonial.biz/c7b603da-16f4-42db-acf1-44914d7b0b7c/main.jpg"
-
+    
+image_path = "https://content-media.bonial.biz/d20216d3-1e36-464a-b11b-87a4075d795d/main.jpg"
+    
 response = chat_with_gpt4(prompt, image_path) 
 
 print(response)
@@ -71,8 +71,8 @@ print(response)
 
 # loyalty program: with a discount from the store
 #    1. https://content-media.bonial.biz/ecd523ca-e31b-445b-9f9e-f62de6252130/main.jpg
-# 2. https://content-media.bonial.biz/65b8e869-865e-4c9b-ad5b-aa0e8406e3ec/main.jpg
-# 3. https://content-media.bonial.biz/892beb4c-0bcd-44bb-86f9-b0c762186df4/main.jpg
+# 2. https://content-media.bonial.biz/65b8e869-865e-4c9b-ad5b-aa0e8406e3ec/main.jpg 
+# 3. https://content-media.bonial.biz/892beb4c-0bcd-44bb-86f9-b0c762186df4/main.jpg --- тут не забирається Le produit de 426 g
 # 4. https://content-media.bonial.biz/2d185e05-bfca-485b-b781-bf261bae55e5/main.jpg 
 # 5. https://content-media.bonial.biz/d20216d3-1e36-464a-b11b-87a4075d795d/main.jpg
 

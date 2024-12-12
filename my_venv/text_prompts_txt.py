@@ -112,6 +112,7 @@ Your answer should be purely json, without any additional explanation such as "`
 - if in description contain text ("Uni 31,37 € le carton de 1,31 m²") you need record only ("le carton de 1,31 m²")
 - if the price is indicated by mm, m2, m3, kg, L then it should be written in deal_pricebybaseunit (for example: “le m² = 29.95”) but if the price is not indicated by unit (for example “le carton de 1.31 m² = 31.37”) then you should write Null
 - the price specified per unit of measurement must be recorded in deal_pricebybaseunit price per 
+- cannot duplicate deal_pricebybaseunit (for exmaple:"1 kg = 8,58 €") and deal_description (for exmaple:"1 kg = 8,58 €") in such cases always write null in deal_description
 - quantity of goods for different weights (for example, “le carton de 1.31 m²”) should be recorded in deal_description and the minPrice and maxPrice should be recorded based on (1.31 m² * per unit price) but the price can be calculated and it is important to write exactly what is written on the offer
 - write only the data that is on the offer, do not make up your own 
 - deal_frequency always "ONCE"
@@ -124,7 +125,7 @@ Your answer should be purely json, without any additional explanation such as "`
 - if product_name and product_sku are the same, then you need to write null in product_sku
 - the art number (for example: "Art. 8207849", "Art. 8207594", Ref. 8203539"), should always be written in the "main_format" in "product_sku"
 - IMPORTANT when there is a loyalty program with a clearly specified discount and a store, you need to write the store's discount in “main_format” in “deals” in “deal_conditions” (for example: “Prix Lidl plus deduit”) 
-- IMPORTANT when loyalty program with a clearly specified discount and a store in the “main_format” in “deals” in deal_conditions it is written ( for example:“Prix Lidl plus deduit” and so on), you need to write SPECIAL_PRICE in “deal_type”
+- IMPORTANT when loyalty program with a clearly specified discount and a store in the “main_format” in “deals” in deal_conditions it is written ( for example:“Prix Lidl plus deduit” and so on), you need  to write "main_format" in "deal" in  “deal_type”:"SPECIAL_PRICE" 
 
 - IMPORTANT In the product_description, only add the price in the format <799.99€HT> if it is clearly marked as HT on the page. If there is no “HT” marking, the price must be ALWAYS is excluded <799.99€HT> in product_description.
 - in TTC, deal_conditions will always be Null
@@ -180,13 +181,15 @@ Your answer should be purely json, without any additional explanation such as "`
 - If in the "main_format" in "product_name" there is information about the size for each deal, then you need to exclude it from "product_name" and add it to "deal_description"
 - IMPORTANT ALWAYS If the description (deal_description) is repeated in one group of deals, then this description is written to the deal from “main_format” in “deal” in “deal_description” with “deal_type” type: “REGULAR_PRICE”, and in the deal from "main_format" in "deal" in "deal_description" with the type "deal_type": “SALES_PRICE”, the deal_description field is filled with NULL.
 - always remove duplicate descriptions in main_format in deal in deal_type:SALES_PRICE
+- if the information relates to the product description, then you need to write it in the “main_format” “product_description” and in the “main_format” in “deal” in “deal_description” write Null
 
+ 
 ### CHECK YOURSELF 
 - if the offer clearly indicates the price without tax HT 799.99 €HT, it must be written in the product_description in the format <799.99 €HT>
 - check if the deal has a clearly specified size(for example:"L. 1,98 x H. 1,53 m. En acier galvanisé plastifié. Fil 0 4 mm.Maille 200 x 55 mm. Anthracite.","Existe aussi en haut. 1,73 m ou haut. 1,93 m et en vert","2 têtes, L. 33 x P. 15 x H. 14 cm.","L. 33 x P. 15 x H. 14 cm.") for the corresponding price, then this size should be written in full with the text in main_format in the deal in deal_description  with "deal_type":"REGULAR_PRICE" 
 - ALWAYS check in the offer with several products and with a loyalty card that in the main_format in the deal there are no repetitions in the deal_description, if there are such repetitions, then in the "main_format" in the "deal" with "deal_type":"SALES_PRICE" you need to write Null and in the “main_format” in the "deal" with “deal_type”: “REGULAR_PRICE” you need to leave unchanged 
 - check offer with several products and with a loyalty card should only type "REGULAR_PRICE" and "SALES_PRICE" without "SPECIAL_PRICE" and "OTHER"
-
+- check that the information in deal_pricebybaseunit remains only in deal_pricebybaseunit and is removed from all remaining ones
 
 """ 
 
