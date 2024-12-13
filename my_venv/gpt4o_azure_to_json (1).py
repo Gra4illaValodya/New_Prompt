@@ -47,14 +47,13 @@ def chat_with_gpt4(prompt, image_path,  model="bonial-gpt-4o", max_tokens=4096):
 
 prompt = other_types
 
-image_path = "https://content-media.bonial.biz/571cdfca-9cad-4c6c-a1d8-e9ca6753aa19/main.jpg    ;"
+image_path = "https://content-media.bonial.biz/c7b603da-16f4-42db-acf1-44914d7b0b7c/main.jpg"
 
 response = chat_with_gpt4(prompt, image_path) 
 
 print(response)
 
 # offer with several products and with loyalty card :
-# ПРОБЛЕМА З ДУБЛІКАТАМИ В ОПИСІ в 2
 # 1. https://content-media.bonial.biz/571cdfca-9cad-4c6c-a1d8-e9ca6753aa19/main.jpg 
 # 2. https://content-media.bonial.biz/0bd2e999-a540-4067-95ad-33abc5b1fb8c/main.jpg 
 # 3. https://content-media.bonial.biz/ae8a8c75-3e3a-48e5-93f9-dfd56387f329/main.jpg 
@@ -68,7 +67,6 @@ print(response)
 # 4. https://content-media.bonial.biz/386b3e86-ddcd-41a8-b5a2-96d3705a16ee/main.jpg
 # 5. https://content-media.bonial.biz/341d65ed-fd3d-494f-a115-c18bd2b57bcf/main.jpg
 
-
 # loyalty program: with a discount from the store
 #    1. https://content-media.bonial.biz/ecd523ca-e31b-445b-9f9e-f62de6252130/main.jpg
 # 2. https://content-media.bonial.biz/65b8e869-865e-4c9b-ad5b-aa0e8406e3ec/main.jpg 
@@ -76,7 +74,7 @@ print(response)
 # 4. https://content-media.bonial.biz/2d185e05-bfca-485b-b781-bf261bae55e5/main.jpg 
 # 5. https://content-media.bonial.biz/d20216d3-1e36-464a-b11b-87a4075d795d/main.jpg
 
-# 6. 
+
 # 7. https://content-media.bonial.biz/78e5f43f-7084-4760-8dae-229772543ded/main.jpg
 # 8. https://content-media.bonial.biz/ea6056d4-b570-49be-b6d5-8c299707e56b/main.jpg
 
