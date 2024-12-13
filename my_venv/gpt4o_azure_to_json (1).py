@@ -47,7 +47,7 @@ def chat_with_gpt4(prompt, image_path,  model="bonial-gpt-4o", max_tokens=4096):
 
 prompt = other_types
 
-image_path = "https://content-media.bonial.biz/c7b603da-16f4-42db-acf1-44914d7b0b7c/main.jpg"
+image_path = "https://content-media.bonial.biz/5809b76c-3070-48c6-9ce2-fc46fcc8e7cb/main.jpg"
 
 response = chat_with_gpt4(prompt, image_path) 
 
@@ -73,8 +73,6 @@ print(response)
 # 3. https://content-media.bonial.biz/892beb4c-0bcd-44bb-86f9-b0c762186df4/main.jpg --- тут не забирається Le produit de 426 g
 # 4. https://content-media.bonial.biz/2d185e05-bfca-485b-b781-bf261bae55e5/main.jpg 
 # 5. https://content-media.bonial.biz/d20216d3-1e36-464a-b11b-87a4075d795d/main.jpg
-
-
 # 7. https://content-media.bonial.biz/78e5f43f-7084-4760-8dae-229772543ded/main.jpg
 # 8. https://content-media.bonial.biz/ea6056d4-b570-49be-b6d5-8c299707e56b/main.jpg
 
@@ -86,8 +84,8 @@ print(response)
 # 5. https://content-media.bonial.biz/f126c210-399f-475c-b68e-00115a6f9b96/main.jpg
 
 # offer with several products
-# 1. https://content-media.bonial.biz/2f282406-e82a-48fa-a6cc-9b8b1f59cc0a/main.jpg --- тут проблема 
-# 2. https://content-media.bonial.biz/03fb1ed5-e99f-466a-a770-6ff88d432887/main.jpg --- тут проблема 
+# 1. https://content-media.bonial.biz/2f282406-e82a-48fa-a6cc-9b8b1f59cc0a/main.jpg 
+# 2. https://content-media.bonial.biz/03fb1ed5-e99f-466a-a770-6ff88d432887/main.jpg 
 # 3. https://content-media.bonial.biz/b17d7fb6-44a0-4089-aa24-d2dd63178d0f/main.jpg
 # 4. https://content-media.bonial.biz/0082a858-712c-42f8-b09a-6a8780a98c4a/main.jpg
 # 5. https://content-media.bonial.biz/306bab6e-496c-44a9-8bb9-a42479e97d79/main.jpg

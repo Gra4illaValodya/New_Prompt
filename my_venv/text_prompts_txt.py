@@ -83,6 +83,8 @@ Your answer should be purely json, without any additional explanation such as "`
 - "product_name" must always have a value.
 - Avoid including "product_name" words in "product_description."
 - "product_description" should not contain details that relate to "product_name" or "deal_pricebybaseunit."
+- If the deal_pricebybaseunit field contains a value (for example, “1 kg = 8.58 €”), then this value should be removed from the deal_description.
+- The deal_description field should not contain details that duplicate or relate to information from deal_pricebybaseunit.
 - Record "deal_pricebybaseunit" only from text segments that follow the format <base-unit> = <price> (e.g., "1 l = € 1.50").
 - Always include product quantity (ml, l, g, kg) in "product_description."
 - Correct any French grammar errors, even if they appear in the source text.
@@ -127,8 +129,7 @@ Your answer should be purely json, without any additional explanation such as "`
 - IMPORTANT the art number (for example: "Art. 8207849", "Art. 8207594", "Ref. 3663602991601.", " Réf. 3188000776648."), should always be written in the "main_format" in "product_sku"
 - IMPORTANT if the description says “Ref. 3188000776648” (e.g. ‘1 tête, L. 10 x P. 14 x H. 13 cm. Réf. 3188000776648’). If so, remove it from the description and add it to “main_format” in “product_sku”. 
 - IMPORTANT If “main_format” in “deal” contains all the necessary information for the description in “deal_description”, then “main_format” in “product_description” should be set to Null.
-- IMPORTANT when there is a loyalty program with a clearly specified discount and a store, you need to write the store's discount in “main_format” in “deals” in “deal_conditions” (for example: “Prix Lidl plus deduit”) 
-- IMPORTANT when loyalty program with a clearly specified discount and a store in the “main_format” in “deals” in deal_conditions it is written ( for example:“Prix Lidl plus deduit” and so on), you need  to write "main_format" in "deal" in  “deal_type”:"SPECIAL_PRICE" 
+- IMPORTANT eliminate all duplicates in "deal_description"
 - **THESE RULES ARE SUITABLE FOR BOTH ONE PRODUCT AND SEVERAL** 
 (
   - IMPORTANT In the product_description, only add the price in the format <799.99€HT> if it is clearly marked as HT on the page. If there is no “HT” marking, the price must be ALWAYS is excluded <799.99€HT> in product_description.
@@ -148,6 +149,14 @@ Your answer should be purely json, without any additional explanation such as "`
       If there is only one price without tax, be sure to write only one price and do not invent others that do not exist
       whether the cents after the decimal point are correct, the product_description should be <4.23€HT> or <4.15€HT>. 
 )
+- IMPORTANT when there is a loyalty program with a clearly specified discount from the store, you need to write the store's discount in the “main_format” in the “deal” in the “deal_conditions” (for example: “Prix Lidl plus deduit”) 
+- IMPORTANT when a loyalty program with a clearly indicated discount from the store is spelled out in the “main_format” in the “deal” in the deal_conditions (for example: “Prix Lidl plus deduit” and so on), you need to write in the “main_format” in the “deal” in the “deal_type”: “SPECIAL_PRICE” 
+
+- IMPORTANT: make sure that the product_description contains all prices without HT tax, if there are such prices (“<1.59 €HT>”, “<43.29 €HT>”) immediately add them to the  "main_format" in "product_description" and only then generate JSON 
+- IMPORTANT: always check whether you need to write information about “<1.59 €HT>”, “<43.29 €HT>” in the product_description sometimes you do not add a correctly crossed out HT price or add it where there are no HT prices at all
+- if text has "Dont éco. contribution : 0,12€TTC" you want to be ignored and record Null
+
+
 
 ### Instructions for "additional_format".
 - in "additional_format" must product_id must always match the deal quantity (for example: "deal_1","deal_2").
@@ -177,9 +186,9 @@ Your answer should be purely json, without any additional explanation such as "`
 - if there is a loyalty program: with a discount from the store, then there can only be "REGULAR_PRICE" , "SALES_PRICE" "SPECIAL_PRICE" without "OTHER"
 - IMPORTANT sif the price is crossed out, it refers to the "main_format" in "deals" with the "deal_type": "REGULAR_PRICE".
 - IMPORTANT if you found a condition ("remise immediate","REMISE IMMEDIATE","REMIS IMMEDIATE"), write it in the "main_format" in "deal" in "deal_conditions" and it refers to the "main_format" in "deals" of the "deal_type": "SALES_PRICE".
-- if there is a loyalty program: with a discount from the store, the discounted price will always be "main_format" in "deals" of "deal_type":"SPECIAL_PRICE"
+- if there is a loyalty program: with a discount from the store, the discounted price will  be "main_format" in "deals" of "deal_type":"SPECIAL_PRICE"
 - IMPORTANT: if the offer has a condition (“de remise différée”, “DE REMISE DIFFÉRÉE”), write it in the “main_format” in “deal” in “deal_conditions” and it will always be “SPECIAL_PRICE”.
-- the discounted price from the store must be written in "main_format" in "deals" in "deal_type": "SPECIAL_PRICE"
+- the discounted price from the store (for example:"lidl plus") must be written in "main_format" in "deals" in "deal_type": "SPECIAL_PRICE"
 - if the offer has several deals without a price, then the deal with a price will be "REGULAR_PRICE" and without a price will be "OTHER"
 - In "OTHER" cannot be price
 - if there is no explicit text (“Prix avant remise”,"prix avant remise), then in the “main_format” in “deals” where “deal_type”: “REGULAR_PRICE” in “deal_conditions” you need to write Nulls
@@ -195,6 +204,10 @@ Your answer should be purely json, without any additional explanation such as "`
 
 
 ### CHECK YOURSELF 
+- Check if all duplicates are excluded from the "main_format" in "deal" in "deal_description" when "deal_type":"SALES_PRICE".
+- Check if the information in deal_description contains all necessary details; if so, write Null in product_description.
+- make sure that the condition “Prix Lidl plus deduit” is always SPECIAL_PRICE
+- make sure that the price without tax (“HT”) is always ignored everywhere except main_format in the product_description in the format (“<27.23€HT>”, “<43.46€HT>”, “<19.31€HT”)
 - if the offer clearly indicates the price without tax HT 799.99 €HT, it must be written in the product_description in the format <799.99 €HT>
 - It is IMPORTANT to check whether the contract has clearly stated dimensions (e.g: “L. 1.98 x H. 1.53 m. En acier galvanisé plastifié. Fil 0 4 mm.Maille 200 x 55 mm. Anthracite.”, ”Existe aussi en haut. 1,73 m ou haut. 1.93 m et en vert”, ‘2 têtes, L. 33 x P. 15 x H. 14 cm.’, ‘L. 33 x P. 15 x H. 14 cm.’) at the appropriate price, then this size with the accompanying text should be written main_format in the deal in the deal_description with ‘deal_type’: “REGULAR_PRICE” 
 - ALWAYS check in the offer with several products and with a loyalty card that in the main_format in the deal there are no repetitions in the deal_description, if there are such repetitions, then in the "main_format" in the "deal" with "deal_type":"SALES_PRICE" you need to write Null and in the “main_format” in the "deal" with “deal_type”: “REGULAR_PRICE” you need to leave unchanged 
@@ -208,6 +221,7 @@ Your answer should be purely json, without any additional explanation such as "`
 - check that there is an equal number of "deals" in which the price with tax ("TTC") is recorded to the price without tax ("HT") recorded in the "main_format" in the "product_description"
 - check if the sku number is explicitly indicated on the offer then it should be written in “main_format” in “product_sku”
 Check that the description says “Ref. 3188000776648” (e.g. ‘1 tête, L. 10 x P. 14 x H. 13 cm. Réf. 3188000776648’). If so, remove it from the description and add it to “main_format” in “product_sku”.
+- Check if the text contains “Dont éco. contribution : 0,50 €TTC”, ignore it and write Null.
 """ 
 
 
