@@ -78,6 +78,7 @@ Your answer should be purely json, without any additional explanation such as "`
 
 
 ### Instructions for "main_format".
+- if the offer has a price with a tax (“HT“, ‘TTC’) then you must write the general description in ‘main_format’ in ‘product_description’ in the format (full description <1.25 € HT>, <1.99 € HT>, <2.39 € HT>, <20.90 € HT>, <1.25 € HT>”)
 - in the “main_format” in “deal” in “deal_description” it turns out to write all the information that is needed for the description then “main_format” “product_description” can be written as Null
 - If duplicates appear in both "deal_type":"REGULAR_PRICE" and "deal_type":"SALES_PRICE" for the same group, retain the "deal_description" in "REGULAR_PRICE" and replace it with Null in "SALES_PRICE".
 - "product_name" must always have a value.
@@ -144,7 +145,6 @@ Your answer should be purely json, without any additional explanation such as "`
   - create deal only TTC price and exclude all information about HT
   - Price TTC always SALES_PRICE 
   - if the text contains “Dont éco. contribution : 0,42 €HT, 0,50 €TTC”, it should be ignored in the product_descriptions
-  - if text has "Dont éco. contribution : 0,50€TTC" you want to be ignored and record Null
   - Always record in product_description prices  without tax (HT) in a format that includes cents.
   - IMPORTANT If the price is crossed out or not crossed out, enter it in triangular brackets in the following format: <whole.cents€HT>. Examples: <27.23€HT>, <43.46€HT>, <19.31€HT>.
       Be sure:
@@ -210,7 +210,8 @@ Your answer should be purely json, without any additional explanation such as "`
 - Check if the information in deal_description contains all necessary details; if so, write Null in product_description.
 - make sure that the condition “Prix Lidl plus deduit” is always SPECIAL_PRICE
 - make sure that the price without tax (“HT”) is always ignored everywhere except main_format in the product_description in the format (“<27.23€HT>”, “<43.46€HT>”, “<19.31€HT”)
-- if the offer clearly indicates the price without tax HT 799.99 €HT, it must be written in the product_description in the format <799.99 €HT>
+- if text has ("Dont éco. contribution : 0,50€TTC","Dont éco. contribution : 0,42€HT, 0,50€TTC" and so on) you should to be ignored and record Null
+- if the offer clearly indicates the price without tax HT 799.99 €HT, it must be written in the product_description in the format (Fabriquée avec des granulats issus de matières plastiques recyclées. <799.99 €HT>)
 - It is IMPORTANT to check whether the contract has clearly stated dimensions (e.g: “L. 1.98 x H. 1.53 m. En acier galvanisé plastifié. Fil 0 4 mm.Maille 200 x 55 mm. Anthracite.”, ”Existe aussi en haut. 1,73 m ou haut. 1.93 m et en vert”, ‘2 têtes, L. 33 x P. 15 x H. 14 cm.’, ‘L. 33 x P. 15 x H. 14 cm.’) at the appropriate price, then this size with the accompanying text should be written main_format in the deal in the deal_description with ‘deal_type’: “REGULAR_PRICE” 
 - ALWAYS check in the offer with several products and with a loyalty card that in the main_format in the deal there are no repetitions in the deal_description, if there are such repetitions, then in the "main_format" in the "deal" with "deal_type":"SALES_PRICE" you need to write Null and in the “main_format” in the "deal" with “deal_type”: “REGULAR_PRICE” you need to leave unchanged 
 - check offer with several products and with a loyalty card should only type "REGULAR_PRICE" and "SALES_PRICE" without "SPECIAL_PRICE" and "OTHER"
@@ -218,7 +219,6 @@ Your answer should be purely json, without any additional explanation such as "`
 - check that the information in deal_pricebybaseunit remains only in deal_pricebybaseunit and is removed from all remaining ones
 - Check if we have an offer with two sales prices and one regular price, then we will have the following types “REGULAR_PRICE” “SALES_PRICE” “SPECIAL_PRICE” without “OTHER”
 - Check if it is always and everywhere ignored (“Dont éco-participation 10,00 €”, “Dont éco-participation 20,00 €”)
-- make sure that the price without tax (“HT”) is always ignored everywhere except main_format in the product_description in the format (“<27.23€HT>”, “<43.46€HT>”, “<19.31€HT”)
 - check if the HT price is clearly indicated on the offer then it should be written in the product_description
 - check that there is an equal number of "deals" in which the price with tax ("TTC") is recorded to the price without tax ("HT") recorded in the "main_format" in the "product_description"
 - check if the sku number is explicitly indicated on the offer then it should be written in “main_format” in “product_sku”
