@@ -167,7 +167,7 @@ Your answer should be purely json, without any additional explanation such as "`
 - check in "price_type" must be only value "SALES_PRICE" or "REGULAR_PRICE" not "REGULAR".
 - "type" should always be "SALES".
 - discount ("50€","-20€","-25%","34%") must be in "additional_format" in "discount" field.
-
+- if the country of the product is clearly indicated, it must be specified in “additional_format” in “detils” in “origin_country”
 
 ### GENERAL INSTRUCTIONS**:
 - if in "main_format" in  "deal_1" with "deal_type": "REGULAR_PRICE" has the value (for example:"L. 1.98 x H. 1.53 m") and in "deal_2" in "deal_type": "SALES_PRICE" has the same value ("L. 1.98 x H. 1.53 m") then you need to "deal_type": "SALES_PRICE" should be set to Null
@@ -1430,10 +1430,9 @@ Field clarity:
 
 All information must be in its respective fields:Size: Record only in unit_size.
   Country of origin: Record only in origin_country.
-  Additional information: Unique data not included in other fields should remain in        product_description.
+  Additional information: Unique data not included in other fields should remain in product_description.
 - Duplication and deletion:If data is duplicated between the fields (unit_size, origin_country) and product_description, leave this data only in the main field (for example, unit_size) and remove it from product_description.
-
--Formatting:The product_description should be concise and clear. Avoid duplicating data from other fields. For example, if the size is 750/975g in unit_size, it should not be in product_description.
+- Formatting:The product_description should be concise and clear. Avoid duplicating data from other fields. For example, if the size is 750/975g in unit_size, it should not be in product_description.
 
 
 ### Check at the end:
@@ -3002,13 +3001,21 @@ Ignore discounts (for example: "-13%", "-5€", "2ème à - 50%" ,"4€ de rédu
 - IMPORTAN in product_description cannot feed values from deal_pricebybaseunit
 - ALWAYS if "product_name" = "product_brand" you must exclude value with product_brand  and change null
 - ALWAYS if "product_name" !="product_description" record Null 
-
-
 - ALWAYS all information about discount (for example:"-24%", "-2€" , "30%" ,"4€") add in discount
 - If JSON parametr has empty string you must to record "Null"
 > IMPORTANT "price_type" and "deal_type" should always be "OTHER".
 > "type" should always be "SALES".
 > if “product_brand” and “product_description” have the same value as “product_name”, then this value should be excluded from “product_brand” and “product_description”
+
+### Instructions for "additional_format".
+- in "additional_format" must product_id must always match the deal quantity (for example: "deal_1","deal_2").
+- IMPORTANT check only in "deals" froms "additional_format" in "type" field should contain only the value only "SALES" not "SALES_PRICE" and "REGULAR".
+- check in "price_type" must be only value "SALES_PRICE" or "REGULAR_PRICE" not "REGULAR".
+- "type" should always be "SALES".
+- discount ("50€","-20€","-25%","34%") must be in "additional_format" in "discount" field.
+- if the country("france") of the product is clearly indicated, it must be specified in “additional_format” in “detils” in “origin_country”
+
+
 ### Instructions 2:
 
 If the offer includes terms related to loyalty programs like "compte," "cagnoté," "prix déduit," "Prix payé en caisse," "Prix carte," or "Sans carte," set "deal_loyaltycard" to "True".
@@ -3023,7 +3030,7 @@ The "deal_type" can only have the value "OTHER."
 - ALWAYS add similar text ("sur la gamme chocolat bio Ethiquable" , "-34% de remise immédiate") in deal_description
 - always record descriptions in  deal_description if it exist otherwise null
 - IMPORTANT if the offer contains a description of the age category (for example:"à partir de 3 ans", "Dès 3 ans" , "Dès 6 mois"), it must be written in deal_description 
-- The "deal_description" is used to describe the terms of the deal, for example, "Offre valable sur le moins cher".  This information must be complete and recorded in the "deal_conditions"
+- The "deal_description" is used to describe the terms of the deal, (for example, "Offre valable sur le moins cher").  This information must be complete and recorded in the "deal_conditions"
 - all information about description must to record in deal_description
 
 
