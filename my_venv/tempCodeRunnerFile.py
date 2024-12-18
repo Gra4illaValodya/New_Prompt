@@ -1,2 +1,1 @@
-
-#  GERMAN 
+price_characterization_statt

@@ -2,7 +2,7 @@ import openai
 # from text_prompts_txt import offer_without_price
 # from text_prompts_txt import deposit_price    
 # from text_prompts_txt3 import one_old_and_one_new_price
-from old_text_prompts_txt import two_products_with_coupon
+from old_text_prompts_txt import regular
 openai.api_type = "azure"   
 openai.api_version = "2023-05-15"
 openai.api_base = "https://bonial-openai-test-004.openai.azure.com/"
@@ -46,16 +46,23 @@ def chat_with_gpt4(prompt, image_path,  model="bonial-gpt-4o", max_tokens=4096):
             return f"Error: {e}"    
         
 
-prompt = two_products_with_coupon
+prompt = regular
 
-image_path = "https://content-media.bonial.biz/9d074b5c-285b-41fa-975a-fcdef9fdf3eb/main.jpg"
+image_path = "https://content-media.bonial.biz/8d5f130b-0bac-4469-b956-94130390ff07/main.jpg"
 
 response = chat_with_gpt4(prompt, image_path) 
 
-print(response) 
+print(response)         
  
 #  GERMAN 
+# https://content-media.bonial.biz/8d5f130b-0bac-4469-b956-94130390ff07/main.jpg
+# https://content-media.bonial.biz/b6888dd5-9e25-4e84-9096-eccbdf9eb3a6/main.jpg
+
+# 2 coupon
 #  1. https://content-media.bonial.biz/eb7285b0-6ae6-4a20-8e6d-8045ab10e467/main.jpg
 #  2. https://content-media.bonial.biz/9d074b5c-285b-41fa-975a-fcdef9fdf3eb/main.jpg
 #  3. https://content-media.bonial.biz/812cea6b-21cb-44b4-a5f0-e69d503c7293/main.jpg" --- записується Preis mit App Coupon в опис
+
+# statt 
+#  1. https://content-media.bonial.biz/98793123-d613-4bc1-8813-a6d2a2c656f4/main.jpg
 

@@ -2167,7 +2167,10 @@ For "product_product_category", the result must be in German language.
 If the image contains the validity period of the deal the validity period of the deal (e.g. "ab Donnerstag, 1.2"), it should be written in the "deal_description".
 "deal_pricebybaseunit" must contain only the price by base unit (e.g. "1 l = € 1,33", "(1 kg = 11,84/ATG)", "5,20/Liter").
 The "deal_maxPrice" and "deal_minPrice" entry must always follow the format f"{value:.2f}".
-The "deal_maxPrice" and "deal_minPrice" prices should be the same in a particular deal.
+# Instructions for "main_format":
+- The "deal_maxPrice" and "deal_minPrice" prices should be the same in a particular deal.
+- if the page explicitly contains text regardless of case (for example: “pro packung”), it should be written in in "main_format" in "deal" in "deal_conditions"
+- if there is explicitly specified text on the page regardless of case (for example: “statt”), then you need to write it in “main_format” in “deal” in “deal_conditions” word ("statt") with in “main_format” in “deal” in “deal_type”: “REGULAR_PRICE”
 
 # Instructions for "additional_format":
 If the text of the offer contains any type of quotation marks (for example: '„ “'), then they should be replaced with '\\\"'.
