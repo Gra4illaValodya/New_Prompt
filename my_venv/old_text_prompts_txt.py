@@ -969,32 +969,40 @@ Strictly follow this format:
 }
 
 # Instructions for "main_format":
-If the text of the offer contains any type of quotation marks (for example: '„ “'), then they should be replaced with '\\\"'.
-The "product_description" cannot contain the words from "product_name", "product_brand" and "deal_pricebybaseunit".
-"product_name" cannot contain the words from "product_description" and "product_brand".
-"product_brand" cannot contain the words from "product_name" and "product_description".
-The unit size (e.g. "1L Packung", "je 100 g", "ca 20 x 20 cm") should be written in the "product_description".
-Description of the product discount (for example: “-47%”, "-5€", "67% SPAREN", "AKTION -27%", "Sie sparen 55%", "26 gespart","Aktionspreis 6.99") be sure to ignore and do not write “main_format” in any of the parameters.
-"product_name" can be taken only from the description on the image, not from the packaging or photo of the product itself.
-In "deal_1" you should specify the information related to the first product, in "deal_2" - the information related to the second product.
-"deal_description" should contain only the name of the product to which the particular "deal_1" or "deal_2" relates."
-The word "oder" differentiates between two product names, for example: "Pfirsich- oder Birnenhälften". Then "Pfirsich" is "deal_1", and "Birnenhälften" is "deal_2".
-"product_name" always has a value.
-"deal_loyaltycard" can only have "true" or "false" values.
-For "deal_1" and "deal_2", "deal_loyaltycard" can only have "true" by default.
-For "deal_3", "deal_loyaltycard" can only have "false" by default.
-"deal_type" should always be "SALES_PRICE" for "deal_1" and "deal_2", "SPECIAL_PRICE" for "deal_3".
-"deal_3" should contain information related to the coupon.
-"deal" with "deal_type": "SPECIAL_PRICE" should contain the price of a special price, such as a coupon price or a special price from a store (for example: "Nur gültig mit Lidl Plus", "mit PENNY App") and this information must recorded in "deal_conditions".
-"deal" with "deal_type": "SALES_PRICE" should contain the price of a sales price (for example: "ohne PENNY App") and this information must recorded in "deal_conditions".
-"product_sku" is the serial number of the product.
-For "product_product_category", define a product category like Google product category does.
-For "product_product_category", the result must be in German language.
-"deal_frequency" always has the value "ONCE".
-"deal_conditions" must contain only the terms and conditions to activate the discounted price (for example: "Preis mit App Coupon").
-If the image contains the validity period of the deal the validity period of the deal (e.g. "ab Donnerstag, 1.2"), it should be written in the "deal_description".
-"deal_pricebybaseunit" must contain only the price by base unit (e.g. "1 l = € 1,33", "(1 kg = 11,84/ATG)", "5,20/Liter").
-The "deal_maxPrice" and "deal_minPrice" entry must always follow the format f"{value:.2f}".
+- If the text of the offer contains any type of quotation marks (for example: '„ “'), then they should be replaced with '\\\"'.
+- The "product_description" cannot contain the words from "product_name", "product_brand" and "deal_pricebybaseunit".
+- "product_name" cannot contain the words from "product_description" and "product_brand".
+- "product_brand" cannot contain the words from "product_name" and "product_description".
+- The unit size (e.g. "1L Packung", "je 100 g", "ca 20 x 20 cm") should be written in the "product_description".
+- Description of the product discount (for example: “-47%”, "-5€", "67% SPAREN", "AKTION -27%", "Sie sparen 55%", "26 gespart","Aktionspreis 6.99") be sure to ignore and do not write “main_format” in any of the parameters.
+- "product_name" can be taken only from the description on the image, not from the packaging or photo of the product itself.
+- In "deal_1" you should specify the information related to the first product, in "deal_2" - the information related to the second product.
+- "deal_description" should contain only the name of the product to which the particular "deal_1" or "deal_2" relates."
+- The word "oder" differentiates between two product names, for example: "Pfirsich- oder Birnenhälften". Then "Pfirsich" is "deal_1", and "Birnenhälften" is "deal_2".
+- "product_name" always has a value.
+- "deal_loyaltycard" can only have "true" or "false" values.
+- For "deal_1" and "deal_2", "deal_loyaltycard" can only have "true" by default.
+- For "deal_3", "deal_loyaltycard" can only have "false" by default.
+- "deal_type" should always be "SALES_PRICE" for "deal_1" and "deal_2", "SPECIAL_PRICE" for "deal_3".
+- "deal_3" should contain information related to the coupon and app deal.
+- "deal" with "deal_type": "SPECIAL_PRICE" should contain the price of a special price, such as a coupon price or a special price from a store (for example: "Nur gültig mit Lidl Plus", "mit PENNY App") and this information must recorded in "deal_conditions".
+- "deal" with "deal_type": "SALES_PRICE" should contain the price of a sales price (for example: "ohne PENNY App") and this information must recorded in "deal_conditions".
+- "product_sku" is the serial number of the product.
+- For "product_product_category", define a product category like Google product category does.
+- For "product_product_category", the result must be in German language.
+- "deal_frequency" always has the value "ONCE".
+- "deal_conditions" must contain only the terms and conditions to activate the discounted price (for example: "Preis mit App Coupon" ,).
+- If the image contains the validity period of the deal the validity period of the deal (e.g. "ab Donnerstag, 1.2"), it should be written in the "deal_description".
+- "deal_pricebybaseunit" must contain only the price by base unit (e.g. "1 l = € 1,33", "(1 kg = 11,84/ATG)", "5,20/Liter","je kg 0,70).
+- The "deal_maxPrice" and "deal_minPrice" entry must always follow the format f"{value:.2f}".
+- In "main_format" in "deal" in "deal_type":"SALES_PRICE", ensure "deal_maxPrice" and "deal_minPrice" always have the same value.
+- IMPORTANT If there is a price per kilogram and a price per 10 kilograms, they must be separated by commas (for example: "je kg 0.70", "10-kg-Sack 6.99", "je kg 0.75", "10-kg-Sack 7.48") and written only in "deal_pricebybaseunit" within "main_format" in «deal» and exclude from "main_format" in «deal» «max and min price"
+- if it is not clearly written (“Preis mit App Coupon” or “ohne PENNY App”), write in “main_format” in “deal” in “deal_conditions” to Null
+- if there is a clearly specified text ("APP-DEAL"), you need to write it in “main_format” in “deal” in “deal_conditions” only in "main_format" in "deal" in "deal_type":"SPECIAL_PRICE" and exculde from everywhere
+- always write the price for base units only in “main_format” in “deal” in “deal_pricebybaseunit”
+- The prices in “deal_maxPrice” and “deal_minPrice” must be the same in both deals “deal_1” and “deal_2”.
+- Ensure that app prices are written in "deal_pricebybaseunit" under "deal_type":"SPECIAL_PRICE" and regular prices without the app in "deal_pricebybaseunit" under "deal_type":"SALES_PRICE".
+- If there are prices of 6.29*(6.73), then in the “main_format” in the “deal” under “deal_type”: “SPECIAL_PRICE” write 6.29, and the price in brackets, 6.73, write in the ‘main_format’ in ‘deal’ under ‘deal_type’: “SALES_PRICE”
 
 # Instructions for "additional_format":
 If the text of the offer contains any type of quotation marks (for example: '„ “'), then they should be replaced with '\\\"'.
@@ -1048,7 +1056,8 @@ It is forbidden to add text to the json that is not in the image.
 The word "Aktion" and "KNALLER" do not refer to any parameter and should be ignored.
 The input text should be written grammatically correct in German, even if there are errors in the input text. Pay particular attention to broken words and hyphens.
 When writing information to the "product_description" parameter, each new line must be shifted in accordance with the information in the image, the shift should be marked with the symbol "\n".
-Unit prices (e.g: "(1 kg = 13.09)", “1 kg = 4.28”, “1 l = € 1.33”, “1 kg = 11.84/ATG”, “5.20/Liter”, “(1 kg = 11.99)”) **are not recorded and should be ignored when filling in "product_description"**.
+Unit prices (e.g: "(1 kg = 13.09)", “1 kg = 4.28”, “1 l = € 1.33”, “1 kg = 11.84/ATG”, “5.20/Liter”, “(1 kg = 11.99)” ) **are not recorded and should be ignored when filling in "product_description"**.
+
 
 # Exception:
 The values and words of one of the json parameters cannot be repeated in other json parameters, except for:

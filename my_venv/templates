@@ -1,0 +1,23 @@
+    in "main_format" in "deal" in "deal_type":"SALES_PRICE"
+
+in "main_format" in "deal" in "deal_description"
+in "main_format" in "deal" in "deal_conditions"
+in "main_format" in "deal" in "deal_pricebybaseunit"
+in "main_format" in "deal" in "deal_maxPrice" and "deal_minPrice"
+
+- if it is not clearly written (“Preis mit App Coupon” or “ohne PENNY App”), write in “main_format” in “deal” in “deal_conditions” to Null
+- if there is a clearly specified text ("APP-DEAL"), you need to write it in “main_format” in “deal” in “deal_conditions” only in "main_format" in "deal" in "deal_type":"SPECIAL_PRICE" and exculde from everywhere
+- If there is an old price (greater than the price in brackets, e.g., 6.73) and a special price (less than the one with the add-on, e.g., 6.29), write the old price in "deal_type": "SALES_PRICE" and the special price with the add-on in "deal_type": "SPECIAL_PRICE" within "main_format" in "deal".
+- If there is a price per kilogram (e.g., 0.75) and a price with the app (e.g., 0.70), as well as a price for 10 kilograms (e.g., 7.48) and a price with the app (e.g., 6.99), write the app prices in "deal_pricebybaseunit" for "deal_type":"SPECIAL_PRICE" and the regular prices in "deal_pricebybaseunit" for "deal_type":"SALES_PRICE".
+- The price in "deal_minPrice" and "deal_maxPrice" cannot be the same as the price in "deal_pricebybaseunit".
+- the price per base unit should always be written only in “main_format” in “deal” in “deal_pricebybaseunit”
+- In "main_format" in "deal" in "deal_type":"SALES_PRICE", ensure "deal_maxPrice" and "deal_minPrice" always have the same value.
+- in the “main_format” in “deal_1” and “deal_2” there must be duplicate prices in the “main_format” in “deal” in “deal_maxPrice” and “deal_minPrice”
+- If there is no clearly defined condition (“ohne PENNY App”), write Null
+- If there is a price per kilogram and a price per 10 kilograms, they must be separated by commas (for example: "je kg 0.70", "10-kg-Sack 6.99", "je kg 0.75", "10-kg-Sack 7.48") and written only in "deal_pricebybaseunit" within "main_format" in «deal» and exclude from "main_format" in «deal» «max and min price"
+- In "main_format" in "deal" in "deal_type":"SALES_PRICE" cannot contain ("APP DEAL")
+- the price for the base unit cannot be specified in “main_format” in “deal” in “deal_maxPrice” and “deal_minPrice”
+- Ensure that app prices are written in "deal_pricebybaseunit" under "deal_type":"SPECIAL_PRICE" and regular prices without the app in "deal_pricebybaseunit" under "deal_type":"SALES_PRICE" without duplication.
+- Ensure "deal_maxPrice" and "deal_minPrice" have their corresponding specific prices, while "deal_pricebybaseunit" reflects the app price under "SPECIAL_PRICE" and the regular price under "SALES_PRICE", without duplication.
+- If there is a price per kilogram and a price per 10 kilograms, they should always be in the format (for example: “je kg 0.70, 10-kg-Sack 6.99”, “je kg 0.75, 10-kg-Sack 7.48”) and written only in “deal_pricebybaseunit” within the “main_format” in “deal” and exclude “max and min price” from the “main_format” in “deal”
+- IMPORTANT the price in in "main_format" in "main_format" in "deal" in "deal_pricebybaseunit" "deal" in "deal_pricebybaseunit" cannot be duplicated in in "main_format" in "deal" in "deal_maxPrice" and "deal_minPrice"
